@@ -1,1 +1,27 @@
 /* You can add global styles to this file, and also import other style files */
+@import "tailwindcss";
+@theme {
+  --color-brand-blue-50: oklch(0.97 0.0142 254.6); /* #eff6ff */
+  --color-brand-blue-100: oklch(0.93 0.0316 255.59); /* #dbeafe */
+  --color-brand-blue-200: oklch(0.88 0.0571 254.13); /* #bfdbfe */
+  --color-brand-blue-300: oklch(0.81 0.0949 250.9); /* #93c6fd */
+  --color-brand-blue-400: oklch(0.69 0.1575 254.6); /* #4f9cf9 */
+  --color-brand-blue-500: oklch(0.63 0.1869 259.51); /* #3b83f6 */
+  --color-brand-blue-600: oklch(0.55 0.2126 262.78); /* #2664ea */
+  --color-brand-blue-700: oklch(0.49 0.216 264.23); /* #1d4fd8 */
+  --color-brand-blue-800: oklch(0.43 0.1797 265.44); /* #1e41af */
+  --color-brand-blue-900: oklch(0.32 0.0643 253.99); /* #1a3453 */
+  --color-brand-blue-950: oklch(0.26 0.0529 256.89); /* #13253e */
+
+  --color-brand-yellow-50: oklch(0.98 0.0204 91.58); /* #fffaeb */
+  --color-brand-yellow-100: oklch(0.96 0.0576 92.14); /* #fff1c6 */
+  --color-brand-yellow-200: oklch(0.92 0.1056 91.87); /* #ffe492 */
+  --color-brand-yellow-300: oklch(0.87 0.1525 86.73); /* #ffcc4a */
+  --color-brand-yellow-400: oklch(0.82 0.1654 78.29); /* #ffb620 */
+  --color-brand-yellow-500: oklch(0.75 0.1707 63.1); /* #f99307 */
+  --color-brand-yellow-600: oklch(0.66 0.1672 52.35); /* #dd6d02 */
+  --color-brand-yellow-700: oklch(0.55 0.1551 44.63); /* #b74b06 */
+  --color-brand-yellow-800: oklch(0.47 0.1332 42); /* #94390c */
+  --color-brand-yellow-900: oklch(0.41 0.1135 41.54); /* #7a2f0d */
+  --color-brand-yellow-950: oklch(0.28 0.0788 42.61); /* #461702 */
+}

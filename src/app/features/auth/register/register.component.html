@@ -1,0 +1,99 @@
+<div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+  <div class="sm:mx-auto sm:w-full sm:max-w-sm">
+    <h2
+      class="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900"
+    >
+      Sign up
+    </h2>
+  </div>
+
+  <div
+    class="mt-10 sm:mx-auto sm:w-full sm:max-w-md py-2 px-5 shadow-xl rounded bg-blue-100"
+  >
+    <form class="space-y-6" action="#" method="POST">
+      @if(step() === 1){
+
+      <div class="flex flex-col gap-6 py-20 px-4">
+        <button
+          (click)="onNextStep()"
+          class="block cursor-pointer  hover:bg-brand-blue-700 focus:bg-brand-blue-700 transition duration-100 bg-brand-blue-600 text-blue-50 py-3 px-2 rounded-md"
+          type="button"
+          value="recruiter"
+        >
+          Join Placement Cell as a Student
+        </button>
+        <div class="sm:flex gap-3">
+          <button
+            (click)="onNextStep()"
+            class="block cursor-pointer w-full  hover:bg-brand-yellow-200 focus:bg-brand-yellow-200 transition durationduration-100 sm:w-1/5 grow bg-[#f99307] text-brand-yellow-950 font-semibold py-3 px-2 rounded-md"
+            type="button"
+            value="recruiter"
+          >
+            Join as Placement Cell
+          </button>
+          <button
+            (click)="onNextStep()"
+            class="block cursor-pointer w-full max-sm:mt-3 hover:bg-brand-yellow-200 focus:bg-brand-yellow-200 transition durationduration-100 sm:w-1/5 grow bg-brand-yellow-500 text-brand-yellow-950 font-semibold py-3 px-2 rounded-md"
+            type="button"
+            value="recruiter"
+          >
+            Join as Recruiter
+          </button>
+        </div>
+      </div>
+      }@else if (step() === 2) {
+      <div class="flex gap-3">
+        <button
+          (click)="onPreviousStep()"
+          class="block cursor-pointer hover:bg-brand-blue-700 focus:bg-brand-blue-700 transition durationduration-100 w-1/5 grow bg-indigo-900 text-blue-50 py-3 px-2 rounded-md"
+          type="button"
+          value="recruiter"
+        >
+          Back
+        </button>
+        <button
+          (click)="onNextStep()"
+          class="block cursor-pointer hover:bg-brand-blue-700 focus:bg-brand-blue-700 transition durationduration-100 w-1/5 grow bg-indigo-900 text-blue-50 py-3 px-2 rounded-md"
+          type="button"
+          value="recruiter"
+        >
+          Next
+        </button>
+      </div>
+      }@else if(step() === 3){
+      <div class="flex gap-3">
+        <button
+          (click)="onPreviousStep()"
+          class="block cursor-pointer hover:bg-brand-blue-700 focus:bg-brand-blue-700 transition durationduration-100 w-1/5 grow bg-indigo-900 text-blue-50 py-3 px-2 rounded-md"
+          type="button"
+          value="recruiter"
+        >
+          Back
+        </button>
+        <button
+          (click)="onSubmit()"
+          class="block cursor-pointer hover:bg-green-700 focus:bg-green-700 transition durationduration-100 w-1/5 grow bg-emerald-800 text-blue-50 py-3 px-2 rounded-md"
+          type="button"
+          value="recruiter"
+        >
+          Submit
+        </button>
+      </div>
+      }
+    </form>
+    <div class="flex gap-1 h-2 overflow-hidden mt-4 px-6 py-3">
+      <div
+        class="grow p-1 -skew-x-12 bg-indigo-100"
+        [class.bg-indigo-950]="step() === 1"
+      ></div>
+      <div
+        class="grow p-1 -skew-x-12 bg-indigo-100"
+        [class.bg-indigo-950]="step() === 2"
+      ></div>
+      <div
+        class="grow p-1 -skew-x-12 bg-indigo-100"
+        [class.bg-indigo-950]="step() === 3"
+      ></div>
+    </div>
+  </div>
+</div>
