@@ -13,7 +13,14 @@ import {
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../core/services/auth.service';
 import { RegisterService } from './register.service';
-import { RegisterBaseData } from '../user.mode';
+import {
+  Branch,
+  Degree,
+  PlacementCellApiData,
+  RegisterBaseData,
+} from '../user.mode';
+import { SearchListComponent } from '../../../shared/search-list/search-list.component';
+import { AutoCompleteComponent } from '../../../shared/auto-complete/auto-complete.component';
 
 type UserFormType = {
   email: FormControl<string>;
@@ -24,7 +31,13 @@ type UserFormType = {
 
 @Component({
   selector: 'app-register',
-  imports: [RouterModule, ReactiveFormsModule, CommonModule],
+  imports: [
+    RouterModule,
+    ReactiveFormsModule,
+    CommonModule,
+    SearchListComponent,
+    AutoCompleteComponent,
+  ],
   templateUrl: './register.component.html',
   styleUrl: './register.component.css',
 })
@@ -37,8 +50,12 @@ export class RegisterComponent {
   roleError = signal('');
   userForm: FormGroup<UserFormType>;
   profileForm: FormGroup;
-
+  isSearching = signal(true);
   registerService = inject(RegisterService);
+  branches = signal<Branch[]>([]);
+  degrees = signal<Degree[]>([]);
+  placementCells = signal<PlacementCellApiData[]>([]);
+  placementCellAutoCompleteList = signal<string[]>([]);
 
   constructor(private fb: FormBuilder) {
     this.userForm = this.fb.group<UserFormType>(
@@ -72,6 +89,138 @@ export class RegisterComponent {
     }
     this.selectedRole = role;
     this.onNextStep();
+  }
+
+  passwordMatchValidator: ValidatorFn = (
+    control: AbstractControl
+  ): ValidationErrors | null => {
+    const group = control as FormGroup;
+    const password = group.get('password')?.value;
+    const confirmPassword = group.get('confirmPassword')?.value;
+    return password === confirmPassword ? null : { passwordsMismatch: true };
+  };
+
+  buildProfileForm() {
+    if (
+      this.selectedRole === 'student' ||
+      this.selectedRole === 'placement_cell'
+    ) {
+      this.registerService.fetchBranches().subscribe({
+        next: (data) => {
+          console.log(data);
+          if (data) {
+            this.branches.set(data);
+          }
+        },
+      });
+    }
+    if (this.selectedRole === 'student') {
+      this.profileForm = this.fb.group({
+        enrollmentNumber: ['', Validators.required],
+        fullName: ['', Validators.required],
+        degreeId: ['', Validators.required],
+        branchId: ['', Validators.required],
+        placementCellId: ['', Validators.required],
+        placementCellSearch: [''],
+      });
+      this.profileForm.get('branchId')?.valueChanges.subscribe((branchId) => {
+        if (branchId) {
+          this.fetchPlacementCells(branchId);
+        }
+      });
+    } else if (this.selectedRole === 'recruiter') {
+      this.profileForm = this.fb.group({
+        companyName: ['', Validators.required],
+        representativePosition: ['', Validators.required],
+        description: [''],
+        website: ['', Validators.required],
+        email: ['', [Validators.required, Validators.email]],
+      });
+    } else if (this.selectedRole === 'placement_cell') {
+      this.profileForm = this.fb.group({
+        name: ['', Validators.required],
+        domains: [[], Validators.required],
+        branchName: ['', Validators.required],
+        degreeNames: [[], Validators.required],
+        email: ['', [Validators.required, Validators.email]],
+        website: ['', [Validators.required]],
+      });
+    }
+  }
+
+  fetchPlacementCells(branchId: string) {
+    this.registerService.fetchPlacementCellByDepartment(branchId).subscribe({
+      next: (data) => {
+        if (data) this.placementCells.set(data);
+        console.log({ PlacementCell: data });
+        this.populatePlacementCellAutoCompleteList();
+      },
+    });
+  }
+
+  populatePlacementCellAutoCompleteList() {
+    this.placementCellAutoCompleteList.set(
+      this.placementCells().map((placementCell) => placementCell.name)
+    );
+    console.log(this.placementCellAutoCompleteList())
+  }
+
+  onUserFormValidate() {
+    if (this.userForm.invalid || this.selectedRole === null) {
+      this.userForm.markAllAsTouched();
+      return;
+    }
+    const { email, username, password, confirmPassword } =
+      this.userForm.getRawValue();
+    const payload: RegisterBaseData = {
+      email,
+      username,
+      password,
+      confirmPassword,
+      role: this.selectedRole!,
+    };
+    this.registerService.validateUserData(payload).subscribe({
+      next: (response) => {
+        console.log({ validations: response });
+        this.buildProfileForm();
+        this.onNextStep();
+      },
+      error: (error) => {
+        for (const key in error) {
+          if (error.hasOwnProperty(key)) {
+            const message = error[key];
+            console.log({ [key]: message });
+            const formControl = this.userForm.get(key);
+            if (formControl) {
+              formControl.setErrors({ server: message });
+            }
+            if (key === 'role') {
+              this.onHandleRoleError(message);
+            }
+          }
+          console.log(this.userForm.getError('password'));
+        }
+      },
+    });
+  }
+
+  onNextStep() {
+    this.step.update((prevStep) => (prevStep === 3 ? 3 : prevStep + 1));
+  }
+
+  onHandleRoleError(serverRoleError: string) {
+    this.step.set(1);
+    this.roleError.set(serverRoleError);
+  }
+
+  onPreviousStep() {
+    this.step.update((prevStep) => prevStep - 1 || 1);
+  }
+  onHandlePlacementCellSearchFocus() {
+    this.isSearching.set(true);
+  }
+  onHandlePlacementCellSearchBlur() {
+    this.isSearching.set(false);
   }
 
   get username() {
@@ -121,94 +270,5 @@ export class RegisterComponent {
   }
   get degreeNames() {
     return this.profileForm.get('degreeNames');
-  }
-
-  passwordMatchValidator: ValidatorFn = (
-    control: AbstractControl
-  ): ValidationErrors | null => {
-    const group = control as FormGroup;
-    const password = group.get('password')?.value;
-    const confirmPassword = group.get('confirmPassword')?.value;
-    return password === confirmPassword ? null : { passwordsMismatch: true };
-  };
-
-  buildProfileForm() {
-    if (this.selectedRole === 'student') {
-      this.profileForm = this.fb.group({
-        enrollmentNumber: ['', Validators.required],
-        fullName: ['', Validators.required],
-        degreeId: ['', Validators.required],
-        placementCellId: ['', Validators.required],
-      });
-    } else if (this.selectedRole === 'recruiter') {
-      this.profileForm = this.fb.group({
-        companyName: ['', Validators.required],
-        representativePosition: ['', Validators.required],
-        description: [''],
-        website: ['', Validators.required],
-        email: ['', [Validators.required, Validators.email]],
-      });
-    } else if (this.selectedRole === 'placement_cell') {
-      this.profileForm = this.fb.group({
-        name: ['', Validators.required],
-        domains: [[], Validators.required],
-        branchName: ['', Validators.required],
-        degreeNames: [[], Validators.required],
-        email: ['', [Validators.required, Validators.email]],
-        website: ['', [Validators.required]],
-      });
-    }
-  }
-
-  onUserFormValidate() {
-    if (this.userForm.invalid || this.selectedRole === null) {
-      this.userForm.markAllAsTouched();
-      return;
-    }
-    const { email, username, password, confirmPassword } =
-      this.userForm.getRawValue();
-    const payload: RegisterBaseData = {
-      email: '',
-      username: '',
-      password: '',
-      confirmPassword: '',
-      role: this.selectedRole!,
-    };
-    this.registerService.validateUserData(payload).subscribe({
-      next: (response) => {
-        console.log(response);
-        this.buildProfileForm();
-        this.onNextStep();
-      },
-      error: (error) => {
-        for (const key in error) {
-          if (error.hasOwnProperty(key)) {
-            const message = error[key];
-            console.log({ [key]: message });
-            const formControl = this.userForm.get(key);
-            if (formControl) {
-              formControl.setErrors({ server: message });
-            }
-            if (key === 'role') {
-              this.onHandleRoleError(message);
-            }
-          }
-          console.log(this.userForm.getError('password'));
-        }
-      },
-    });
-  }
-
-  onNextStep() {
-    this.step.update((prevStep) => (prevStep === 3 ? 3 : prevStep + 1));
-  }
-
-  onHandleRoleError(serverRoleError: string) {
-    this.step.set(1);
-    this.roleError.set(serverRoleError);
-  }
-
-  onPreviousStep() {
-    this.step.update((prevStep) => prevStep - 1 || 1);
   }
 }

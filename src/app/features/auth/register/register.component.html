@@ -24,186 +24,555 @@
         [class.bg-brand-blue-700]="step() === 3"
       ></div>
     </div>
-    <form class="space-y-6" action="#" method="POST">
-      @if(step() === 1){
-      <div class="flex flex-col gap-6 py-20 px-4">
-        <button
-          class="block cursor-pointer hover:shadow-lg hover:bg-brand-blue-700 focus:bg-brand-blue-700 transition duration-100 bg-brand-blue-600 text-blue-50 py-3 px-2 rounded-md"
-          type="button"
-          (click)="onRoleSelect('student')"
-        >
-          Join Placement Cell as a Student
-        </button>
-        <div class="sm:flex gap-3">
-          <button
-            class="block cursor-pointer w-full hover:shadow-lg hover:bg-brand-yellow-300 focus:bg-brand-yellow-300 transition durationduration-100 sm:w-1/5 grow bg-[#f99307] text-brand-yellow-950 font-semibold py-3 px-2 rounded-md"
-            type="button"
-            (click)="onRoleSelect('placement_cell')"
-          >
-            Signup as Placement Cell
-          </button>
-          <button
-            class="block cursor-pointer w-full max-sm:mt-3 hover:shadow-lg hover:bg-brand-yellow-300 focus:bg-brand-yellow-300 transition durationduration-100 sm:w-1/5 grow bg-brand-yellow-500 text-brand-yellow-950 font-semibold py-3 px-2 rounded-md"
-            type="button"
-            (click)="onRoleSelect('recruiter')"
-          >
-            Signup as Recruiter
-          </button>
-        </div>
-        @if(roleError()){
-        <div class="text-red-500 text-center">Select Role</div>
-        }
-      </div>
-      }@else if (step() === 2) {
-      <form
-        [formGroup]="userForm"
-        (ngSubmit)="onUserFormValidate()"
-        class="max-w-sm mx-auto"
+    @if(step() === 1){
+    <div class="flex flex-col gap-6 py-20 px-4">
+      <button
+        class="block cursor-pointer hover:shadow-lg hover:bg-brand-blue-700 focus:bg-brand-blue-700 transition duration-100 bg-brand-blue-600 text-blue-50 py-3 px-2 rounded-md"
+        type="button"
+        (click)="onRoleSelect('student')"
       >
-        <div class="mt-3">
-          <label
-            for="username"
-            class="block text-sm/6 font-medium text-gray-900"
-            >User name</label
-          >
-          <div class="mt-0.5">
-            <input
-              type="text"
-              formControlName="username"
-              name="username"
-              id="username"
-              class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
-            />
-          </div>
+        Join Placement Cell as a Student
+      </button>
+      <div class="sm:flex gap-3">
+        <button
+          class="block cursor-pointer w-full hover:shadow-lg hover:bg-brand-yellow-300 focus:bg-brand-yellow-300 transition durationduration-100 sm:w-1/5 grow bg-[#f99307] text-brand-yellow-950 font-semibold py-3 px-2 rounded-md"
+          type="button"
+          (click)="onRoleSelect('placement_cell')"
+        >
+          Signup as Placement Cell
+        </button>
+        <button
+          class="block cursor-pointer w-full max-sm:mt-3 hover:shadow-lg hover:bg-brand-yellow-300 focus:bg-brand-yellow-300 transition durationduration-100 sm:w-1/5 grow bg-brand-yellow-500 text-brand-yellow-950 font-semibold py-3 px-2 rounded-md"
+          type="button"
+          (click)="onRoleSelect('recruiter')"
+        >
+          Signup as Recruiter
+        </button>
+      </div>
+      @if(roleError()){
+      <div class="text-red-500 text-center">Select Role</div>
+      }
+    </div>
+    }@else if (step() === 2) {
+    <form
+      [formGroup]="userForm"
+      (ngSubmit)="onUserFormValidate()"
+      class="max-w-sm mx-auto"
+    >
+      <div class="mt-3">
+        <label for="username" class="block text-sm/6 font-medium text-gray-900"
+          >User name</label
+        >
+        <div class="mt-0.5">
+          <input
+            type="text"
+            formControlName="username"
+            name="username"
+            id="username"
+            class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+          />
+        </div>
 
-          @if (username?.invalid && (username?.dirty || username?.touched)) {
-          @if(username?.hasError("required")){
+        @if (username?.invalid && (username?.dirty || username?.touched)) {
+        @if(username?.hasError("required")){
+        <div class="text-red-500">Username is required.</div>
+        }@if(username?.hasError("server")){
+
+        <div class="text-red-500">
+          {{ userForm.get("username")?.getError("server") }}
+        </div>
+        } }
+      </div>
+      <div class="mt-3">
+        <label for="email" class="block text-sm/6 font-medium text-gray-900"
+          >Email address</label
+        >
+        <div class="mt-0.5">
+          <input
+            type="email"
+            name="email"
+            id="email"
+            formControlName="email"
+            autocomplete="email"
+            class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+          />
+
+          @if (email?.invalid && (email?.dirty || email?.touched)) {
+          @if(email?.hasError("required")){
           <div class="text-red-500">Username is required.</div>
-          }@if(username?.hasError("server")){
-
+          } @else if(email?.hasError("email")){
+          <div class="text-red-500">Please enter valid email</div>
+          } @else if(email?.hasError("server")){
           <div class="text-red-500">
-            {{ userForm.get("username")?.getError("server") }}
-          </div>
-          } }
-        </div>
-        <div class="mt-3">
-          <label for="email" class="block text-sm/6 font-medium text-gray-900"
-            >Email address</label
-          >
-          <div class="mt-0.5">
-            <input
-              type="email"
-              name="email"
-              id="email"
-              formControlName="email"
-              autocomplete="email"
-              class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
-            />
-
-            @if (email?.invalid && (email?.dirty || email?.touched)) {
-            @if(email?.hasError("required")){
-            <div class="text-red-500">Username is required.</div>
-            } @else if(email?.hasError("email")){
-            <div class="text-red-500">Please enter valid email</div>
-            } @else if(email?.hasError("server")){
-            <div class="text-red-500">
-              {{ userForm.get("email")?.getError("server") }}
-            </div>
-            }}
-          </div>
-        </div>
-
-        <div class="mt-3">
-          <div class="flex items-center justify-between">
-            <label
-              for="password"
-              class="block text-sm/6 font-medium text-gray-900"
-              >Password</label
-            >
-          </div>
-          <div class="mt-0.5">
-            <input
-              type="password"
-              name="password"
-              id="password"
-              formControlName="password"
-              autocomplete="current-password"
-              class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
-            />
-          </div>
-          @if (password?.invalid && (password?.dirty || password?.touched)) {
-          @if(password?.hasError("required")) {
-          <div class="text-red-500">Password is required.</div>
-          } @else if(password?.hasError("minlength")) {
-          <div class="text-red-500">
-            Password must be at least 6 characters.
-          </div>
-          } @else if(password?.hasError("server")){
-          <div class="text-red-500">
-            {{ userForm.get("password")?.getError("server") }}
+            {{ userForm.get("email")?.getError("server") }}
           </div>
           }}
         </div>
-        <div class="mt-3">
-          <div class="flex items-center justify-between">
-            <label
-              for="confirmPassword"
-              class="block text-sm/6 font-medium text-gray-900"
-              >Confirm Password</label
-            >
-          </div>
-          <div class="mt-0.5">
-            <input
-              type="confirmPassword"
-              name="confirmPassword"
-              id="confirmPassword"
-              formControlName="confirmPassword"
-              autocomplete="current-confirmPassword"
-              class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
-            />
-          </div>
-          <!-- Error handling for confirm password -->
-          @if (confirmPassword?.invalid && (confirmPassword?.dirty ||
-          confirmPassword?.touched)) {
-          @if(confirmPassword?.hasError("required")) {
-          <div class="text-red-500">Confirm password is required.</div>
-          }@else if(confirmPassword?.hasError("minlength")) {
-          <div class="text-red-500">
-            Confirm password must be at least 6 characters.
-          </div>
-          } }
+      </div>
 
-          <!-- Check for custom password mismatch error on the entire form group -->
-          @if(confirmPassword?.parent?.hasError("passwordsMismatch") &&
-          (confirmPassword?.dirty || confirmPassword?.touched)) {
-          <div class="text-red-500">Passwords do not match.</div>
-          } @else if(confirmPassword?.hasError("server")){
-          <div class="text-red-500">
-            {{ userForm.get("confirmPassword")?.getError("server") }}
+      <div class="mt-3">
+        <div class="flex items-center justify-between">
+          <label
+            for="password"
+            class="block text-sm/6 font-medium text-gray-900"
+            >Password</label
+          >
+        </div>
+        <div class="mt-0.5">
+          <input
+            type="password"
+            name="password"
+            id="password"
+            formControlName="password"
+            class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+          />
+        </div>
+        @if (password?.invalid && (password?.dirty || password?.touched)) {
+        @if(password?.hasError("required")) {
+        <div class="text-red-500">Password is required.</div>
+        } @else if(password?.hasError("minlength")) {
+        <div class="text-red-500">Password must be at least 6 characters.</div>
+        } @else if(password?.hasError("server")){
+        <div class="text-red-500">
+          {{ userForm.get("password")?.getError("server") }}
+        </div>
+        }}
+      </div>
+      <div class="mt-3">
+        <div class="flex items-center justify-between">
+          <label
+            for="confirmPassword"
+            class="block text-sm/6 font-medium text-gray-900"
+            >Confirm Password</label
+          >
+        </div>
+        <div class="mt-0.5">
+          <input
+            type="password"
+            name="confirmPassword"
+            id="confirmPassword"
+            formControlName="confirmPassword"
+            class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+          />
+        </div>
+        <!-- Error handling for confirm password -->
+        @if (confirmPassword?.invalid && (confirmPassword?.dirty ||
+        confirmPassword?.touched)) { @if(confirmPassword?.hasError("required"))
+        {
+        <div class="text-red-500">Confirm password is required.</div>
+        }@else if(confirmPassword?.hasError("minlength")) {
+        <div class="text-red-500">
+          Confirm password must be at least 6 characters.
+        </div>
+        } }
+
+        <!-- Check for custom password mismatch error on the entire form group -->
+        @if(confirmPassword?.parent?.hasError("passwordsMismatch") &&
+        (confirmPassword?.dirty || confirmPassword?.touched)) {
+        <div class="text-red-500">Passwords do not match.</div>
+        } @else if(confirmPassword?.hasError("server")){
+        <div class="text-red-500">
+          {{ userForm.get("confirmPassword")?.getError("server") }}
+        </div>
+        }
+      </div>
+      <div class="flex gap-3 mt-3">
+        <button
+          (click)="onPreviousStep()"
+          class="block cursor-pointer hover:shadow-lg hover:bg-brand-blue-600 focus:bg-brand-blue-600 transition durationduration-100 w-1/5 grow bg-brand-blue-700 text-blue-50 py-2 px-1 rounded-md"
+          type="button"
+        >
+          Back
+        </button>
+        <button
+          (click)="onUserFormValidate()"
+          class="block cursor-pointer hover:shadow-lg hover:bg-brand-blue-600 focus:bg-brand-blue-600 transition durationduration-100 w-1/5 grow bg-brand-blue-700 text-blue-50 py-2 px-1 rounded-md"
+          type="submit"
+          [disabled]="userForm.invalid"
+        >
+          Next
+        </button>
+      </div>
+    </form>
+    }@else if(step() === 3){
+
+    <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+      @if(selectedRole === "recruiter"){
+      <div class="mt-3">
+        <div class="flex items-center justify-between">
+          <label
+            for="companyName"
+            class="block text-sm/6 font-medium text-gray-900"
+            >Company Name</label
+          >
+        </div>
+        <div class="mt-0.5">
+          <input
+            type="text"
+            name="companyName"
+            id="companyName"
+            formControlName="companyName"
+            class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+          />
+        </div>
+        <!-- Error handling for confirm password -->
+        @if (confirmPassword?.invalid && (confirmPassword?.dirty ||
+        confirmPassword?.touched)) { @if(confirmPassword?.hasError("required"))
+        {
+        <div class="text-red-500">Confirm password is required.</div>
+        }@else if(confirmPassword?.hasError("minlength")) {
+        <div class="text-red-500">
+          Confirm password must be at least 6 characters.
+        </div>
+        } }
+      </div>
+      <!-- representativePosition -->
+      <div class="mt-3">
+        <div class="flex items-center justify-between">
+          <label
+            for="representativePosition"
+            class="block text-sm/6 font-medium text-gray-900"
+            >Representative Position</label
+          >
+        </div>
+        <div class="mt-0.5">
+          <input
+            type="text"
+            name="representativePosition"
+            id="representativePosition"
+            formControlName="representativePosition"
+            placeholder="your role in company"
+            class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+          />
+        </div>
+        <!-- Error handling for confirm password -->
+        @if (confirmPassword?.invalid && (confirmPassword?.dirty ||
+        confirmPassword?.touched)) { @if(confirmPassword?.hasError("required"))
+        {
+        <div class="text-red-500">Confirm password is required.</div>
+        }@else if(confirmPassword?.hasError("minlength")) {
+        <div class="text-red-500">
+          Confirm password must be at least 6 characters.
+        </div>
+        } }
+      </div>
+      <!-- description -->
+      <div class="mt-3">
+        <div class="flex items-center justify-between">
+          <label
+            for="description"
+            class="block text-sm/6 font-medium text-gray-900"
+            >Description</label
+          >
+        </div>
+        <div class="mt-0.5">
+          <textarea
+            type="text"
+            name="description"
+            id="description"
+            formControlName="description"
+            placeholder="Provide brief description about company"
+            class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+          ></textarea>
+        </div>
+        <!-- Error handling for confirm password -->
+        @if (confirmPassword?.invalid && (confirmPassword?.dirty ||
+        confirmPassword?.touched)) { @if(confirmPassword?.hasError("required"))
+        {
+        <div class="text-red-500">Confirm password is required.</div>
+        }@else if(confirmPassword?.hasError("minlength")) {
+        <div class="text-red-500">
+          Confirm password must be at least 6 characters.
+        </div>
+        } }
+      </div>
+      <!-- website -->
+      <div class="mt-3">
+        <div class="flex items-center justify-between">
+          <label for="website" class="block text-sm/6 font-medium text-gray-900"
+            >Website</label
+          >
+        </div>
+        <div class="mt-0.5">
+          <input
+            type="text"
+            name="website"
+            id="website"
+            formControlName="website"
+            placeholder="Company's website"
+            class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+          />
+        </div>
+        <!-- Error handling for confirm password -->
+        @if (confirmPassword?.invalid && (confirmPassword?.dirty ||
+        confirmPassword?.touched)) { @if(confirmPassword?.hasError("required"))
+        {
+        <div class="text-red-500">Confirm password is required.</div>
+        }@else if(confirmPassword?.hasError("minlength")) {
+        <div class="text-red-500">
+          Confirm password must be at least 6 characters.
+        </div>
+        } }
+      </div>
+      <!-- email -->
+      <div class="mt-3">
+        <div class="flex items-center justify-between">
+          <label for="email" class="block text-sm/6 font-medium text-gray-900"
+            >email</label
+          >
+        </div>
+        <div class="mt-0.5">
+          <input
+            type="text"
+            name="email"
+            id="email"
+            formControlName="email"
+            placeholder="Company's contact email"
+            class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+          />
+        </div>
+        <!-- Error handling for confirm password -->
+        @if (confirmPassword?.invalid && (confirmPassword?.dirty ||
+        confirmPassword?.touched)) { @if(confirmPassword?.hasError("required"))
+        {
+        <div class="text-red-500">Confirm password is required.</div>
+        }@else if(confirmPassword?.hasError("minlength")) {
+        <div class="text-red-500">
+          Confirm password must be at least 6 characters.
+        </div>
+        } }
+      </div>
+      }@else if(selectedRole === "student"){
+
+      <!-- enrollmentNumber -->
+      <div class="mt-3">
+        <label
+          for="enrollmentNumber"
+          class="block text-sm/6 font-medium text-gray-900"
+          >Enrollment number</label
+        >
+        <div class="mt-0.5">
+          <input
+            type="text"
+            name="enrollmentNumber"
+            id="enrollmentNumber"
+            formControlName="enrollmentNumber"
+            placeholder="128734342"
+            class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+          />
+        </div>
+        <!-- Error handling for confirm password -->
+        @if (confirmPassword?.invalid && (confirmPassword?.dirty ||
+        confirmPassword?.touched)) { @if(confirmPassword?.hasError("required"))
+        {
+        <div class="text-red-500">Confirm password is required.</div>
+        }@else if(confirmPassword?.hasError("minlength")) {
+        <div class="text-red-500">
+          Confirm password must be at least 6 characters.
+        </div>
+        } }
+
+        <!-- Check for custom password mismatch error on the entire form group -->
+        @if(confirmPassword?.parent?.hasError("passwordsMismatch") &&
+        (confirmPassword?.dirty || confirmPassword?.touched)) {
+        <div class="text-red-500">Passwords do not match.</div>
+        } @else if(confirmPassword?.hasError("server")){
+        <div class="text-red-500">
+          {{ userForm.get("confirmPassword")?.getError("server") }}
+        </div>
+        }
+      </div>
+      <!-- fullName -->
+      <div class="mt-3">
+        <div class="flex items-center justify-between">
+          <label
+            for="fullName"
+            class="block text-sm/6 font-medium text-gray-900"
+            >Full Name</label
+          >
+        </div>
+        <div class="mt-0.5">
+          <input
+            type="text"
+            name="fullName"
+            id="fullName"
+            formControlName="fullName"
+            autocomplete="current-fullName"
+            placeholder="Full name as per your collage id"
+            class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+          />
+        </div>
+        <!-- Error handling for confirm password -->
+        @if (confirmPassword?.invalid && (confirmPassword?.dirty ||
+        confirmPassword?.touched)) { @if(confirmPassword?.hasError("required"))
+        {
+        <div class="text-red-500">Confirm password is required.</div>
+        }@else if(confirmPassword?.hasError("minlength")) {
+        <div class="text-red-500">
+          Confirm password must be at least 6 characters.
+        </div>
+        } }
+
+        <!-- Check for custom password mismatch error on the entire form group -->
+        @if(confirmPassword?.parent?.hasError("passwordsMismatch") &&
+        (confirmPassword?.dirty || confirmPassword?.touched)) {
+        <div class="text-red-500">Passwords do not match.</div>
+        } @else if(confirmPassword?.hasError("server")){
+        <div class="text-red-500">
+          {{ userForm.get("confirmPassword")?.getError("server") }}
+        </div>
+        }
+      </div>
+
+      <!-- Branch -->
+      <div class="mt-3">
+        <label for="branch" class="block mb-2 text-sm font-medium text-gray-900"
+          >Select your branch</label
+        >
+        <select
+          id="branch"
+          formControlName="branchId"
+          class="bg-white text-gray-900 text-sm rounded-lg focus:ring-indigo-600 focus:border-indigo-600 block w-full p-2.5 outline-1 -outline-offset-1 outline-gray-300"
+        >
+          <option selected disabled>
+            Choose a branch to find you placement cell
+          </option>
+          @for (branch of branches(); track branch.branchId) {
+          <option [value]="branch.branchId">{{ branch.name }}</option>
+          }
+        </select>
+        <!-- Error handling for confirm password -->
+        @if (confirmPassword?.invalid && (confirmPassword?.dirty ||
+        confirmPassword?.touched)) { @if(confirmPassword?.hasError("required"))
+        {
+        <div class="text-red-500">Confirm password is required.</div>
+        }@else if(confirmPassword?.hasError("minlength")) {
+        <div class="text-red-500">
+          Confirm password must be at least 6 characters.
+        </div>
+        } }
+
+        <!-- Check for custom password mismatch error on the entire form group -->
+        @if(confirmPassword?.parent?.hasError("passwordsMismatch") &&
+        (confirmPassword?.dirty || confirmPassword?.touched)) {
+        <div class="text-red-500">Passwords do not match.</div>
+        } @else if(confirmPassword?.hasError("server")){
+        <div class="text-red-500">
+          {{ userForm.get("confirmPassword")?.getError("server") }}
+        </div>
+        }
+      </div>
+      <!-- placementCellId -->
+      <div class="mt-3">
+        <label
+          for="placementCellId"
+          class="block mb-2 text-sm font-medium text-gray-900"
+          >Select your placement cell</label
+        >
+        <app-auto-complete
+          [options]="placementCellAutoCompleteList()"
+          placeHolder="Select PlacementCell"
+        />
+        <!-- <div class="relative">
+          <input
+            type="search"
+            id="placementCellId"
+            class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+            placeholder="your placement cell name"
+            required
+            (focus)="onHandlePlacementCellSearchFocus()"
+            (blur)="onHandlePlacementCellSearchBlur()"
+          />
+          <input type="hidden" name="placementCellId" id="placementCellId" />
+          @if (isSearching()){
+          <div
+            class="absolute z-100 bottom-0 transform translate-y-full left-0 right-0 p-1 bg-white rounded"
+          >
+            <app-search-list [options]="this.placementCells()" [searchPrefix]="''" optionValue="placementCellId" optionDisplay="name"/>
           </div>
           }
+        </div> -->
+      </div>
+      <!-- degreeId -->
+      <div class="mt-3">
+        <label
+          for="degreeId"
+          class="block mb-2 text-sm font-medium text-gray-900"
+          >Select your degree/course</label
+        >
+        <select
+          id="degreeId"
+          class="bg-white text-gray-900 text-sm rounded-lg focus:ring-indigo-600 focus:border-indigo-600 block w-full p-2.5 outline-1 -outline-offset-1 outline-gray-300"
+        >
+          <option selected>Choose a degree/course</option>
+          <!-- <option value="US">United States</option>
+          <option value="CA">Canada</option>
+          <option value="FR">France</option>
+          <option value="DE">Germany</option> -->
+        </select>
+        <!-- Error handling for confirm password -->
+        @if (confirmPassword?.invalid && (confirmPassword?.dirty ||
+        confirmPassword?.touched)) { @if(confirmPassword?.hasError("required"))
+        {
+        <div class="text-red-500">Confirm password is required.</div>
+        }@else if(confirmPassword?.hasError("minlength")) {
+        <div class="text-red-500">
+          Confirm password must be at least 6 characters.
         </div>
-        <div class="flex gap-3 mt-3">
-          <button
-            (click)="onPreviousStep()"
-            class="block cursor-pointer hover:shadow-lg hover:bg-brand-blue-600 focus:bg-brand-blue-600 transition durationduration-100 w-1/5 grow bg-brand-blue-700 text-blue-50 py-2 px-1 rounded-md"
-            type="button"
-          >
-            Back
-          </button>
-          <button
-            (click)="onUserFormValidate()"
-            class="block cursor-pointer hover:shadow-lg hover:bg-brand-blue-600 focus:bg-brand-blue-600 transition durationduration-100 w-1/5 grow bg-brand-blue-700 text-blue-50 py-2 px-1 rounded-md"
-            type="submit"
-            [disabled]="userForm.invalid"
-          >
-            Next
-          </button>
-        </div>
-      </form>
-      }@else if(step() === 3){
+        } }
 
-      <div class="flex gap-3">
+        <!-- Check for custom password mismatch error on the entire form group -->
+        @if(confirmPassword?.parent?.hasError("passwordsMismatch") &&
+        (confirmPassword?.dirty || confirmPassword?.touched)) {
+        <div class="text-red-500">Passwords do not match.</div>
+        } @else if(confirmPassword?.hasError("server")){
+        <div class="text-red-500">
+          {{ userForm.get("confirmPassword")?.getError("server") }}
+        </div>
+        }
+      </div>
+      }@else if(selectedRole === "placement_cell"){
+      <div class="mt-3">
+        <div class="flex items-center justify-between">
+          <label
+            for="confirmPassword"
+            class="block text-sm/6 font-medium text-gray-900"
+            >Confirm Password</label
+          >
+        </div>
+        <div class="mt-0.5">
+          <input
+            type="confirmPassword"
+            name="confirmPassword"
+            id="confirmPassword"
+            formControlName="confirmPassword"
+            autocomplete="current-confirmPassword"
+            class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+          />
+        </div>
+        <!-- Error handling for confirm password -->
+        @if (confirmPassword?.invalid && (confirmPassword?.dirty ||
+        confirmPassword?.touched)) { @if(confirmPassword?.hasError("required"))
+        {
+        <div class="text-red-500">Confirm password is required.</div>
+        }@else if(confirmPassword?.hasError("minlength")) {
+        <div class="text-red-500">
+          Confirm password must be at least 6 characters.
+        </div>
+        } }
+
+        <!-- Check for custom password mismatch error on the entire form group -->
+        @if(confirmPassword?.parent?.hasError("passwordsMismatch") &&
+        (confirmPassword?.dirty || confirmPassword?.touched)) {
+        <div class="text-red-500">Passwords do not match.</div>
+        } @else if(confirmPassword?.hasError("server")){
+        <div class="text-red-500">
+          {{ userForm.get("confirmPassword")?.getError("server") }}
+        </div>
+        }
+      </div>
+      }
+      <div class="flex gap-3 mt-2">
         <button
           (click)="onPreviousStep()"
           class="block cursor-pointer hover:shadow-lg hover:bg-brand-blue-600 focus:bg-brand-blue-600 transition durationduration-100 w-1/5 grow bg-brand-blue-700 text-blue-50 py-2 px-1 rounded-md"
@@ -221,8 +590,8 @@
           Submit
         </button>
       </div>
-      }
     </form>
+    }
     <p
       class="text-sm text-center font-light text-gray-500 dark:text-gray-400 mt-1"
     >
