@@ -25,3 +25,30 @@
   --color-brand-yellow-900: oklch(0.41 0.1135 41.54); /* #7a2f0d */
   --color-brand-yellow-950: oklch(0.28 0.0788 42.61); /* #461702 */
 }
+
+@layer components {
+  .modal-success {
+    @apply bg-green-100 text-green-800 border border-green-200 dark:bg-green-800 dark:text-green-200;
+  }
+  .modal-info {
+    @apply bg-blue-100 text-blue-800 border border-blue-200 dark:bg-blue-800 dark:text-blue-200;
+  }
+  .modal-error {
+    @apply bg-red-100 text-red-800 border border-red-200 dark:bg-red-800 dark:text-red-200;
+  }
+  .modal-warning {
+    @apply bg-yellow-100 text-yellow-800 border border-yellow-200 dark:bg-yellow-800 dark:text-yellow-200;
+  }
+  .modal-success-button {
+    @apply bg-green-100 text-green-800 border border-green-200 dark:bg-green-800 dark:text-green-200;
+  }
+  .modal-info-button {
+    @apply bg-blue-100 text-blue-800 border border-blue-200 dark:bg-blue-800 dark:text-blue-200;
+  }
+  .modal-error-button {
+    @apply bg-red-100 text-red-800 border border-red-200 dark:bg-red-800 dark:text-red-200;
+  }
+  .modal-warning-button {
+    @apply bg-yellow-100 text-yellow-800 border border-yellow-200 dark:bg-yellow-800 dark:text-yellow-200;
+  }
+}

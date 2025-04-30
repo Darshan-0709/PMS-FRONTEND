@@ -42,6 +42,7 @@ export class RegisterService {
 
   fetchDegrees() {
     return this.http.get<ApiResponse<Degree[]>>(`${this.baseUrl}/degrees`).pipe(
+      map((data) => data.data),
       catchError((err) => {
         console.error(err.error.errors);
         return throwError(() => err.error.errors);
@@ -52,7 +53,16 @@ export class RegisterService {
   fetchPlacementCellByDepartment(branchId: string) {
     let url = `${this.baseUrl}/placement_cells_list?branch=${branchId}`;
     return this.http.get<ApiResponse<PlacementCellApiData[]>>(url).pipe(
-      map(data => data.data),
+      map((data) => data.data),
+      catchError((err) => {
+        console.error(err.error.errors);
+        return throwError(() => err.error.errors);
+      })
+    );
+  }
+
+  submitRegistrationData(payload: any) {
+    return this.http.post(`${this.baseUrl}/auth/register`, payload).pipe(
       catchError((err) => {
         console.error(err.error.errors);
         return throwError(() => err.error.errors);

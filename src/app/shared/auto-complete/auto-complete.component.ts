@@ -3,6 +3,7 @@ import {
   computed,
   input,
   OnInit,
+  output,
   Signal,
   signal,
   WritableSignal,
@@ -19,8 +20,14 @@ export class AutoCompleteComponent implements OnInit {
   placeHolder = input<string>('');
 
   inputValue: WritableSignal<string> = signal('');
-  selectedValue: WritableSignal<string | null> = signal(null);
-  isDropdownOpen: WritableSignal<boolean> = signal(true);
+  selectedOption: WritableSignal<string | null> = signal(null);
+  isDropdownOpen: WritableSignal<boolean> = signal(false);
+
+  valueSelected = output<string | null>()
+
+  onSelectedValueChanged(){
+    this.valueSelected.emit(this.selectedOption());
+  }
 
   filteredOptions: Signal<string[]> = computed(() => {
     const options = this.options() ?? [];
@@ -32,16 +39,19 @@ export class AutoCompleteComponent implements OnInit {
   selectOption(option: string) {
     console.log(option);
     this.inputValue.set(option);
-    this.selectedValue.set(option);
+    this.selectedOption.set(option);
     this.isDropdownOpen.set(false);
+    this.onSelectedValueChanged()
   }
-
+  
   onInputChange(event: Event) {
     const target = event.target as HTMLInputElement;
     const value = target.value;
     this.inputValue.set(value);
     this.isDropdownOpen.set(true);
+    this.onSelectedValueChanged()
   }
+  
   ngOnInit(): void {
     console.log({ Options: this.options });
   }

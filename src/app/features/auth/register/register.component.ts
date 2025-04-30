@@ -11,16 +11,16 @@ import {
   Validators,
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { AuthService } from '../../../core/services/auth.service';
 import { RegisterService } from './register.service';
 import {
   Branch,
   Degree,
+  Domain,
   PlacementCellApiData,
   RegisterBaseData,
 } from '../user.mode';
-import { SearchListComponent } from '../../../shared/search-list/search-list.component';
 import { AutoCompleteComponent } from '../../../shared/auto-complete/auto-complete.component';
+import { AlertModalComponent } from '../../../shared/alert-modal/alert-modal.component';
 
 type UserFormType = {
   email: FormControl<string>;
@@ -35,27 +35,48 @@ type UserFormType = {
     RouterModule,
     ReactiveFormsModule,
     CommonModule,
-    SearchListComponent,
     AutoCompleteComponent,
+    AlertModalComponent,
   ],
   templateUrl: './register.component.html',
   styleUrl: './register.component.css',
 })
 export class RegisterComponent {
-  onSubmit() {
-    throw new Error('Method not implemented.');
-  }
+addBranch() {
+throw new Error('Method not implemented.');
+}
+onBranchAdded($event: string|null) {
+throw new Error('Method not implemented.');
+}
+addDomain() {
+throw new Error('Method not implemented.');
+}
+onDomainAdded($event: string|null) {
+
+}
   step = signal(1);
   selectedRole: 'student' | 'placement_cell' | 'recruiter' | null = null;
   roleError = signal('');
+  emailError = signal<string | null>(null);
   userForm: FormGroup<UserFormType>;
   profileForm: FormGroup;
-  isSearching = signal(true);
   registerService = inject(RegisterService);
   branches = signal<Branch[]>([]);
   degrees = signal<Degree[]>([]);
   placementCells = signal<PlacementCellApiData[]>([]);
   placementCellAutoCompleteList = signal<string[]>([]);
+  placementCellDegreeAutoCompleteList = signal<string[]>([]);
+  placementCellBranchAutoCompleteList = signal<string[]>([]);
+  placementCellDegrees = signal<Degree[] | undefined>([]);
+  placementCellAddedDegrees = signal<string[]>(
+    []
+  );
+
+  placementCellAddedDomains = signal<string[]>(
+    []
+  );
+  placementCellDomain = signal<Domain[] | undefined>([]);
+  successfulRegister = signal<boolean>(false);
 
   constructor(private fb: FormBuilder) {
     this.userForm = this.fb.group<UserFormType>(
@@ -63,6 +84,7 @@ export class RegisterComponent {
         email: this.fb.control('', {
           nonNullable: true,
           validators: [Validators.required, Validators.email],
+          updateOn: 'blur',
         }),
         username: this.fb.control('', {
           nonNullable: true,
@@ -80,6 +102,13 @@ export class RegisterComponent {
       { validators: this.passwordMatchValidator }
     );
     this.profileForm = this.fb.group({});
+
+    // Subscribe to form status changes for debugging
+    this.userForm.statusChanges.subscribe((status) => {
+      console.log('Form status changed:', status);
+      console.log('Form errors:', this.userForm.errors);
+      console.log('Email control errors:', this.userForm.get('email')?.errors);
+    });
   }
 
   onRoleSelect(role: 'student' | 'placement_cell' | 'recruiter') {
@@ -89,6 +118,9 @@ export class RegisterComponent {
     }
     this.selectedRole = role;
     this.onNextStep();
+    if (role !== 'student') {
+      this.profileForm.reset();
+    }
   }
 
   passwordMatchValidator: ValidatorFn = (
@@ -110,6 +142,15 @@ export class RegisterComponent {
           console.log(data);
           if (data) {
             this.branches.set(data);
+          }
+        },
+      });
+    }
+    if (this.selectedRole === 'placement_cell') {
+      this.registerService.fetchDegrees().subscribe({
+        next: (data) => {
+          if (data) {
+            this.degrees.set(data);
           }
         },
       });
@@ -154,6 +195,8 @@ export class RegisterComponent {
         if (data) this.placementCells.set(data);
         console.log({ PlacementCell: data });
         this.populatePlacementCellAutoCompleteList();
+        this.placementCellId?.reset();
+        this.degreeId?.reset();
       },
     });
   }
@@ -162,8 +205,28 @@ export class RegisterComponent {
     this.placementCellAutoCompleteList.set(
       this.placementCells().map((placementCell) => placementCell.name)
     );
-    console.log(this.placementCellAutoCompleteList())
+    this.placementCellId?.reset();
+    this.placementCellDegrees.set(undefined);
+    console.log(this.placementCellAutoCompleteList());
   }
+
+  populatePlacementCellDegreeAutoCompleteList() {
+    this.placementCellDegreeAutoCompleteList.set(
+      this.degrees().map((degree) => degree.name)
+    );
+    // this.placementCellId?.reset();
+    // this.placementCellDegrees.set(undefined);
+    // console.log(this.placementCellAutoCompleteList());
+  }
+  populatePlacementCellBranchesAutoCompleteList() {
+    this.placementCellBranchAutoCompleteList.set(
+      this.branches().map((branch) => branch.name)
+    );
+    // this.placementCellId?.reset();
+    // this.placementCellDegrees.set(undefined);
+    // console.log(this.placementCellAutoCompleteList());
+  }
+
 
   onUserFormValidate() {
     if (this.userForm.invalid || this.selectedRole === null) {
@@ -186,27 +249,169 @@ export class RegisterComponent {
         this.onNextStep();
       },
       error: (error) => {
+        console.log('Validation errors:', error);
         for (const key in error) {
           if (error.hasOwnProperty(key)) {
             const message = error[key];
             console.log({ [key]: message });
-            const formControl = this.userForm.get(key);
-            if (formControl) {
-              formControl.setErrors({ server: message });
+            if (key === 'email') {
+              const emailControl = this.userForm.get('email');
+              if (emailControl) {
+                emailControl.setErrors({ server: message });
+                emailControl.markAsTouched();
+                this.emailError.set(message);
+              }
+            } else {
+              const formControl = this.userForm.get(key);
+              if (formControl) {
+                formControl.setErrors({ server: message });
+              }
             }
             if (key === 'role') {
               this.onHandleRoleError(message);
             }
           }
-          console.log(this.userForm.getError('password'));
         }
       },
     });
   }
 
+  onRegisterSubmit() {
+    console.log('Submitting');
+    if (this.userForm.invalid || this.profileForm.invalid) {
+      this.userForm.markAllAsTouched();
+      this.profileForm.markAllAsTouched();
+      return;
+    }
+
+    const { email, username, password, confirmPassword } =
+      this.userForm.getRawValue();
+
+    const userData = {
+      email,
+      username,
+      password,
+      confirmPassword,
+      role: this.selectedRole!,
+    };
+
+    let profileData: any;
+
+    switch (this.selectedRole) {
+      case 'student':
+        profileData = {
+          studentProfileData: {
+            enrollmentNumber: this.enrollmentNumber?.value,
+            fullName: this.fullName?.value,
+            degreeId: this.degreeId?.value,
+            placementCellId: this.placementCellId?.value,
+          },
+        };
+        break;
+
+      case 'recruiter':
+        profileData = {
+          recruiterProfileData: {
+            companyName: this.companyName?.value,
+            representativePosition: this.representativePosition?.value,
+            description: this.description?.value,
+            website: this.website?.value,
+            email: this.email?.value,
+          },
+        };
+        break;
+
+      case 'placement_cell':
+        profileData = {
+          placementCellProfileData: {
+            name: this.name?.value,
+            domains: this.domains?.value,
+            branchName: this.branchName?.value,
+            degreeNames: this.degreeNames?.value,
+            email: this.email?.value,
+            website: this.website?.value,
+          },
+        };
+        break;
+    }
+
+    const finalPayload = {
+      ...userData,
+      ...profileData,
+    };
+
+    this.registerService.submitRegistrationData(finalPayload).subscribe({
+      next: (response) => {
+        console.log('Registration successful:', response);
+      },
+      error: (errors: Record<string, string>) => {
+        console.log('Registration errors:', errors);
+        for (const key in errors) {
+          if (!errors.hasOwnProperty(key)) continue;
+          const message = errors[key];
+          if (key === 'email') {
+            const emailControl = this.userForm.get('email');
+            console.log('Before setting error - Email control:', {
+              value: emailControl?.value,
+              errors: emailControl?.errors,
+              touched: emailControl?.touched,
+              dirty: emailControl?.dirty,
+              status: emailControl?.status,
+            });
+
+            if (emailControl) {
+              emailControl.setErrors({ server: message });
+              emailControl.markAsTouched();
+              this.emailError.set(message);
+              this.step.set(2);
+
+              console.log('After setting error - Email control:', {
+                value: emailControl.value,
+                errors: emailControl.errors,
+                touched: emailControl.touched,
+                dirty: emailControl.dirty,
+                status: emailControl.status,
+              });
+            }
+          } else {
+            this.mapErrorToControl(key, message);
+          }
+        }
+      },
+    });
+  }
+
+  private mapErrorToControl(key: string, message: string) {
+    let ctrl = this.userForm.get(key);
+    if (ctrl) {
+      ctrl.setErrors({ server: message });
+      if (key === 'email') {
+        this.step.set(2);
+      }
+      console.log(ctrl);
+    }
+
+    ctrl = this.profileForm.get(key);
+    if (ctrl) {
+      ctrl.setErrors({ server: message });
+    }
+
+    const parts = key.split('.');
+    if (parts.length === 2) {
+      ctrl = this.profileForm.get(parts[1]);
+      if (ctrl) {
+        ctrl.setErrors({ server: message });
+      }
+    }
+  }
+
   onNextStep() {
     this.step.update((prevStep) => (prevStep === 3 ? 3 : prevStep + 1));
   }
+
+  onRegisterSuccess() {}
+
+  onLoginRedirect() {}
 
   onHandleRoleError(serverRoleError: string) {
     this.step.set(1);
@@ -216,11 +421,20 @@ export class RegisterComponent {
   onPreviousStep() {
     this.step.update((prevStep) => prevStep - 1 || 1);
   }
-  onHandlePlacementCellSearchFocus() {
-    this.isSearching.set(true);
-  }
-  onHandlePlacementCellSearchBlur() {
-    this.isSearching.set(false);
+
+  onSelectedPlacementCell(selectedPlacementCellName: string | null) {
+    this.placementCellDegrees.set(undefined);
+    this.placementCellId?.reset();
+    if (selectedPlacementCellName) {
+      console.log({ selectedPlacementCellName });
+      const placementCell = this.placementCells().find(
+        (cell) => cell.name === selectedPlacementCellName
+      );
+      const degrees = placementCell?.placementCellDegrees;
+      this.placementCellDegrees.set(degrees);
+      this.degreeId?.reset();
+      this.placementCellId?.setValue(placementCell?.placementCellId);
+    }
   }
 
   get username() {
@@ -241,11 +455,17 @@ export class RegisterComponent {
   get fullName() {
     return this.profileForm.get('fullName');
   }
+  get branchId() {
+    return this.profileForm.get('branchId');
+  }
   get degreeId() {
     return this.profileForm.get('degreeId');
   }
   get placementCellId() {
     return this.profileForm.get('placementCellId');
+  }
+  get placementCellSearch() {
+    return this.profileForm.get('placementCellSearch');
   }
   get companyName() {
     return this.profileForm.get('companyName');

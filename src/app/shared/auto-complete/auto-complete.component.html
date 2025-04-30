@@ -7,12 +7,12 @@
     (input)="onInputChange($event)"
     (focus)="isDropdownOpen.set(true)"
     (blur)="onBlur()"
+
   />
 
   @if(isDropdownOpen()){
 
   <ul class="absolute top-full transform translate-y-1 left-0 bg-white right-0 rounded">
-    <li>name</li>
     @for (option of filteredOptions(); track option) {
     <li (click)="selectOption(option)" class="option">
       {{ option }}

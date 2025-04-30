@@ -7,14 +7,12 @@ export interface Degree {
   degreeId: string;
   name: string;
 }
-
+export type Domain =  string
 export interface PlacementCellApiData {
   placementCellId: string;
   name: string;
   branchId: string;
-  placementCellDegrees: {
-    degree: Degree;
-  }[];
+  placementCellDegrees: Degree[]
 }
 export interface RegisterBaseData {
   email: string;
