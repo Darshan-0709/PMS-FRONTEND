@@ -7,7 +7,9 @@
 />
 }
 
-<div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+<div
+  class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-2 max-w-2xl m-auto"
+>
   <div class="sm:mx-auto sm:w-full sm:max-w-sm">
     <h2
       class="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900"
@@ -17,47 +19,45 @@
   </div>
 
   <div
-    class="mt-10 sm:mx-auto sm:w-full sm:max-w-lg py-2 px-5 shadow-xl rounded bg-blue-100"
+    class="mt-10 sm:mx-auto sm:w-full sm:max-w-lg py-2 px-5 shadow-xl rounded bg-white"
   >
     <div class="flex gap-1 h-2 overflow-hidden mt-4 px-6 py-3">
       <div
         class="grow p-1 -skew-x-12 bg-brand-blue-50"
-        [class.bg-brand-blue-700]="step() === 1"
+        [class.bg-info-bg-dark]="step() >= 1"
       ></div>
       <div
         class="grow p-1 -skew-x-12 bg-brand-blue-50"
-        [class.bg-brand-blue-700]="step() === 2"
+        [class.bg-info-bg-dark]="step() >= 2"
       ></div>
       <div
         class="grow p-1 -skew-x-12 bg-brand-blue-50"
-        [class.bg-brand-blue-700]="step() === 3"
+        [class.bg-info-bg-dark]="step() >= 3"
       ></div>
     </div>
     @if(step() === 1){
-    <div class="flex flex-col gap-6 py-20 px-4">
-      <button
-        class="block cursor-pointer hover:shadow-lg hover:bg-brand-blue-700 focus:bg-brand-blue-700 transition duration-100 bg-brand-blue-600 text-blue-50 py-3 px-2 rounded-md"
-        type="button"
-        (click)="onRoleSelect('student')"
-      >
-        Join Placement Cell as a Student
-      </button>
-      <div class="sm:flex gap-3">
-        <button
-          class="block cursor-pointer w-full hover:shadow-lg hover:bg-brand-yellow-300 focus:bg-brand-yellow-300 transition durationduration-100 sm:w-1/5 grow bg-[#f99307] text-brand-yellow-950 font-semibold py-3 px-2 rounded-md"
-          type="button"
-          (click)="onRoleSelect('placement_cell')"
-        >
-          Signup as Placement Cell
-        </button>
-        <button
-          class="block cursor-pointer w-full max-sm:mt-3 hover:shadow-lg hover:bg-brand-yellow-300 focus:bg-brand-yellow-300 transition durationduration-100 sm:w-1/5 grow bg-brand-yellow-500 text-brand-yellow-950 font-semibold py-3 px-2 rounded-md"
-          type="button"
-          (click)="onRoleSelect('recruiter')"
-        >
-          Signup as Recruiter
-        </button>
-      </div>
+    <div class="flex max-sm:flex-col gap-6 py-10 px-4 m-auto justify-between">
+      <app-role-select-button
+        label="Join Placement Cell as a Student"
+        role="student"
+        (roleSelected)="onRoleSelect($event)"
+        classes="mb-2 max-sm:min-w-md"
+      ></app-role-select-button>
+
+      <app-role-select-button
+        label="Signup as Placement Cell"
+        role="placement_cell"
+        classes="mb-2 max-sm:min-w-md"
+        (roleSelected)="onRoleSelect($event)"
+      ></app-role-select-button>
+
+      <app-role-select-button
+        label="Signup as Recruiter"
+        role="recruiter"
+        (roleSelected)="onRoleSelect($event)"
+        classes="max-sm:min-w-md"
+      ></app-role-select-button>
+
       @if(roleError()){
       <div class="text-red-500 text-xs text-center">Select Role</div>
       }
@@ -69,7 +69,7 @@
       class="max-w-sm mx-auto"
     >
       <div class="mt-3">
-        <label for="username" class="block text-sm/6 font-medium text-gray-900"
+        <label for="username" class="block text-sm/6 font-medium text-secondary"
           >User name</label
         >
         <div class="mt-0.5">
@@ -78,7 +78,8 @@
             formControlName="username"
             name="username"
             id="username"
-            class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+            placeholder="johnDoe"
+            class="block w-full rounded-md px-3 py-1.5 text-base text-primary outline-1 outline-soft-white hover:outline-secondary focus:outline-secondary placeholder:text-secondary/50 focus:outline-2 hover:outline-2 focus:-outline-offset-2 sm:text-sm/6"
           />
         </div>
 
@@ -93,8 +94,8 @@
         } }
       </div>
       <div class="mt-3 relative">
-        <label for="email" class="block text-sm/6 font-medium text-gray-900"
-          ><span>Email address</span>
+        <label for="email" class="block text-sm/6 font-medium text-gray-900">
+          <span>Email address</span>
         </label>
         @if (selectedRole === "student") {
         <span class="absolute top-0 right-0 text-xs text-gray-500"
@@ -108,19 +109,22 @@
             id="email"
             formControlName="email"
             autocomplete="email"
-            class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+            class="block w-full rounded-md px-3 py-1.5 text-base text-primary outline-1 outline-soft-white hover:outline-secondary focus:outline-secondary placeholder:text-secondary/50 focus:outline-2 hover:outline-2 focus:-outline-offset-2 sm:text-sm/6"
           />
 
           @if (emailError()) {
           <div class="text-red-500 text-xs">
             {{ emailError() }}
           </div>
-          } @else if (userForm.get('email')?.invalid &&
-          (userForm.get('email')?.dirty || userForm.get('email')?.touched)) {
-          @if (userForm.get('email')?.hasError('required')) {
+          } @else if (email?.invalid && (email?.dirty || email?.touched)) { @if
+          (email?.hasError('required')) {
           <div class="text-red-500 text-xs">Email is required.</div>
-          } @else if (userForm.get('email')?.hasError('email')) {
+          } @else if (email?.hasError('email')) {
           <div class="text-red-500 text-xs">Please enter valid email</div>
+          } @else if (email?.hasError('server')) {
+          <div class="text-red-500 text-xs">
+            {{ email?.getError("server") }}
+          </div>
           } }
         </div>
       </div>
@@ -139,21 +143,19 @@
             name="password"
             id="password"
             formControlName="password"
-            class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+            class="block w-full rounded-md px-3 py-1.5 text-base text-primary outline-1 outline-soft-white hover:outline-secondary focus:outline-secondary placeholder:text-secondary/50 focus:outline-2 hover:outline-2 focus:-outline-offset-2 sm:text-sm/6"
           />
         </div>
-        @if (password?.invalid && (password?.dirty || password?.touched)) {
-        @if(password?.hasError("required")) {
-        <div class="text-red-500 text-xs">Password is required.</div>
-        } @else if(password?.hasError("minlength")) {
+        @if (email?.invalid && (email?.dirty || email?.touched)) {
+        @if(email?.hasError("required")) {
+        <div class="text-red-500 text-xs">Email is required.</div>
+        } @else if(email?.hasError("email")) {
+        <div class="text-red-500 text-xs">Please enter a valid email</div>
+        } @else if(email?.hasError("server")) {
         <div class="text-red-500 text-xs">
-          Password must be at least 6 characters.
+          {{ userForm.get("email")?.getError("server") }}
         </div>
-        } @else if(password?.hasError("server")){
-        <div class="text-red-500 text-xs">
-          {{ userForm.get("password")?.getError("server") }}
-        </div>
-        }}
+        } }
       </div>
       <div class="mt-3">
         <div class="flex items-center justify-between">
@@ -169,7 +171,7 @@
             name="confirmPassword"
             id="confirmPassword"
             formControlName="confirmPassword"
-            class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+            class="block w-full rounded-md px-3 py-1.5 text-base text-primary outline-1 outline-soft-white hover:outline-secondary focus:outline-secondary placeholder:text-secondary/50 focus:outline-2 hover:outline-2 focus:-outline-offset-2 sm:text-sm/6"
           />
         </div>
         <!-- Error handling for confirm password -->
@@ -197,16 +199,22 @@
       <div class="flex gap-3 mt-3">
         <button
           (click)="onPreviousStep()"
-          class="block cursor-pointer hover:shadow-lg hover:bg-brand-blue-600 focus:bg-brand-blue-600 transition durationduration-100 w-1/5 grow bg-brand-blue-700 text-blue-50 py-2 px-1 rounded-md"
+          class="block cursor-pointer shadow-layered transition durationduration-100 w-1/5 grow py-2 px-1 rounded-2xl bg-secondary-light hover:bg-soft-white focus:bg-soft-white font-semibold text-primary"
           type="button"
         >
-          Back
+          <div class="flex">
+            <img src="/icon/arrow-left.svg" alt="" />
+            <span class="m-auto"> Back </span>
+          </div>
         </button>
         <button
-          class="block cursor-pointer hover:shadow-lg hover:bg-brand-blue-600 focus:bg-brand-blue-600 transition durationduration-100 w-1/5 grow bg-brand-blue-700 text-blue-50 py-2 px-1 rounded-md"
+          class="block cursor-pointer shadow-layered transition durationduration-100 w-1/5 grow py-2 px-1 rounded-2xl bg-secondary-light hover:bg-soft-white focus:bg-soft-white font-semibold text-primary"
           type="submit"
         >
-          Next
+          <div class="flex">
+            <span class="m-auto"> Next </span>
+            <img src="/icon/arrow-right.svg" alt="" />
+          </div>
         </button>
       </div>
     </form>
@@ -228,7 +236,7 @@
             name="companyName"
             id="companyName"
             formControlName="companyName"
-            class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+            class="block w-full rounded-md px-3 py-1.5 text-base text-primary outline-1 outline-soft-white hover:outline-secondary focus:outline-secondary placeholder:text-secondary/50 focus:outline-2 hover:outline-2 focus:-outline-offset-2 sm:text-sm/6"
           />
         </div>
         <!-- Error handling for confirm password -->
@@ -258,7 +266,7 @@
             id="representativePosition"
             formControlName="representativePosition"
             placeholder="your role in company"
-            class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+            class="block w-full rounded-md px-3 py-1.5 text-base text-primary outline-1 outline-soft-white hover:outline-secondary focus:outline-secondary placeholder:text-secondary/50 focus:outline-2 hover:outline-2 focus:-outline-offset-2 sm:text-sm/6"
           />
         </div>
         <!-- Error handling for confirm password -->
@@ -288,7 +296,7 @@
             id="description"
             formControlName="description"
             placeholder="Provide brief description about company"
-            class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+            class="block w-full rounded-md px-3 py-1.5 text-base text-primary outline-1 outline-soft-white hover:outline-secondary focus:outline-secondary placeholder:text-secondary/50 focus:outline-2 hover:outline-2 focus:-outline-offset-2 sm:text-sm/6"
           ></textarea>
         </div>
         <!-- Error handling for confirm password -->
@@ -316,7 +324,7 @@
             id="website"
             formControlName="website"
             placeholder="Company's website"
-            class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+            class="block w-full rounded-md px-3 py-1.5 text-base text-primary outline-1 outline-soft-white hover:outline-secondary focus:outline-secondary placeholder:text-secondary/50 focus:outline-2 hover:outline-2 focus:-outline-offset-2 sm:text-sm/6"
           />
         </div>
         <!-- Error handling for confirm password -->
@@ -344,7 +352,7 @@
             id="email"
             formControlName="email"
             placeholder="Company's contact email"
-            class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+            class="block w-full rounded-md px-3 py-1.5 text-base text-primary outline-1 outline-soft-white hover:outline-secondary focus:outline-secondary placeholder:text-secondary/50 focus:outline-2 hover:outline-2 focus:-outline-offset-2 sm:text-sm/6"
           />
         </div>
         <!-- Error handling for confirm password -->
@@ -374,7 +382,7 @@
             id="enrollmentNumber"
             placeholder="128734342"
             formControlName="enrollmentNumber"
-            class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+            class="block w-full rounded-md px-3 py-1.5 text-base text-primary outline-1 outline-soft-white hover:outline-secondary focus:outline-secondary placeholder:text-secondary/50 focus:outline-2 hover:outline-2 focus:-outline-offset-2 sm:text-sm/6"
           />
           @if (profileForm.get('enrollmentNumber')?.touched &&
           profileForm.get('enrollmentNumber')?.invalid) { @if
@@ -399,7 +407,7 @@
             id="fullName"
             placeholder="Full name as per your college ID"
             formControlName="fullName"
-            class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+            class="block w-full rounded-md px-3 py-1.5 text-base text-primary outline-1 outline-soft-white hover:outline-secondary focus:outline-secondary placeholder:text-secondary/50 focus:outline-2 hover:outline-2 focus:-outline-offset-2 sm:text-sm/6"
           />
           @if (profileForm.get('fullName')?.touched &&
           profileForm.get('fullName')?.invalid) { @if
@@ -513,33 +521,59 @@
             placeholder="Enter placement cell name"
             class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm"
           />
-          @if (profileForm.get('name')?.touched &&
-          profileForm.get('name')?.invalid) { @if
-          (profileForm.get('name')?.hasError('required')) {
+          @if (name?.touched && name?.invalid) { @if
+          (name?.hasError('required')) {
           <div class="text-red-500 text-xs">Name is required.</div>
+          } @else if (name?.hasError('server')) {
+          <div class="text-red-500 text-xs">
+            {{ name?.getError("server") }}
+          </div>
           } }
         </div>
       </div>
 
       <!-- Domains -->
       <div class="mt-3">
-        <label class="block text-sm font-medium text-gray-900">Domains</label>
-        <app-auto-complete
-          placeHolder="Add domain"
-          (valueSelected)="onDomainAdded($event)"
-        />
-        <button
-          type="button"
-          (click)="addDomain()"
-          class="mt-2 inline-flex items-center rounded-md bg-indigo-600 px-2.5 py-1.5 text-xs font-semibold text-white hover:bg-indigo-500"
-        >
-          Add Domain
-        </button>
-        <ul class="mt-2 list-disc pl-5 text-sm text-gray-700">
-          <li *ngFor="let domain of placementCellAddedDomains()">
+        <label for="domains" class="block text-sm font-medium text-gray-900">
+          Domains
+        </label>
+        <div class="flex items-center gap-2">
+          <input
+            type="text"
+            class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm"
+            id="domains"
+            placeholder="Enter domain"
+            formControlName="enteredDomain"
+          />
+          <button
+            type="button"
+            class="bg-brand-blue-700 text-blue-50 rounded-md button block px-5 py-1"
+            (click)="onDomainAdded(enteredDomain?.value)"
+          >
+            Add
+          </button>
+        </div>
+        @if (enteredDomain?.touched && domains?.invalid) { @if
+        (domains?.hasError('required')) {
+        <div class="text-red-500 text-xs">Domain is required.</div>
+        } @else if (domains?.hasError('server')) {
+        <div class="text-red-500 text-xs">
+          {{ domains?.getError("server") }}
+        </div>
+        } }
+        <div class="mt-2">
+          <div
+            *ngFor="let domain of placementCellAddedDomains()"
+            class="badge bg-primary me-2 mb-2"
+          >
             {{ domain }}
-          </li>
-        </ul>
+            <button
+              type="button"
+              class="btn-close btn-close-white ms-2"
+              (click)="removeDomain(domain)"
+            ></button>
+          </div>
+        </div>
       </div>
 
       <!-- Branch -->
@@ -558,54 +592,87 @@
             <option [value]="branch.name">{{ branch.name }}</option>
             }
           </select>
-          @if (profileForm.get('branchName')?.touched &&
-          profileForm.get('branchName')?.invalid) { @if
-          (profileForm.get('branchName')?.hasError('required')) {
+          @if (branchName?.touched && branchName?.invalid) { @if
+          (branchName?.hasError('required')) {
           <div class="text-red-500 text-xs">Branch is required.</div>
+          } @else if (branchName?.hasError('server')) {
+          <div class="text-red-500 text-xs">
+            {{ branchName?.getError("server") }}
+          </div>
           } }
         </div>
       </div>
-      <!-- Degree -->
-      <div class="mt-3">
-        <label class="block text-sm font-medium text-gray-900">Domains</label>
-        <app-auto-complete
-          [options]="placementCellDegreeAutoCompleteList()"
-          placeHolder="Add domain"
-          (valueSelected)="onDegreeAdded($event)"
-        />
-        <button
-          type="button"
-          (click)="addDegree()"
-          class="mt-2 inline-flex items-center rounded-md bg-indigo-600 px-2.5 py-1.5 text-xs font-semibold text-white hover:bg-indigo-500"
-        >
-          Add Degree
-        </button>
-        <ul class="mt-2 list-disc pl-5 text-sm text-gray-700">
-          <li *ngFor="let domain of placementCellAddedDegrees()">
-            {{ domain }}
-          </li>
-        </ul>
+
+      <!-- Degrees -->
+      <div class="form-group">
+        <label for="degreeNames">Degrees</label>
+        <div class="input-group">
+          <app-auto-complete
+            [options]="placementCellDegreeAutoCompleteList()"
+            placeHolder="Add degree"
+            (valueSelected)="onDegreeSelected($event)"
+          ></app-auto-complete>
+          <button
+            type="button"
+            class="btn btn-primary"
+            (click)="onDegreeAdded(selectedDegree())"
+          >
+            Add Degree
+          </button>
+        </div>
+        @if (degreeNames?.touched && degreeNames?.invalid) { @if
+        (degreeNames?.hasError('required')) {
+        <div class="text-red-500 text-xs">Degree is required.</div>
+        } @else if (degreeNames?.hasError('server')) {
+        <div class="text-red-500 text-xs">
+          {{ degreeNames?.getError("server") }}
+        </div>
+        } }
+        <div class="mt-2">
+          {{ degreeNames?.errors?.['serverError'] }}
+        </div>
+        <div class="mt-2">
+          @for (degree of placementCellAddedDegrees(); track degree) {
+          <div
+            *ngFor="let degree of placementCellAddedDegrees()"
+            class="badge bg-primary me-2 mb-2"
+          >
+            {{ degree }}
+            <button
+              type="button"
+              class="btn-close btn-close-white ms-2"
+              (click)="removeDegree(degree)"
+            ></button>
+          </div>
+          }
+        </div>
       </div>
 
       <!-- Email -->
       <div class="mt-3">
-        <label for="email" class="block text-sm font-medium text-gray-900">
+        <label
+          for="placementCellEmail"
+          class="block text-sm font-medium text-gray-900"
+        >
           Email
         </label>
         <div class="mt-0.5">
           <input
             type="email"
-            id="email"
+            id="placementCellEmail"
             placeholder="Enter email"
-            formControlName="email"
+            formControlName="placementCellEmail"
             class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm"
           />
-          @if (profileForm.get('email')?.touched &&
-          profileForm.get('email')?.invalid) { @if
-          (profileForm.get('email')?.hasError('required')) {
+          @if (placementCellEmail?.touched && placementCellEmail?.invalid) { @if
+          (placementCellEmail?.hasError('required')) {
           <div class="text-red-500 text-xs">Email is required.</div>
-          } @else if (profileForm.get('email')?.hasError('email')) {
+          } @else if (placementCellEmail?.hasError('email')) {
           <div class="text-red-500 text-xs">Invalid email address.</div>
+          } @else if (placementCellEmail?.hasError('server')) {
+          <div class="text-red-500 text-xs">
+            {{ placementCellEmail?.getError("server") }}
+          </div>
           } }
         </div>
       </div>
@@ -623,10 +690,13 @@
             formControlName="website"
             class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm"
           />
-          @if (profileForm.get('website')?.touched &&
-          profileForm.get('website')?.invalid) { @if
-          (profileForm.get('website')?.hasError('required')) {
+          @if (website?.touched && website?.invalid) { @if
+          (website?.hasError('required')) {
           <div class="text-red-500 text-xs">Website is required.</div>
+          } @else if (website?.hasError('server')) {
+          <div class="text-red-500 text-xs">
+            {{ website?.getError("server") }}
+          </div>
           } }
         </div>
       </div>
@@ -634,13 +704,16 @@
       <div class="flex gap-3 mt-2">
         <button
           (click)="onPreviousStep()"
-          class="block cursor-pointer hover:shadow-lg hover:bg-brand-blue-600 focus:bg-brand-blue-600 transition durationduration-100 w-1/5 grow bg-brand-blue-700 text-blue-50 py-2 px-1 rounded-md"
+          class="block cursor-pointer shadow-layered transition durationduration-100 w-1/5 grow py-2 px-1 rounded-2xl bg-secondary-light hover:bg-soft-white focus:bg-soft-white font-semibold text-primary"
           type="button"
         >
-          Back
+          <div class="flex">
+            <img src="/icon/arrow-left.svg" alt="" />
+            <span class="m-auto"> Back </span>
+          </div>
         </button>
         <button
-          class="block cursor-pointer hover:shadow-lg hover:bg-green-700 focus:bg-green-700 transition durationduration-100 w-1/5 grow bg-emerald-800 text-blue-50 py-3 px-2 rounded-md"
+          class="block cursor-pointer shadow-layered transition durationduration-100 w-1/5 grow py-2 px-1 rounded-2xl bg-success-bg-dark/70 text-soft-white hover:bg-success-bg-dark focus:bg-soft-white font-semibold"
           type="submit"
         >
           Submit
@@ -649,9 +722,9 @@
     </form>
     }
     <p
-      class="text-sm text-center font-light text-gray-500 dark:text-gray-400 mt-1"
+      class="text-sm text-center font-light text-gray-500 dark:text-gray-400 mt-10"
     >
-      Already have an account yet?
+      Already have an account?
       <a
         routerLink="/auth/login"
         class="font-medium text-primary-600 hover:underline dark:text-primary-500 cursor-pointer"

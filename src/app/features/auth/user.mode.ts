@@ -11,7 +11,7 @@ export type Domain =  string
 export interface PlacementCellApiData {
   placementCellId: string;
   name: string;
-  branchId: string;
+  branch: Branch;
   placementCellDegrees: Degree[]
 }
 export interface RegisterBaseData {

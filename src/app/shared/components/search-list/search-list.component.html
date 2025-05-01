@@ -1,0 +1,7 @@
+<select (change)="onSelect($event)">
+  @for (item of filteredOptions(); track $index) {
+    <option [value]="item[optionValue()]">
+      {{ item[optionDisplay()] }}
+    </option>
+  }
+</select>

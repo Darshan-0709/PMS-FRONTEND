@@ -1,0 +1,27 @@
+<div class="bg-white relative d-block w-full">
+  <input
+    type="text"
+    class="block w-full rounded-md px-3 py-1.5 text-base text-primary outline-1 outline-soft-white hover:outline-secondary focus:outline-secondary placeholder:text-secondary/50 focus:outline-2 hover:outline-2 focus:-outline-offset-2 sm:text-sm/6"
+    [placeholder]="placeHolder()"
+    [value]="inputValue()"
+    (input)="onInputChange($event)"
+    (focus)="isDropdownOpen.set(true)"
+    (blur)="onBlur()"
+  />
+
+  @if(isDropdownOpen()){
+
+  <ul
+    class="absolute top-full transform translate-y-1 left-0 bg-white right-0 rounded shadow-layered outline-secondary"
+  >
+  @if(filteredOptions().length <= 0){
+    <li class="mt-0.5 ps-2 hover:bg-secondary/20 pointer-events-none">No Placement cell found</li>
+  }
+    @for (option of filteredOptions(); track option) {
+    <li (click)="selectOption(option)" class="mt-0.5 ps-2 hover:bg-secondary/20">
+      {{ option }}
+    </li>
+    }
+  </ul>
+  }
+</div>

@@ -50,8 +50,8 @@ export class RegisterService {
     );
   }
 
-  fetchPlacementCellByDepartment(branchId: string) {
-    let url = `${this.baseUrl}/placement_cells_list?branch=${branchId}`;
+  fetchPlacementCellDepartment() {
+    let url = `${this.baseUrl}/placement_cells_list`;
     return this.http.get<ApiResponse<PlacementCellApiData[]>>(url).pipe(
       map((data) => data.data),
       catchError((err) => {

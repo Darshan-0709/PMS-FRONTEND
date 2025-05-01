@@ -1,6 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 @import "tailwindcss";
 @theme {
+
   --color-brand-blue-50: oklch(0.97 0.0142 254.6); /* #eff6ff */
   --color-brand-blue-100: oklch(0.93 0.0316 255.59); /* #dbeafe */
   --color-brand-blue-200: oklch(0.88 0.0571 254.13); /* #bfdbfe */
@@ -24,9 +25,73 @@
   --color-brand-yellow-800: oklch(0.47 0.1332 42); /* #94390c */
   --color-brand-yellow-900: oklch(0.41 0.1135 41.54); /* #7a2f0d */
   --color-brand-yellow-950: oklch(0.28 0.0788 42.61); /* #461702 */
+
+  --color-primary: #0d141c; /* Dark text color */
+  --color-secondary: #4f7396; /* Muted secondary text color */
+  --color-box-background: #e8edf2; /* Light background for boxes */
+  --color-table-column: #e5e8eb; /* Light gray for table columns */
+  --color-table-column: #e5e8eb; /* Light gray for table columns */
+  --color-soft-white: #e5e8eb; /* Light gray for table columns */
+
+  /* Info Alert */
+  --color-info-bg-light: #eff6ff;
+  --color-info-text-light: #1e40af;
+  --color-info-border-light: #bfdbfe;
+  --color-info-bg-dark: #1e3a8a;
+  --color-info-text-dark: #93c5fd;
+  --color-info-border-dark: #1e40af;
+
+  /* Danger Alert */
+  --color-danger-bg-light: #fee2e2;
+  --color-danger-text-light: #991b1b;
+  --color-danger-border-light: #fca5a5;
+  --color-danger-bg-dark: #7f1d1d;
+  --color-danger-text-dark: #f87171;
+  --color-danger-border-dark: #991b1b;
+
+  /* Success Alert */
+  --color-success-bg-light: #d1fae5;
+  --color-success-text-light: #065f46;
+  --color-success-border-light: #6ee7b7;
+  --color-success-bg-dark: #064e3b;
+  --color-success-text-dark: #34d399;
+  --color-success-border-dark: #065f46;
+
+  /* Warning Alert */
+  --color-warning-bg-light: #fef3c7;
+  --color-warning-text-light: #92400e;
+  --color-warning-border-light: #fcd34d;
+  --color-warning-bg-dark: #78350f;
+  --color-warning-text-dark: #fbbf24;
+  --color-warning-border-dark: #92400e;
+
+  /* Dark Alert */
+  --color-dark-bg-light: #f3f4f6;
+  --color-dark-text-light: #1f2937;
+  --color-dark-border-light: #d1d5db;
+  --color-dark-bg-dark: #1f2937;
+  --color-dark-text-dark: #9ca3af;
+  --color-dark-border-dark: #374151;
 }
 
 @layer components {
+  .shadow-layered {
+    box-shadow: 0 1px 1px hsl(0deg 0% 0% / 0.075),
+      0 2px 2px hsl(0deg 0% 0% / 0.075), 0 4px 4px hsl(0deg 0% 0% / 0.075),
+      0 8px 8px hsl(0deg 0% 0% / 0.075), 0 16px 16px hsl(0deg 0% 0% / 0.075);
+  }
+  .shadow-layered-hover {
+    box-shadow: 6.7px 13.4px 13.4px hsl(0deg 0% 0% / 0.29);
+    /* box-shadow: 0 1px 1px hsl(0deg 0% 0% / 0.075),
+      0 2px 2px hsl(0deg 0% 0% / 0.075), 0 4px 4px hsl(0deg 0% 0% / 0.075),
+      0 8px 8px hsl(0deg 0% 0% / 0.075), 0 16px 16px hsl(0deg 0% 0% / 0.075); */
+  }
+
+  /* .custom-layered-box {
+    box-shadow: 0 1px 2px hsl(0deg 0% 0% / 0.1), 0 3px 6px hsl(0deg 0% 0% / 0.1),
+      0 5px 10px hsl(0deg 0% 0% / 0.1), 0 8px 16px hsl(0deg 0% 0% / 0.1),
+      0 12px 24px hsl(0deg 0% 0% / 0.1);
+  } */
   .modal-success {
     @apply bg-green-100 text-green-800 border border-green-200 dark:bg-green-800 dark:text-green-200;
   }
@@ -51,4 +116,64 @@
   .modal-warning-button {
     @apply bg-yellow-100 text-yellow-800 border border-yellow-200 dark:bg-yellow-800 dark:text-yellow-200;
   }
+  .alert-info {
+    background-color: var(--info-bg-light);
+    color: var(--info-text-light);
+    border: 1px solid var(--info-border-light);
+  }
+  .alert-info.dark {
+    background-color: var(--info-bg-dark);
+    color: var(--info-text-dark);
+    border: 1px solid var(--info-border-dark);
+  }
+
+  .alert-danger {
+    background-color: var(--danger-bg-light);
+    color: var(--danger-text-light);
+    border: 1px solid var(--danger-border-light);
+  }
+  .alert-danger.dark {
+    background-color: var(--danger-bg-dark);
+    color: var(--danger-text-dark);
+    border: 1px solid var(--danger-border-dark);
+  }
+
+  .alert-success {
+    background-color: var(--success-bg-light);
+    color: var(--success-text-light);
+    border: 1px solid var(--success-border-light);
+  }
+  .alert-success.dark {
+    background-color: var(--success-bg-dark);
+    color: var(--success-text-dark);
+    border: 1px solid var(--success-border-dark);
+  }
+
+  .alert-warning {
+    background-color: var(--warning-bg-light);
+    color: var(--warning-text-light);
+    border: 1px solid var(--warning-border-light);
+  }
+  .alert-warning.dark {
+    background-color: var(--warning-bg-dark);
+    color: var(--warning-text-dark);
+    border: 1px solid var(--warning-border-dark);
+  }
+
+  .alert-dark {
+    background-color: var(--dark-bg-light);
+    color: var(--dark-text-light);
+    border: 1px solid var(--dark-border-light);
+  }
+  .alert-dark.dark {
+    background-color: var(--dark-bg-dark);
+    color: var(--dark-text-dark);
+    border: 1px solid var(--dark-border-dark);
+  }
+}
+
+body {
+  background-color: #f7fafc;
+  min-width: 100vh;
+  font-family: Lexend;
 }
