@@ -7,10 +7,9 @@ export interface Degree {
   degreeId: string;
   name: string;
 }
-export type Domain =  string
 export interface PlacementCellApiData {
   placementCellId: string;
-  name: string;
+  placementCellName: string;
   branch: Branch;
   placementCellDegrees: Degree[]
 }
@@ -30,11 +29,11 @@ export interface StudentProfileData {
 }
 
 export interface PlacementCellProfileData {
-  name: string;
+  placementCellName: string;
   domains: string[];
   branchName: string;
   degreeNames: string[];
-  email: string;
+  placementCellEmail: string;
   website: string;
 }
 
@@ -43,7 +42,7 @@ export interface RecruiterProfileData {
   representativePosition: string;
   description: string;
   website: string;
-  email: string;
+  companyEmail: string;
 }
 
 export type RegisterInput =

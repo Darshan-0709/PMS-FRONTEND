@@ -1,12 +1,3 @@
-@if (successfulRegister()) {
-<app-alert-modal
-  message="register succuss fully"
-  [type]="'success'"
-  [show]="false"
-  (onClose)="onLoginRedirect()"
-/>
-}
-
 <div
   class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-2 max-w-2xl m-auto"
 >
@@ -17,719 +8,82 @@
       Sign up
     </h2>
   </div>
-
   <div
     class="mt-10 sm:mx-auto sm:w-full sm:max-w-lg py-2 px-5 shadow-xl rounded bg-white"
   >
+    @if (showSuccessMessage) {
+    <div class="success-message">
+      {{ successMessage }}
+      <p>Redirecting to login page...</p>
+    </div>
+    } @else { @if (currentStep() > 1) {
+    <button
+      class="mr-auto cursor-pointer transition durationduration-100 w-1/5 py-1 px-0.5 rounded-2xl bg-secondary-light hover:bg-soft-white focus:bg-soft-white font-semibold text-primary"
+      type="button"
+      (click)="onPreviousStep()"
+    >
+      <div class="flex">
+        <img src="/icon/arrow-left.svg" alt="" />
+        <span class="m-auto"> Back </span>
+      </div>
+    </button>
+    }
     <div class="flex gap-1 h-2 overflow-hidden mt-4 px-6 py-3">
       <div
         class="grow p-1 -skew-x-12 bg-brand-blue-50"
-        [class.bg-info-bg-dark]="step() >= 1"
+        [class.bg-info-bg-dark]="currentStep() >= 1"
       ></div>
       <div
         class="grow p-1 -skew-x-12 bg-brand-blue-50"
-        [class.bg-info-bg-dark]="step() >= 2"
+        [class.bg-info-bg-dark]="currentStep() >= 2"
       ></div>
       <div
         class="grow p-1 -skew-x-12 bg-brand-blue-50"
-        [class.bg-info-bg-dark]="step() >= 3"
+        [class.bg-info-bg-dark]="currentStep() >= 3"
       ></div>
     </div>
-    @if(step() === 1){
-    <div class="flex max-sm:flex-col gap-6 py-10 px-4 m-auto justify-between">
-      <app-role-select-button
-        label="Join Placement Cell as a Student"
-        role="student"
-        (roleSelected)="onRoleSelect($event)"
-        classes="mb-2 max-sm:min-w-md"
-      ></app-role-select-button>
+    <div class="steps">
+      @if (currentStep() === 1) {
+      <div class="flex max-sm:flex-col gap-6 py-10 px-4 m-auto justify-between">
+        <app-role-select-button
+          label="Join Placement Cell as a Student"
+          role="student"
+          (roleSelected)="onRoleSelect($event)"
+          classes="mb-2 max-sm:min-w-md"
+        ></app-role-select-button>
 
-      <app-role-select-button
-        label="Signup as Placement Cell"
-        role="placement_cell"
-        classes="mb-2 max-sm:min-w-md"
-        (roleSelected)="onRoleSelect($event)"
-      ></app-role-select-button>
+        <app-role-select-button
+          label="Signup as Placement Cell"
+          role="placement_cell"
+          classes="mb-2 max-sm:min-w-md"
+          (roleSelected)="onRoleSelect($event)"
+        ></app-role-select-button>
 
-      <app-role-select-button
-        label="Signup as Recruiter"
-        role="recruiter"
-        (roleSelected)="onRoleSelect($event)"
-        classes="max-sm:min-w-md"
-      ></app-role-select-button>
-
-      @if(roleError()){
-      <div class="text-red-500 text-xs text-center">Select Role</div>
-      }
+        <app-role-select-button
+          label="Signup as Recruiter"
+          role="recruiter"
+          (roleSelected)="onRoleSelect($event)"
+          classes="max-sm:min-w-md"
+        ></app-role-select-button>
+      </div>
+      } @if (currentStep() === 2) {
+      <app-user-form
+        (validationSuccess)="onUserFormValidationSuccess()"
+        (validationError)="onUserFormValidationError()"
+      ></app-user-form>
+      } @if (currentStep() === 3) { @switch (selectedRole()) { @case
+      ('recruiter') {
+      <app-recruiter-form
+        (registrationSuccess)="onRegistrationSuccess($event)"
+      ></app-recruiter-form>
+      } @case ('placement_cell') {
+      <app-placement-cell-form></app-placement-cell-form>
+      <!-- (registrationSuccess)="onRegistrationSuccess($event)" -->
+      } @case ('student') {
+      <app-student-form></app-student-form>
+      <!-- (registrationSuccess)="onRegistrationSuccess($event)" -->
+      } } }
     </div>
-    }@else if (step() === 2) {
-    <form
-      [formGroup]="userForm"
-      (ngSubmit)="onUserFormValidate()"
-      class="max-w-sm mx-auto"
-    >
-      <div class="mt-3">
-        <label for="username" class="block text-sm/6 font-medium text-secondary"
-          >User name</label
-        >
-        <div class="mt-0.5">
-          <input
-            type="text"
-            formControlName="username"
-            name="username"
-            id="username"
-            placeholder="johnDoe"
-            class="block w-full rounded-md px-3 py-1.5 text-base text-primary outline-1 outline-soft-white hover:outline-secondary focus:outline-secondary placeholder:text-secondary/50 focus:outline-2 hover:outline-2 focus:-outline-offset-2 sm:text-sm/6"
-          />
-        </div>
-
-        @if (username?.invalid && (username?.dirty || username?.touched)) {
-        @if(username?.hasError("required")){
-        <div class="text-red-500 text-xs">Username is required.</div>
-        }@if(username?.hasError("server")){
-
-        <div class="text-red-500 text-xs">
-          {{ userForm.get("username")?.getError("server") }}
-        </div>
-        } }
-      </div>
-      <div class="mt-3 relative">
-        <label for="email" class="block text-sm/6 font-medium text-gray-900">
-          <span>Email address</span>
-        </label>
-        @if (selectedRole === "student") {
-        <span class="absolute top-0 right-0 text-xs text-gray-500"
-          >Make sure to use your college email</span
-        >
-        }
-        <div class="mt-0.5">
-          <input
-            type="email"
-            name="email"
-            id="email"
-            formControlName="email"
-            autocomplete="email"
-            class="block w-full rounded-md px-3 py-1.5 text-base text-primary outline-1 outline-soft-white hover:outline-secondary focus:outline-secondary placeholder:text-secondary/50 focus:outline-2 hover:outline-2 focus:-outline-offset-2 sm:text-sm/6"
-          />
-
-          @if (emailError()) {
-          <div class="text-red-500 text-xs">
-            {{ emailError() }}
-          </div>
-          } @else if (email?.invalid && (email?.dirty || email?.touched)) { @if
-          (email?.hasError('required')) {
-          <div class="text-red-500 text-xs">Email is required.</div>
-          } @else if (email?.hasError('email')) {
-          <div class="text-red-500 text-xs">Please enter valid email</div>
-          } @else if (email?.hasError('server')) {
-          <div class="text-red-500 text-xs">
-            {{ email?.getError("server") }}
-          </div>
-          } }
-        </div>
-      </div>
-
-      <div class="mt-3">
-        <div class="flex items-center justify-between">
-          <label
-            for="password"
-            class="block text-sm/6 font-medium text-gray-900"
-            >Password</label
-          >
-        </div>
-        <div class="mt-0.5">
-          <input
-            type="password"
-            name="password"
-            id="password"
-            formControlName="password"
-            class="block w-full rounded-md px-3 py-1.5 text-base text-primary outline-1 outline-soft-white hover:outline-secondary focus:outline-secondary placeholder:text-secondary/50 focus:outline-2 hover:outline-2 focus:-outline-offset-2 sm:text-sm/6"
-          />
-        </div>
-        @if (email?.invalid && (email?.dirty || email?.touched)) {
-        @if(email?.hasError("required")) {
-        <div class="text-red-500 text-xs">Email is required.</div>
-        } @else if(email?.hasError("email")) {
-        <div class="text-red-500 text-xs">Please enter a valid email</div>
-        } @else if(email?.hasError("server")) {
-        <div class="text-red-500 text-xs">
-          {{ userForm.get("email")?.getError("server") }}
-        </div>
-        } }
-      </div>
-      <div class="mt-3">
-        <div class="flex items-center justify-between">
-          <label
-            for="confirmPassword"
-            class="block text-sm/6 font-medium text-gray-900"
-            >Confirm Password</label
-          >
-        </div>
-        <div class="mt-0.5">
-          <input
-            type="password"
-            name="confirmPassword"
-            id="confirmPassword"
-            formControlName="confirmPassword"
-            class="block w-full rounded-md px-3 py-1.5 text-base text-primary outline-1 outline-soft-white hover:outline-secondary focus:outline-secondary placeholder:text-secondary/50 focus:outline-2 hover:outline-2 focus:-outline-offset-2 sm:text-sm/6"
-          />
-        </div>
-        <!-- Error handling for confirm password -->
-        @if (confirmPassword?.invalid && (confirmPassword?.dirty ||
-        confirmPassword?.touched)) { @if(confirmPassword?.hasError("required"))
-        {
-        <div class="text-red-500 text-xs">Confirm password is required.</div>
-        }@else if(confirmPassword?.hasError("minlength")) {
-        <div class="text-red-500 text-xs">
-          Confirm password must be at least 6 characters.
-        </div>
-        } }
-
-        <!-- Check for custom password mismatch error on the entire form group -->
-        @if(confirmPassword?.parent?.hasError("passwordsMismatch") &&
-        (confirmPassword?.dirty || confirmPassword?.touched)) {
-        <div class="text-red-500 text-xs">Password do not match.</div>
-        } @else if(confirmPassword?.hasError("server")){
-        <div class="text-red-500 text-xs">
-          {{ userForm.get("confirmPassword")?.getError("server") }}
-        </div>
-        }
-      </div>
-
-      <div class="flex gap-3 mt-3">
-        <button
-          (click)="onPreviousStep()"
-          class="block cursor-pointer shadow-layered transition durationduration-100 w-1/5 grow py-2 px-1 rounded-2xl bg-secondary-light hover:bg-soft-white focus:bg-soft-white font-semibold text-primary"
-          type="button"
-        >
-          <div class="flex">
-            <img src="/icon/arrow-left.svg" alt="" />
-            <span class="m-auto"> Back </span>
-          </div>
-        </button>
-        <button
-          class="block cursor-pointer shadow-layered transition durationduration-100 w-1/5 grow py-2 px-1 rounded-2xl bg-secondary-light hover:bg-soft-white focus:bg-soft-white font-semibold text-primary"
-          type="submit"
-        >
-          <div class="flex">
-            <span class="m-auto"> Next </span>
-            <img src="/icon/arrow-right.svg" alt="" />
-          </div>
-        </button>
-      </div>
-    </form>
-    }@else if(step() === 3){
-
-    <form [formGroup]="profileForm" (ngSubmit)="onRegisterSubmit()">
-      @if(selectedRole === "recruiter"){
-      <div class="mt-3">
-        <div class="flex items-center justify-between">
-          <label
-            for="companyName"
-            class="block text-sm/6 font-medium text-gray-900"
-            >Company Name</label
-          >
-        </div>
-        <div class="mt-0.5">
-          <input
-            type="text"
-            name="companyName"
-            id="companyName"
-            formControlName="companyName"
-            class="block w-full rounded-md px-3 py-1.5 text-base text-primary outline-1 outline-soft-white hover:outline-secondary focus:outline-secondary placeholder:text-secondary/50 focus:outline-2 hover:outline-2 focus:-outline-offset-2 sm:text-sm/6"
-          />
-        </div>
-        <!-- Error handling for confirm password -->
-        @if (confirmPassword?.invalid && (confirmPassword?.dirty ||
-        confirmPassword?.touched)) { @if(confirmPassword?.hasError("required"))
-        {
-        <div class="text-red-500 text-xs">Confirm password is required.</div>
-        }@else if(confirmPassword?.hasError("minlength")) {
-        <div class="text-red-500 text-xs">
-          Confirm password must be at least 6 characters.
-        </div>
-        } }
-      </div>
-      <!-- representativePosition -->
-      <div class="mt-3">
-        <div class="flex items-center justify-between">
-          <label
-            for="representativePosition"
-            class="block text-sm/6 font-medium text-gray-900"
-            >Representative Position</label
-          >
-        </div>
-        <div class="mt-0.5">
-          <input
-            type="text"
-            name="representativePosition"
-            id="representativePosition"
-            formControlName="representativePosition"
-            placeholder="your role in company"
-            class="block w-full rounded-md px-3 py-1.5 text-base text-primary outline-1 outline-soft-white hover:outline-secondary focus:outline-secondary placeholder:text-secondary/50 focus:outline-2 hover:outline-2 focus:-outline-offset-2 sm:text-sm/6"
-          />
-        </div>
-        <!-- Error handling for confirm password -->
-        @if (confirmPassword?.invalid && (confirmPassword?.dirty ||
-        confirmPassword?.touched)) { @if(confirmPassword?.hasError("required"))
-        {
-        <div class="text-red-500 text-xs">Confirm password is required.</div>
-        }@else if(confirmPassword?.hasError("minlength")) {
-        <div class="text-red-500 text-xs">
-          Confirm password must be at least 6 characters.
-        </div>
-        } }
-      </div>
-      <!-- description -->
-      <div class="mt-3">
-        <div class="flex items-center justify-between">
-          <label
-            for="description"
-            class="block text-sm/6 font-medium text-gray-900"
-            >Description</label
-          >
-        </div>
-        <div class="mt-0.5">
-          <textarea
-            type="text"
-            name="description"
-            id="description"
-            formControlName="description"
-            placeholder="Provide brief description about company"
-            class="block w-full rounded-md px-3 py-1.5 text-base text-primary outline-1 outline-soft-white hover:outline-secondary focus:outline-secondary placeholder:text-secondary/50 focus:outline-2 hover:outline-2 focus:-outline-offset-2 sm:text-sm/6"
-          ></textarea>
-        </div>
-        <!-- Error handling for confirm password -->
-        @if (confirmPassword?.invalid && (confirmPassword?.dirty ||
-        confirmPassword?.touched)) { @if(confirmPassword?.hasError("required"))
-        {
-        <div class="text-red-500 text-xs">Confirm password is required.</div>
-        }@else if(confirmPassword?.hasError("minlength")) {
-        <div class="text-red-500 text-xs">
-          Confirm password must be at least 6 characters.
-        </div>
-        } }
-      </div>
-      <!-- website -->
-      <div class="mt-3">
-        <div class="flex items-center justify-between">
-          <label for="website" class="block text-sm/6 font-medium text-gray-900"
-            >Website</label
-          >
-        </div>
-        <div class="mt-0.5">
-          <input
-            type="text"
-            name="website"
-            id="website"
-            formControlName="website"
-            placeholder="Company's website"
-            class="block w-full rounded-md px-3 py-1.5 text-base text-primary outline-1 outline-soft-white hover:outline-secondary focus:outline-secondary placeholder:text-secondary/50 focus:outline-2 hover:outline-2 focus:-outline-offset-2 sm:text-sm/6"
-          />
-        </div>
-        <!-- Error handling for confirm password -->
-        @if (confirmPassword?.invalid && (confirmPassword?.dirty ||
-        confirmPassword?.touched)) { @if(confirmPassword?.hasError("required"))
-        {
-        <div class="text-red-500 text-xs">Confirm password is required.</div>
-        }@else if(confirmPassword?.hasError("minlength")) {
-        <div class="text-red-500 text-xs">
-          Confirm password must be at least 6 characters.
-        </div>
-        } }
-      </div>
-      <!-- email -->
-      <div class="mt-3">
-        <div class="flex items-center justify-between">
-          <label for="email" class="block text-sm/6 font-medium text-gray-900"
-            >email</label
-          >
-        </div>
-        <div class="mt-0.5">
-          <input
-            type="text"
-            name="email"
-            id="email"
-            formControlName="email"
-            placeholder="Company's contact email"
-            class="block w-full rounded-md px-3 py-1.5 text-base text-primary outline-1 outline-soft-white hover:outline-secondary focus:outline-secondary placeholder:text-secondary/50 focus:outline-2 hover:outline-2 focus:-outline-offset-2 sm:text-sm/6"
-          />
-        </div>
-        <!-- Error handling for confirm password -->
-        @if (confirmPassword?.invalid && (confirmPassword?.dirty ||
-        confirmPassword?.touched)) { @if(confirmPassword?.hasError("required"))
-        {
-        <div class="text-red-500 text-xs">Confirm password is required.</div>
-        }@else if(confirmPassword?.hasError("minlength")) {
-        <div class="text-red-500 text-xs">
-          Confirm password must be at least 6 characters.
-        </div>
-        } }
-      </div>
-      }@else if (selectedRole === 'student') {
-
-      <!-- enrollmentNumber -->
-      <div class="mt-3">
-        <label
-          for="enrollmentNumber"
-          class="block text-sm/6 font-medium text-gray-900"
-        >
-          Enrollment number
-        </label>
-        <div class="mt-0.5">
-          <input
-            type="text"
-            id="enrollmentNumber"
-            placeholder="128734342"
-            formControlName="enrollmentNumber"
-            class="block w-full rounded-md px-3 py-1.5 text-base text-primary outline-1 outline-soft-white hover:outline-secondary focus:outline-secondary placeholder:text-secondary/50 focus:outline-2 hover:outline-2 focus:-outline-offset-2 sm:text-sm/6"
-          />
-          @if (profileForm.get('enrollmentNumber')?.touched &&
-          profileForm.get('enrollmentNumber')?.invalid) { @if
-          (profileForm.get('enrollmentNumber')?.hasError('required')) {
-          <div class="text-red-500 text-xs">Enrollment number is required.</div>
-          } @else if (profileForm.get('enrollmentNumber')?.hasError('server')) {
-          <div class="text-red-500 text-xs">
-            {{ profileForm.get("enrollmentNumber")?.getError("server") }}
-          </div>
-          } }
-        </div>
-      </div>
-
-      <!-- fullName -->
-      <div class="mt-3">
-        <label for="fullName" class="block text-sm/6 font-medium text-gray-900">
-          Full Name
-        </label>
-        <div class="mt-0.5">
-          <input
-            type="text"
-            id="fullName"
-            placeholder="Full name as per your college ID"
-            formControlName="fullName"
-            class="block w-full rounded-md px-3 py-1.5 text-base text-primary outline-1 outline-soft-white hover:outline-secondary focus:outline-secondary placeholder:text-secondary/50 focus:outline-2 hover:outline-2 focus:-outline-offset-2 sm:text-sm/6"
-          />
-          @if (profileForm.get('fullName')?.touched &&
-          profileForm.get('fullName')?.invalid) { @if
-          (profileForm.get('fullName')?.hasError('required')) {
-          <div class="text-red-500 text-xs">Full name is required.</div>
-          } @else if (profileForm.get('fullName')?.hasError('server')) {
-          <div class="text-red-500 text-xs">
-            {{ profileForm.get("fullName")?.getError("server") }}
-          </div>
-          } }
-        </div>
-      </div>
-
-      <!-- Branch -->
-      <div class="mt-3">
-        <label
-          for="branch"
-          class="block mb-2 text-sm font-medium text-gray-900"
-        >
-          Select your branch
-        </label>
-        <select
-          id="branch"
-          formControlName="branchId"
-          class="bg-white text-gray-900 text-sm rounded-lg focus:ring-indigo-600 focus:border-indigo-600 block w-full p-2.5 outline-1 -outline-offset-1 outline-gray-300"
-        >
-          <option selected disabled>
-            Choose a branch to find your placement cell
-          </option>
-          @for (branch of branches(); track branch.branchId) {
-          <option [value]="branch.branchId">{{ branch.name }}</option>
-          }
-        </select>
-        @if (profileForm.get('branchId')?.touched &&
-        profileForm.get('branchId')?.invalid) { @if
-        (profileForm.get('branchId')?.hasError('required')) {
-        <div class="text-red-500 text-xs">Branch selection is required.</div>
-        } @else if (profileForm.get('branchId')?.hasError('server')) {
-        <div class="text-red-500 text-xs">
-          {{ profileForm.get("branchId")?.getError("server") }}
-        </div>
-        } }
-      </div>
-
-      <!-- placementCellId -->
-      <div class="mt-3">
-        <label
-          for="placementCellId"
-          class="block mb-2 text-sm font-medium text-gray-900"
-        >
-          Select your placement cell
-        </label>
-        <app-auto-complete
-          [options]="placementCellAutoCompleteList()"
-          placeHolder="Select PlacementCell"
-          (valueSelected)="onSelectedPlacementCell($event)"
-        />
-        @if (profileForm.get('placementCellId')?.touched &&
-        profileForm.get('placementCellId')?.invalid) { @if
-        (profileForm.get('placementCellId')?.hasError('required')) {
-        <div class="text-red-500 text-xs">
-          Placement cell selection is required.
-        </div>
-        } @else if (profileForm.get('placementCellId')?.hasError('server')) {
-        <div class="text-red-500 text-xs">
-          {{ profileForm.get("placementCellId")?.getError("server") }}
-        </div>
-        } }
-      </div>
-
-      <!-- degreeId -->
-      <div class="mt-3">
-        <label
-          for="degreeId"
-          class="block mb-2 text-sm font-medium text-gray-900"
-        >
-          Select your degree/course
-        </label>
-        <select
-          id="degreeId"
-          formControlName="degreeId"
-          class="bg-white text-gray-900 text-sm rounded-lg focus:ring-indigo-600 focus:border-indigo-600 block w-full p-2.5 outline-1 -outline-offset-1 outline-gray-300"
-        >
-          <option selected disabled>Choose a degree/course</option>
-          @for (degree of placementCellDegrees(); track degree.degreeId) {
-          <option [value]="degree.degreeId">{{ degree.name }}</option>
-          }
-        </select>
-        @if (profileForm.get('degreeId')?.touched &&
-        profileForm.get('degreeId')?.invalid) { @if
-        (profileForm.get('degreeId')?.hasError('required')) {
-        <div class="text-red-500 text-xs">Degree selection is required.</div>
-        } @else if (profileForm.get('degreeId')?.hasError('server')) {
-        <div class="text-red-500 text-xs">
-          {{ profileForm.get("degreeId")?.getError("server") }}
-        </div>
-        } }
-      </div>
-
-      } @else if(selectedRole === "placement_cell"){
-      <!-- Name -->
-      <div class="mt-3">
-        <label for="name" class="block text-sm font-medium text-gray-900">
-          Name
-        </label>
-        <div class="mt-0.5">
-          <input
-            type="text"
-            id="name"
-            formControlName="name"
-            placeholder="Enter placement cell name"
-            class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm"
-          />
-          @if (name?.touched && name?.invalid) { @if
-          (name?.hasError('required')) {
-          <div class="text-red-500 text-xs">Name is required.</div>
-          } @else if (name?.hasError('server')) {
-          <div class="text-red-500 text-xs">
-            {{ name?.getError("server") }}
-          </div>
-          } }
-        </div>
-      </div>
-
-      <!-- Domains -->
-      <div class="mt-3">
-        <label for="domains" class="block text-sm font-medium text-gray-900">
-          Domains
-        </label>
-        <div class="flex items-center gap-2">
-          <input
-            type="text"
-            class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm"
-            id="domains"
-            placeholder="Enter domain"
-            formControlName="enteredDomain"
-          />
-          <button
-            type="button"
-            class="bg-brand-blue-700 text-blue-50 rounded-md button block px-5 py-1"
-            (click)="onDomainAdded(enteredDomain?.value)"
-          >
-            Add
-          </button>
-        </div>
-        @if (enteredDomain?.touched && domains?.invalid) { @if
-        (domains?.hasError('required')) {
-        <div class="text-red-500 text-xs">Domain is required.</div>
-        } @else if (domains?.hasError('server')) {
-        <div class="text-red-500 text-xs">
-          {{ domains?.getError("server") }}
-        </div>
-        } }
-        <div class="mt-2">
-          <div
-            *ngFor="let domain of placementCellAddedDomains()"
-            class="badge bg-primary me-2 mb-2"
-          >
-            {{ domain }}
-            <button
-              type="button"
-              class="btn-close btn-close-white ms-2"
-              (click)="removeDomain(domain)"
-            ></button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Branch -->
-      <div class="mt-3">
-        <label for="branch" class="block text-sm font-medium text-gray-900">
-          Select Branch
-        </label>
-        <div class="mt-0.5">
-          <select
-            id="branch"
-            formControlName="branchName"
-            class="bg-white text-gray-900 text-sm rounded-md focus:ring-indigo-600 focus:border-indigo-600 block w-full p-2.5 outline-1 -outline-offset-1 outline-gray-300"
-          >
-            <option selected disabled>Select Branch</option>
-            @for (branch of branches(); track branch.branchId) {
-            <option [value]="branch.name">{{ branch.name }}</option>
-            }
-          </select>
-          @if (branchName?.touched && branchName?.invalid) { @if
-          (branchName?.hasError('required')) {
-          <div class="text-red-500 text-xs">Branch is required.</div>
-          } @else if (branchName?.hasError('server')) {
-          <div class="text-red-500 text-xs">
-            {{ branchName?.getError("server") }}
-          </div>
-          } }
-        </div>
-      </div>
-
-      <!-- Degrees -->
-      <div class="form-group">
-        <label for="degreeNames">Degrees</label>
-        <div class="input-group">
-          <app-auto-complete
-            [options]="placementCellDegreeAutoCompleteList()"
-            placeHolder="Add degree"
-            (valueSelected)="onDegreeSelected($event)"
-          ></app-auto-complete>
-          <button
-            type="button"
-            class="btn btn-primary"
-            (click)="onDegreeAdded(selectedDegree())"
-          >
-            Add Degree
-          </button>
-        </div>
-        @if (degreeNames?.touched && degreeNames?.invalid) { @if
-        (degreeNames?.hasError('required')) {
-        <div class="text-red-500 text-xs">Degree is required.</div>
-        } @else if (degreeNames?.hasError('server')) {
-        <div class="text-red-500 text-xs">
-          {{ degreeNames?.getError("server") }}
-        </div>
-        } }
-        <div class="mt-2">
-          {{ degreeNames?.errors?.['serverError'] }}
-        </div>
-        <div class="mt-2">
-          @for (degree of placementCellAddedDegrees(); track degree) {
-          <div
-            *ngFor="let degree of placementCellAddedDegrees()"
-            class="badge bg-primary me-2 mb-2"
-          >
-            {{ degree }}
-            <button
-              type="button"
-              class="btn-close btn-close-white ms-2"
-              (click)="removeDegree(degree)"
-            ></button>
-          </div>
-          }
-        </div>
-      </div>
-
-      <!-- Email -->
-      <div class="mt-3">
-        <label
-          for="placementCellEmail"
-          class="block text-sm font-medium text-gray-900"
-        >
-          Email
-        </label>
-        <div class="mt-0.5">
-          <input
-            type="email"
-            id="placementCellEmail"
-            placeholder="Enter email"
-            formControlName="placementCellEmail"
-            class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm"
-          />
-          @if (placementCellEmail?.touched && placementCellEmail?.invalid) { @if
-          (placementCellEmail?.hasError('required')) {
-          <div class="text-red-500 text-xs">Email is required.</div>
-          } @else if (placementCellEmail?.hasError('email')) {
-          <div class="text-red-500 text-xs">Invalid email address.</div>
-          } @else if (placementCellEmail?.hasError('server')) {
-          <div class="text-red-500 text-xs">
-            {{ placementCellEmail?.getError("server") }}
-          </div>
-          } }
-        </div>
-      </div>
-
-      <!-- Website -->
-      <div class="mt-3">
-        <label for="website" class="block text-sm font-medium text-gray-900">
-          Website
-        </label>
-        <div class="mt-0.5">
-          <input
-            type="url"
-            id="website"
-            placeholder="https://example.com"
-            formControlName="website"
-            class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm"
-          />
-          @if (website?.touched && website?.invalid) { @if
-          (website?.hasError('required')) {
-          <div class="text-red-500 text-xs">Website is required.</div>
-          } @else if (website?.hasError('server')) {
-          <div class="text-red-500 text-xs">
-            {{ website?.getError("server") }}
-          </div>
-          } }
-        </div>
-      </div>
-      }
-      <div class="flex gap-3 mt-2">
-        <button
-          (click)="onPreviousStep()"
-          class="block cursor-pointer shadow-layered transition durationduration-100 w-1/5 grow py-2 px-1 rounded-2xl bg-secondary-light hover:bg-soft-white focus:bg-soft-white font-semibold text-primary"
-          type="button"
-        >
-          <div class="flex">
-            <img src="/icon/arrow-left.svg" alt="" />
-            <span class="m-auto"> Back </span>
-          </div>
-        </button>
-        <button
-          class="block cursor-pointer shadow-layered transition durationduration-100 w-1/5 grow py-2 px-1 rounded-2xl bg-success-bg-dark/70 text-soft-white hover:bg-success-bg-dark focus:bg-soft-white font-semibold"
-          type="submit"
-        >
-          Submit
-        </button>
-      </div>
-    </form>
     }
-    <p
-      class="text-sm text-center font-light text-gray-500 dark:text-gray-400 mt-10"
-    >
-      Already have an account?
-      <a
-        routerLink="/auth/login"
-        class="font-medium text-primary-600 hover:underline dark:text-primary-500 cursor-pointer"
-        >Sign in</a
-      >
-    </p>
   </div>
 </div>

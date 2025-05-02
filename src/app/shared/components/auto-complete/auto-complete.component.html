@@ -1,27 +1,27 @@
-<div class="bg-white relative d-block w-full">
+<div class="relative w-full">
   <input
     type="text"
-    class="block w-full rounded-md px-3 py-1.5 text-base text-primary outline-1 outline-soft-white hover:outline-secondary focus:outline-secondary placeholder:text-secondary/50 focus:outline-2 hover:outline-2 focus:-outline-offset-2 sm:text-sm/6"
-    [placeholder]="placeHolder()"
-    [value]="inputValue()"
-    (input)="onInputChange($event)"
-    (focus)="isDropdownOpen.set(true)"
+    class="w-full border rounded px-3 py-2"
+    [placeholder]="placeholder()"
+    [value]="query()"
+    (input)="onInput($event)"
+    (focus)="open.set(true)"
     (blur)="onBlur()"
   />
 
-  @if(isDropdownOpen()){
-
-  <ul
-    class="absolute top-full transform translate-y-1 left-0 bg-white right-0 rounded shadow-layered outline-secondary"
-  >
-  @if(filteredOptions().length <= 0){
-    <li class="mt-0.5 ps-2 hover:bg-secondary/20 pointer-events-none">No Placement cell found</li>
-  }
-    @for (option of filteredOptions(); track option) {
-    <li (click)="selectOption(option)" class="mt-0.5 ps-2 hover:bg-secondary/20">
-      {{ option }}
-    </li>
-    }
-  </ul>
+  @if(open()) {
+    <ul class="absolute z-10 mt-1 w-full bg-white border rounded max-h-60 overflow-auto">
+      @if(filtered().length === 0) {
+        <li class="px-3 py-2 text-sm text-gray-500">No results</li>
+      }
+      @for(option of filtered(); track option.value) {
+        <li
+          class="px-3 py-2 cursor-pointer hover:bg-gray-100"
+          (click)="select(option)"
+        >
+          {{ option.label }}
+        </li>
+      }
+    </ul>
   }
 </div>

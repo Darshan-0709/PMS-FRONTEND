@@ -15,46 +15,44 @@ import {
   templateUrl: './auto-complete.component.html',
   styleUrl: './auto-complete.component.css',
 })
-export class AutoCompleteComponent implements OnInit {
-  options = input<string[]>([]);
-  placeHolder = input<string>('');
+export class AutoCompleteComponent<T> {
+  // Inputs
+  options = input.required<SelectOption<T>[]>();    // full list
+  placeholder = input<string>('Select…');
 
-  inputValue: WritableSignal<string> = signal('');
-  selectedOption: WritableSignal<string | null> = signal(null);
-  isDropdownOpen: WritableSignal<boolean> = signal(false);
+  // Internal signals
+  query = signal<string>('');
+  open = signal(false);
 
-  valueSelected = output<string | null>()
+  // Output
+  selection = output<T>();
 
-  onSelectedValueChanged(){
-    this.valueSelected.emit(this.inputValue());
+  // Filtered list based on query
+  filtered = computed(() =>
+    this.options()
+      .filter(o => o.label.toLowerCase().includes(this.query().toLowerCase()))
+  );
+
+  // Emit when a selection happens
+  select(o: SelectOption<T>) {
+    this.query.set(o.label);
+    this.open.set(false);
+    this.selection.emit(o.value);
   }
 
-  filteredOptions: Signal<string[]> = computed(() => {
-    const options = this.options() ?? [];
-    return options.filter((opt) =>
-      opt.toLowerCase().includes(this.inputValue().toLowerCase())
-    );
-  });
-
-  selectOption(option: string) {
-    this.inputValue.set(option);
-    this.selectedOption.set(option);
-    this.isDropdownOpen.set(false);
-    this.onSelectedValueChanged()
-  }
-  
-  onInputChange(event: Event) {
-    const target = event.target as HTMLInputElement;
-    const value = target.value;
-    this.inputValue.set(value);
-    this.isDropdownOpen.set(true);
-    this.onSelectedValueChanged()
-  }
-  
-  ngOnInit(): void {
+  // Update query as the user types
+  onInput(e: Event) {
+    this.query.set((e.target as HTMLInputElement).value);
+    this.open.set(true);
   }
 
+  // Close on blur (allow click)
   onBlur() {
-    setTimeout(() => this.isDropdownOpen.set(false), 200);
+    setTimeout(() => this.open.set(false), 200);
   }
+}
+
+export interface SelectOption<T> {
+  label: string;
+  value: T;
 }

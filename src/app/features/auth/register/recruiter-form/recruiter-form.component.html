@@ -1,0 +1,74 @@
+<form [formGroup]="recruiterForm" (ngSubmit)="onSubmit()" class="user-form">
+  <!-- Company Name Input -->
+  <app-shared-input
+    [control]="companyName"
+    label="Company Name"
+    placeholder="Enter your company name"
+  ></app-shared-input>
+  <app-validation-errors
+    [control]="companyName"
+    [messages]="validationMessages"
+    label="Company Name"
+  />
+
+  <!-- Representative Position Input -->
+  <app-shared-input
+    [control]="representativePosition"
+    label="Representative Position"
+    placeholder="Enter representative position"
+  ></app-shared-input>
+  <app-validation-errors
+    [control]="representativePosition"
+    [messages]="validationMessages"
+    label="Representative Position"
+  />
+
+  <!-- Description Input -->
+  <app-shared-input
+    [control]="description"
+    label="Description"
+    placeholder="Enter company description"
+  ></app-shared-input>
+  <app-validation-errors
+    [control]="description"
+    [messages]="validationMessages"
+    label="Description"
+  />
+
+  <!-- Website Input -->
+  <app-shared-input
+    [control]="website"
+    label="Website"
+    placeholder="Enter your website"
+  ></app-shared-input>
+  <app-validation-errors
+    [control]="website"
+    [messages]="validationMessages"
+    label="Website"
+  />
+
+  <!-- Company Email Input -->
+  <app-shared-input
+    [control]="companyEmail"
+    label="Company Email"
+    placeholder="Enter company email"
+  ></app-shared-input>
+  <app-validation-errors
+    [control]="companyEmail"
+    [messages]="validationMessages"
+    label="Company Email"
+  />
+
+  <div class="flex gap-3 mt-2">
+    <button
+      class="ml-auto cursor-pointer shadow-layered transition duration-100 w-1/5 py-2 px-1 rounded-2xl bg-secondary-light hover:bg-soft-white focus:bg-soft-white font-semibold text-primary"
+      type="submit"
+      [disabled]="recruiterForm.invalid"
+    >
+      <div class="flex">
+        <span class="m-auto"> Submit </span>
+        <img src="/icon/arrow-right.svg" alt="" />
+      </div>
+    </button>
+  </div>
+</form>

@@ -8,12 +8,10 @@ import { Component, input, output } from '@angular/core';
   styleUrl: './role-select-button.component.css',
 })
 export class RoleSelectButtonComponent {
- label = input.required<string>();
- role = input.required<'student' | 'placement_cell' | 'recruiter'>();
- classes= input<string>('');
-roleSelected = output<
-    'student' | 'placement_cell' | 'recruiter'
-  >();
+  label = input.required<string>();
+  role = input.required<'student' | 'placement_cell' | 'recruiter'>();
+  classes = input<string>('');
+  roleSelected = output<'student' | 'placement_cell' | 'recruiter'>();
 
   selectRole() {
     this.roleSelected.emit(this.role());
