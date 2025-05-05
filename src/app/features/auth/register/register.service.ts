@@ -1,45 +1,37 @@
-import { HttpClient } from '@angular/common/http';
-import { computed, inject, Injectable, signal } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+
+import { inject, Injectable, signal } from '@angular/core';
 import { RegisterAPIService } from './register-api.service';
 import {
   UserFormModel,
-  RecruiterProfileFormModel,
-  PlacementCellProfileFormModel,
   RegisterBaseData,
-  FinalRegistrationPayload,
   RecruiterProfileData,
   PlacementCellProfileData,
   StudentProfileData,
+  Degree,
+  PlacementCellApiData,
+  Branch,
+  RegisterInput,
 } from './register.models';
 import { Observable, map, tap, catchError, throwError } from 'rxjs';
-import { Branch, Degree, PlacementCellApiData } from '../user.mode';
-
 @Injectable({
   providedIn: 'root',
 })
 export class RegisterService {
-  constructor(private http: HttpClient, private fb: FormBuilder) {}
-
   private api = inject(RegisterAPIService);
 
   // State signals
-  private _currentStep = signal(3);
-  private _selectedRole = signal<'student' | 'placement_cell' | 'recruiter'>(
+  currentStep = signal(1);
+  selectedRole = signal<'student' | 'placement_cell' | 'recruiter'>(
     'student'
   );
-  private _userFormData = signal<UserFormModel | null>(null);
-  private _profileFormData = signal<
-    RecruiterProfileFormModel | PlacementCellProfileFormModel | null
-  >(null);
-  private _errors = signal<Record<string, string>>({});
+  userFormData = signal<UserFormModel | null>(null);
+  studentProfile = signal<StudentProfileData | null>(null);
+  recruiterProfile = signal<RecruiterProfileData | null>(null);
+  placementCellProfile = signal<PlacementCellProfileData | null>(null);
+  errors = signal<Record<string, string>>({});
 
   // Computed signals
-  currentStep = computed(() => this._currentStep());
-  selectedRole = computed(() => this._selectedRole());
-  userFormData = computed(() => this._userFormData());
-  profileFormData = computed(() => this._profileFormData());
-  errors = computed(() => this._errors());
+
 
   // API data
   placementCells = signal<PlacementCellApiData[]>([]);
@@ -48,11 +40,12 @@ export class RegisterService {
 
   // Step management
   nextStep() {
-    this._currentStep.update((step) => Math.min(step + 1, 3));
+    this.currentStep.update((step) => Math.min(step + 1, 3));
+    console.log(this.currentStep())
   }
 
   previousStep() {
-    this._currentStep.update((step) => Math.max(step - 1, 1));
+    this.currentStep.update((step) => Math.max(step - 1, 1));
   }
 
   fetchData() {
@@ -87,39 +80,54 @@ export class RegisterService {
           }
         },
       });
-    console.log(this.branches());
   }
 
   setStep(step: number) {
-    this._currentStep.set(Math.max(1, Math.min(step, 3)));
+    this.currentStep.set(Math.max(1, Math.min(step, 3)));
   }
 
   // Role management
   setRole(role: 'student' | 'placement_cell' | 'recruiter') {
-    this._selectedRole.set(role);
+    this.selectedRole.set(role);
   }
 
   // Form data management
   setUserFormData(data: UserFormModel) {
-    this._userFormData.set(data);
+    this.userFormData.set(data);
   }
 
-  setProfileFormData(
-    data: RecruiterProfileFormModel | PlacementCellProfileFormModel
-  ) {
-    this._profileFormData.set(data);
+  // setUserData(data: UserFormModel) {
+  //   this.userFormData.set(data);
+  // }
+
+  setStudentProfile(data: StudentProfileData) {
+    this.studentProfile.set(data);
   }
+
+  setRecruiterProfile(data: RecruiterProfileData) {
+    this.recruiterProfile.set(data);
+  }
+
+  setPlacementCellProfile(data: PlacementCellProfileData) {
+    this.placementCellProfile.set(data);
+  }
+
+  getUserDataEmail():string | undefined{
+    return this.userFormData()?.email
+  }
+
+
 
   // Error management
   setErrors(errors: Record<string, string>) {
-    this._errors.set(errors);
+    this.errors.set(errors);
   }
 
   clearErrors() {
-    this._errors.set({});
+    this.errors.set({});
   }
 
-  // Validation and submission
+
   validateUserData(userData: UserFormModel): Observable<boolean> {
     const payload: RegisterBaseData = {
       ...userData,
@@ -142,7 +150,7 @@ export class RegisterService {
   }
 
   submitRegistration(): Observable<any> {
-    if (!this.userFormData() || !this.profileFormData()) {
+    if (!this.userFormData()) {
       throw new Error('Form data is incomplete');
     }
 
@@ -154,31 +162,28 @@ export class RegisterService {
       role: this.selectedRole(),
     };
 
-    let payload: FinalRegistrationPayload;
+    let payload: RegisterInput;
 
     switch (this.selectedRole()) {
+      case 'student':
+        payload = {
+          ...baseData,
+          role: 'student',
+          studentProfileData: this.studentProfile()!,
+        };
+        break;
       case 'recruiter':
         payload = {
           ...baseData,
           role: 'recruiter',
-          recruiterProfileData:
-            this.profileFormData() as unknown as RecruiterProfileData,
+          recruiterProfileData: this.recruiterProfile()!,
         };
         break;
       case 'placement_cell':
         payload = {
           ...baseData,
           role: 'placement_cell',
-          placementCellProfileData:
-            this.profileFormData() as unknown as PlacementCellProfileData,
-        };
-        break;
-      case 'student':
-        payload = {
-          ...baseData,
-          role: 'student',
-          studentProfileData:
-            this.profileFormData() as unknown as StudentProfileData,
+          placementCellProfileData: this.placementCellProfile()!,
         };
         break;
       default:

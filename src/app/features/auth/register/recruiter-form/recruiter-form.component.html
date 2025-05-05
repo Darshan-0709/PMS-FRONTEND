@@ -1,4 +1,4 @@
-<form [formGroup]="recruiterForm" (ngSubmit)="onSubmit()" class="user-form">
+<fieldset formGroupName="recruiterForm">
   <!-- Company Name Input -->
   <app-shared-input
     [control]="companyName"
@@ -59,7 +59,7 @@
     label="Company Email"
   />
 
-  <div class="flex gap-3 mt-2">
+  <!-- <div class="flex gap-3 mt-2">
     <button
       class="ml-auto cursor-pointer shadow-layered transition duration-100 w-1/5 py-2 px-1 rounded-2xl bg-secondary-light hover:bg-soft-white focus:bg-soft-white font-semibold text-primary"
       type="submit"
@@ -70,5 +70,5 @@
         <img src="/icon/arrow-right.svg" alt="" />
       </div>
     </button>
-  </div>
-</form>
+  </div> -->
+</fieldset>

@@ -7,22 +7,21 @@ import {
   signal,
 } from '@angular/core';
 import {
+  ControlContainer,
   FormControl,
   FormGroup,
+  FormGroupDirective,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+
+import { StudentProfileFormModel } from '../register.models';
 import { SharedInputComponent } from '../../../../shared/components/shared-input/shared-input.component';
 import { ValidationErrorsComponent } from '../../../../shared/components/validation-errors/validation-errors.component';
+import { DropdownAutocompleteComponentComponent, SelectOption } from '../../../../shared/components/dropdown-autocomplete-component/dropdown-autocomplete-component.component';
+import { AlertModalComponent } from '../../../../shared/components/alert-modal/alert-modal.component';
 import { defaultValidationMessages } from '../../../../shared/types/validation.types';
-import {
-  AutoCompleteComponent,
-  SelectOption,
-} from '../../../../shared/components/auto-complete/auto-complete.component';
 import { RegisterService } from '../register.service';
-import { DropdownAutocompleteComponentComponent } from '../../../../shared/components/dropdown-autocomplete-component/dropdown-autocomplete-component.component';
-import { tap, catchError, throwError } from 'rxjs';
-import { Branch, Degree, PlacementCellApiData } from '../../user.mode';
 
 @Component({
   selector: 'app-student-form',
@@ -33,92 +32,88 @@ import { Branch, Degree, PlacementCellApiData } from '../../user.mode';
     ValidationErrorsComponent,
     DropdownAutocompleteComponentComponent,
     ReactiveFormsModule,
+    AlertModalComponent,
+  ],
+  viewProviders: [
+    {
+      provide: ControlContainer,
+      useExisting: FormGroupDirective,
+    },
   ],
 })
 export class StudentFormComponent implements OnInit {
-  studentForm: FormGroup;
+  parentContainer = inject(ControlContainer);
+
+  get parentFormGroup() {
+    return this.parentContainer.control as FormGroup;
+  }
 
   validationMessages = defaultValidationMessages;
   registerService = inject(RegisterService);
   registrationSuccess = output<{ message: string }>();
 
   // Signals for data management
-  branches = signal<SelectOption<string>[]>([]);
-  placementCells = signal<PlacementCellApiData[]>([]);
+  placementCells = this.registerService.placementCells;
   placementCellAutoCompleteList = signal<SelectOption<string>[]>([]);
   degrees = signal<SelectOption<string>[]>([]);
 
+  domainMismatchWarning = signal<boolean>(false);
+
   constructor() {
-    this.studentForm = new FormGroup({
-      enrollmentNumber: new FormControl('', Validators.required),
-      fullName: new FormControl('', Validators.required),
-      degreeId: new FormControl('', Validators.required),
-      placementCellId: new FormControl('', Validators.required),
-      branchId: new FormControl('', Validators.required),
-    });
-
-    // Listen for branch selection changes
-    this.branchIdControl.valueChanges.subscribe((branchId) => {
-      if (branchId) {
-        this.filterPlacementCellsByBranch(branchId);
-      }
-    });
-
-    // Listen for placement cell selection changes
-    this.placementCellIdControl.valueChanges.subscribe((placementCellId) => {
-      if (placementCellId) {
-        this.updateDegreesForPlacementCell(placementCellId);
-      }
-    });
-
-    // React to branches signal changes
     effect(() => {
-      const branches = this.registerService.branches();
-      if (branches && branches.length > 0) {
-        this.branches.set(
-          branches.map((branch) => ({
-            label: branch.name,
-            value: branch.branchId,
+      const cells = this.placementCells();
+      if (cells && cells.length > 0) {
+        this.placementCellAutoCompleteList.set(
+          cells.map((cell) => ({
+            label: cell.placementCellName,
+            value: cell.placementCellId,
           }))
         );
-      }
-    });
-
-    // React to placement cells signal changes
-    effect(() => {
-      const cells = this.registerService.placementCells();
-      if (cells && cells.length > 0) {
-        this.placementCells.set(cells);
-        this.updatePlacementCellList();
       }
     });
   }
 
   ngOnInit(): void {
-    // Fetch data from service
-    this.registerService.fetchData();
+    // Initialize the studentForm
+    const studentForm = new FormGroup({
+      enrollmentNumber: new FormControl('', Validators.required),
+      fullName: new FormControl('', Validators.required),
+      degreeId: new FormControl('', Validators.required),
+      placementCellId: new FormControl('', Validators.required),
+    });
+
+    // Add the studentForm to the parent form group
+    this.parentFormGroup.addControl('studentForm', studentForm);
+
+    // Subscribe to placementCellIdControl value changes
+    this.placementCellIdControl?.valueChanges.subscribe((placementCellId) => {
+      if (placementCellId) {
+        this.updateDegreesForPlacementCell(placementCellId);
+      }
+    });
+    // React to placement cells signal changes
+
+    // Load saved data if available
+    const savedData = this.registerService.studentProfile();
+    if (savedData) {
+      studentForm.patchValue(savedData);
+    }
+
+    // Subscribe to form value changes
+    studentForm.valueChanges.subscribe((val) => {
+      if (
+        val.fullName !== undefined &&
+        val.degreeId !== undefined &&
+        val.enrollmentNumber !== undefined &&
+        val.placementCellId !== undefined
+      ) {
+        this.registerService.setStudentProfile(val as StudentProfileFormModel);
+      }
+    });
   }
 
-  private updatePlacementCellList() {
-    this.placementCellAutoCompleteList.set(
-      this.placementCells().map((cell) => ({
-        label: cell.placementCellName,
-        value: cell.placementCellId,
-      }))
-    );
-  }
-
-  private filterPlacementCellsByBranch(branchId: string) {
-    const filteredCells = this.placementCells().filter(
-      (cell) => cell.branch.branchId === branchId
-    );
-
-    this.placementCellAutoCompleteList.set(
-      filteredCells.map((cell) => ({
-        label: cell.placementCellName,
-        value: cell.placementCellId,
-      }))
-    );
+  ngOnDestroy() {
+    this.parentFormGroup.removeControl('studentForm');
   }
 
   private updateDegreesForPlacementCell(placementCellId: string) {
@@ -136,16 +131,38 @@ export class StudentFormComponent implements OnInit {
     }
   }
 
-  onBranchSelected(branchId: string) {
-    this.branchIdControl.setValue(branchId);
-    this.branchIdControl.markAsDirty();
-    this.branchIdControl.markAsTouched();
-  }
-
   onPlacementCellSelected(placementCellId: string) {
     this.placementCellIdControl.setValue(placementCellId);
     this.placementCellIdControl.markAsDirty();
     this.placementCellIdControl.markAsTouched();
+
+    const selectedCell = this.registerService
+      .placementCells()
+      .find((cell) => cell.placementCellId === placementCellId);
+
+    if (selectedCell) {
+      const userEmail = this.registerService.getUserDataEmail();
+
+      if (userEmail) {
+        const emailDomain = userEmail.split('@')[1];
+        const placementCellDomain = selectedCell.placementCellDomains;
+
+        if (placementCellDomain.some((domain) => domain === emailDomain)) {
+          this.domainMismatchWarning.set(false);
+          this.studentForm.setErrors(null); // Clear errors on the parent group
+        } else {
+          this.domainMismatchWarning.set(true);
+          this.studentForm.setErrors({ domainMismatch: true }); // Set error on the parent group
+        }
+      } else {
+        this.domainMismatchWarning.set(true);
+        this.studentForm.setErrors({ domainMismatch: true }); // Set error if no email
+      }
+      console.log(this.studentForm.errors);
+    }
+
+    // Log the current errors on the parent form group
+    console.log('Parent Form Group Errors:', this.parentFormGroup.errors);
   }
 
   onDegreeSelected(degreeId: string) {
@@ -154,36 +171,8 @@ export class StudentFormComponent implements OnInit {
     this.degreeIdControl.markAsTouched();
   }
 
-  onSubmit() {
-    if (this.studentForm.invalid) {
-      this.studentForm.markAllAsTouched();
-      return;
-    }
-
-    const formData = this.studentForm.getRawValue();
-    this.registerService.setProfileFormData(formData);
-
-    this.registerService
-      .submitRegistration()
-      .pipe(
-        tap((response) => {
-          if (response.success) {
-            this.registrationSuccess.emit({ message: response.message });
-          }
-        }),
-        catchError((err) => {
-          Object.entries(err).forEach(([key, message]) => {
-            const control = this.studentForm.get(key);
-            if (control) {
-              control.setErrors({ server: message });
-              control.markAsTouched();
-              control.markAsDirty();
-            }
-          });
-          return throwError(() => err);
-        })
-      )
-      .subscribe();
+  get studentForm() {
+    return this.parentFormGroup.get('studentForm') as FormGroup;
   }
 
   get fullNameControl(): FormControl {
@@ -200,9 +189,5 @@ export class StudentFormComponent implements OnInit {
 
   get placementCellIdControl(): FormControl {
     return this.studentForm.get('placementCellId') as FormControl;
-  }
-
-  get branchIdControl(): FormControl {
-    return this.studentForm.get('branchId') as FormControl;
   }
 }

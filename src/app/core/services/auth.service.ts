@@ -1,79 +1,117 @@
+import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { computed, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { jwtDecode } from 'jwt-decode';
-import { catchError, Observable, tap, throwError } from 'rxjs';
+import { Observable, tap } from 'rxjs';
+import { API_CONFIG, ApiResponse } from '../config/api.config';
+import { AuthUser, AuthResponse } from '../../shared/types/auth.types';
 
-export interface User {
-  id: string;
+export interface LoginCredentials {
   email: string;
-  role: string;
-  name: string;
+  password: string;
+}
+
+export interface RegisterCredentials {
+  email: string;
+  username: string;
+  password: string;
+  confirmPassword: string;
+  role: AuthUser['role'];
 }
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private readonly TOKEN_KEY = 'auth_token';
-  
-  // Use signals for reactive state management
-  private currentUserSignal = signal<User | null>(null);
-  public user = computed(() => this.currentUserSignal());
-  
-  constructor(
-    private http: HttpClient, 
-    private router: Router
-  ) {
-    this.loadUser();
+  private readonly AUTH_KEY = 'auth_token';
+  private readonly USER_KEY = 'user_data';
+
+  public user = signal<AuthUser | null>(null);
+  private authState = signal<boolean>(false);
+
+  constructor(private http: HttpClient, private router: Router) {
+    this.loadStoredAuth();
   }
-  
-  private loadUser() {
-    const token = this.getToken();
-    if (token) {
-      try {
-        const decodedToken = jwtDecode<{user: User}>(token);
-        if (decodedToken && decodedToken.user) {
-          this.currentUserSignal.set(decodedToken.user);
-        }
-      } catch (error) {
-        // Invalid token
-        this.logout();
-      }
+
+  private loadStoredAuth() {
+    const token = localStorage.getItem(this.AUTH_KEY);
+    const userData = localStorage.getItem(this.USER_KEY);
+
+    console.log('AuthService: Checking localStorage for user and token');
+    console.log('AuthService: token from localStorage:', token);
+    console.log('AuthService: userData from localStorage:', userData);
+
+    if (token && userData) {
+      console.log(
+        'AuthService: Found valid token and userData, setting signals'
+      );
+      this.user.set(JSON.parse(userData));
+      this.authState.set(true);
+    } else {
+      console.log('AuthService: No valid token/userData found');
     }
   }
-  
-  login(credentials: { email: string, password: string }): Observable<any> {
-    return this.http.post<{accessToken: string, user: User}>('/api/auth/login', credentials)
+
+  login(credentials: LoginCredentials): Observable<ApiResponse<AuthResponse>> {
+    return this.http
+      .post<ApiResponse<AuthResponse>>(
+        `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.auth.login}`,
+        credentials
+      )
       .pipe(
-        tap(response => {
-          localStorage.setItem(this.TOKEN_KEY, response.accessToken);
-          this.currentUserSignal.set(response.user);
-        }),
-        catchError(error => {
-          console.error('Login failed', error);
-          return throwError(() => new Error('Invalid credentials'));
+        tap((response) => {
+          if (response.success && response.data) {
+            this.setAuth(response.data.user, response.data.token);
+          }
         })
       );
   }
-  
+
+  register(
+    credentials: RegisterCredentials
+  ): Observable<ApiResponse<{ user: AuthUser }>> {
+    return this.http.post<ApiResponse<{ user: AuthUser }>>(
+      `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.auth.register}`,
+      credentials
+    );
+  }
+
+  private setAuth(user: AuthUser, token: string) {
+    localStorage.setItem(this.AUTH_KEY, token);
+    localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+    this.user.set(user);
+    this.authState.set(true);
+  }
+
   logout() {
-    localStorage.removeItem(this.TOKEN_KEY);
-    this.currentUserSignal.set(null);
+    localStorage.removeItem(this.AUTH_KEY);
+    localStorage.removeItem(this.USER_KEY);
+    this.user.set(null);
+    this.authState.set(false);
     this.router.navigate(['/auth/login']);
   }
-  
+
   getToken(): string | null {
-    return localStorage.getItem(this.TOKEN_KEY);
+    return localStorage.getItem(this.AUTH_KEY);
   }
-  
+
   isAuthenticated(): boolean {
-    return !!this.getToken();
+    return this.authState();
   }
-  
-  hasRole(role: string): boolean {
-    const user = this.user();
-    return !!user && user.role === role;
+
+  redirectBasedOnRole() {
+    const currentUser = this.user();
+    if (!currentUser) return;
+
+    switch (currentUser.role) {
+      case 'student':
+        this.router.navigate(['/student/dashboard']);
+        break;
+      case 'recruiter':
+        this.router.navigate(['/recruiter/dashboard']);
+        break;
+      case 'placement_cell':
+        this.router.navigate(['/placement-cell/dashboard']);
+        break;
+    }
   }
-  // constructor() { }
 }

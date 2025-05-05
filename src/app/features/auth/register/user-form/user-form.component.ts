@@ -1,29 +1,21 @@
 import { Component, EventEmitter, inject, Output } from '@angular/core';
 import {
-  AbstractControl,
-  FormBuilder,
+  ControlContainer,
   FormControl,
   FormGroup,
+  FormGroupDirective,
   ReactiveFormsModule,
   ValidationErrors,
   ValidatorFn,
   Validators,
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+
+import { RegisterService } from '../register.service';
+import { UserFormModel } from '../register.models';
 import { SharedInputComponent } from '../../../../shared/components/shared-input/shared-input.component';
 import { ValidationErrorsComponent } from '../../../../shared/components/validation-errors/validation-errors.component';
-import {
-  defaultValidationMessages,
-  ValidationMessages,
-} from '../../../../shared/types/validation.types';
-import { RegisterService } from '../register.service';
-
-type UserFormType = {
-  email: FormControl<string>;
-  username: FormControl<string>;
-  password: FormControl<string>;
-  confirmPassword: FormControl<string>;
-};
+import { defaultValidationMessages, ValidationMessages } from '../../../../shared/types/validation.types';
 
 @Component({
   selector: 'app-user-form',
@@ -34,14 +26,26 @@ type UserFormType = {
     SharedInputComponent,
     ValidationErrorsComponent,
   ],
+  viewProviders: [
+    {
+      provide: ControlContainer,
+      useExisting: FormGroupDirective,
+    },
+  ],
   templateUrl: './user-form.component.html',
   styleUrl: './user-form.component.css',
 })
 export class UserFormComponent {
-  private fb = inject(FormBuilder);
   private registerService = inject(RegisterService);
 
-  userForm: FormGroup<UserFormType>;
+  parentContainer = inject(ControlContainer);
+
+  currentStep = this.registerService.currentStep;
+
+  get parentFormGroup() {
+    return this.parentContainer.control as FormGroup;
+  }
+
   validationMessages: ValidationMessages = {
     ...defaultValidationMessages,
     passwordsMismatch: () => 'Passwords do not match',
@@ -50,86 +54,104 @@ export class UserFormComponent {
   @Output() validationSuccess = new EventEmitter<void>();
   @Output() validationError = new EventEmitter<void>();
 
-  constructor() {
-    this.userForm = this.fb.group<UserFormType>(
+  ngOnInit() {
+    const userGroup = new FormGroup(
       {
-        email: this.fb.control('', {
+        email: new FormControl('', {
           nonNullable: true,
           validators: [Validators.required, Validators.email],
         }),
-        username: this.fb.control('', {
+        username: new FormControl('', {
           nonNullable: true,
           validators: [Validators.required, Validators.minLength(3)],
         }),
-        password: this.fb.control('', {
+        password: new FormControl('', {
           nonNullable: true,
           validators: [Validators.required, Validators.minLength(6)],
         }),
-        confirmPassword: this.fb.control('', {
+        confirmPassword: new FormControl('', {
           nonNullable: true,
           validators: [Validators.required, Validators.minLength(6)],
         }),
       },
       { validators: this.passwordMatchValidator }
     );
-
-    // Load saved data if exists
+    this.parentFormGroup.addControl('userForm', userGroup);
     const savedData = this.registerService.userFormData();
+    userGroup.valueChanges.subscribe((val) => {
+      if (
+        val.email !== undefined &&
+        val.username !== undefined &&
+        val.password !== undefined &&
+        val.confirmPassword !== undefined
+      ) {
+        this.registerService.setUserFormData(val as UserFormModel);
+      }
+    });
     if (savedData) {
-      this.userForm.patchValue(savedData);
+      userGroup.patchValue(savedData);
     }
   }
 
-  passwordMatchValidator: ValidatorFn = (
-    control: AbstractControl
-  ): ValidationErrors | null => {
-    const formGroup = control as FormGroup;
-    const password = formGroup.get('password')?.value;
-    const confirmPassword = formGroup.get('confirmPassword')?.value;
-    return password === confirmPassword ? null : { passwordsMismatch: true };
+  ngOnDestroy() {
+    this.parentFormGroup.removeControl('userForm');
+  }
+
+  passwordMatchValidator: ValidatorFn = (ctrl): ValidationErrors | null => {
+    const pw = ctrl.get('password')?.value;
+    const cp = ctrl.get('confirmPassword');
+    if (!cp) return null;
+    return pw === cp.value
+      ? (cp.setErrors(null), null)
+      : (cp.setErrors({ passwordsMismatch: true }), null);
   };
 
-  onSubmit() {
-    if (this.userForm.invalid) {
-      this.userForm.markAllAsTouched();
+  validateUserData() {
+    // Log the entire form state for debugging
+    const userForm = this.parentFormGroup.get('userForm') as FormGroup;
+    if (userForm.invalid) {
+      userForm.markAllAsTouched();
       return;
     }
 
-    const formData = this.userForm.getRawValue();
-    this.registerService.setUserFormData(formData);
-
-    this.registerService.validateUserData(formData).subscribe({
-      next: () => this.validationSuccess.emit(),
-      error: (errors) => {
-        console.error('Validation error:', errors);
-        Object.entries(errors).forEach(([key, message]) => {
-          const control = this.userForm.get(key);
-          if (control) {
-            control.setErrors({ server: message });
-            control.markAsTouched();
-            control.markAsDirty();
-          } else {
-            this.userForm.setErrors({ [key]: message });
-          }
-        });
-        this.validationError.emit();
-      },
-    });
+    const data = userForm.getRawValue();
+    if (data.email && data.username && data.password && data.confirmPassword) {
+      this.registerService.setUserFormData(data);
+      this.registerService.validateUserData(data).subscribe({
+        next: () => this.validationSuccess.emit(),
+        error: (errors) => {
+          Object.entries(errors).forEach(([key, msg]) => {
+            const ctl = userForm.get(key);
+            if (ctl) {
+              ctl.setErrors({ server: msg });
+              ctl.markAsTouched();
+              ctl.markAsDirty();
+            } else {
+              userForm.setErrors({ [key]: msg });
+            }
+          });
+          this.validationError.emit();
+        },
+      });
+    } else {
+      userForm.setErrors({ incompleteForm: true });
+      this.validationError.emit();
+    }
   }
 
+  get f() {
+    return this.parentFormGroup.get('userForm') as FormGroup;
+  }
   get email() {
-    return this.userForm.get('email') as FormControl;
+    return this.f.get('email') as FormControl;
   }
-
   get username() {
-    return this.userForm.get('username') as FormControl;
+    return this.f.get('username') as FormControl;
   }
-
   get password() {
-    return this.userForm.get('password') as FormControl;
+    return this.f.get('password') as FormControl;
   }
-
   get confirmPassword() {
-    return this.userForm.get('confirmPassword') as FormControl;
+    return this.f.get('confirmPassword') as FormControl;
   }
 }

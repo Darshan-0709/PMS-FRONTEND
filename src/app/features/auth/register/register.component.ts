@@ -1,31 +1,34 @@
 import { Component, computed, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RegisterService } from './register.service';
-import { RoleSelectButtonComponent } from '../../../shared/components/role-select-button/role-select-button.component';
 import { UserFormComponent } from './user-form/user-form.component';
 import { RecruiterFormComponent } from './recruiter-form/recruiter-form.component';
 import { Router } from '@angular/router';
-import { StudentFormComponent } from "./student-form/student-form.component";
-import { PlacementCellFormComponent } from "./placement-cell-form/placement-cell-form.component";
+import { StudentFormComponent } from './student-form/student-form.component';
+import { PlacementCellFormComponent } from './placement-cell-form/placement-cell-form.component';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { RoleSelectButtonComponent } from "../../../shared/components/role-select-button/role-select-button.component";
 
 @Component({
   selector: 'app-register',
   standalone: true,
   imports: [
     CommonModule,
-    RoleSelectButtonComponent,
     UserFormComponent,
     RecruiterFormComponent,
     StudentFormComponent,
-    PlacementCellFormComponent
+    ReactiveFormsModule,
+    PlacementCellFormComponent,
+    RoleSelectButtonComponent
 ],
   templateUrl: './register.component.html',
 })
 export class RegisterComponent implements OnInit {
+  private fb = inject(FormBuilder);
   private registerService = inject(RegisterService);
   private router = inject(Router);
+  registrationForm!: FormGroup;
 
-  // Computed signals from service
   currentStep = this.registerService.currentStep;
   selectedRole = this.registerService.selectedRole;
   errors = this.registerService.errors;
@@ -46,16 +49,38 @@ export class RegisterComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.registerService.fetchData()
+    this.registrationForm = this.fb.group({});
+    this.registerService.fetchData();
   }
 
-  async onSubmit() {
-    try {
-      await this.registerService.submitRegistration();
-      // Handle successful registration
-    } catch (error) {
-      // Errors are handled by the service
+  get studentForm() {
+    return this.registrationForm.get('studentForm') as FormGroup;
+  }
+
+  onSubmit() {
+    // // Ensure the entire registration form is valid
+    console.log(this.registrationForm.getRawValue());
+    if (this.registrationForm.invalid) {
+      console.log('Parent Form Group Errors:', this.registrationForm.errors);
+
+      this.registrationForm.markAllAsTouched();
+      console.log('return');
+      return;
     }
+
+    this.registerService.submitRegistration().subscribe({
+      next: (response) => {
+        console.log('Registration successful:', response);
+        this.showSuccessMessage = true;
+        this.successMessage = 'Registration completed successfully!';
+        setTimeout(() => {
+          this.router.navigate(['/auth/login']);
+        }, 3000);
+      },
+      error: (error) => {
+        console.error('Registration failed:', error);
+      },
+    });
   }
 
   onNextStep() {

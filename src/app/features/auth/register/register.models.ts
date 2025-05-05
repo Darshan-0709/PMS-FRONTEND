@@ -1,13 +1,33 @@
 import { FormControl } from '@angular/forms';
 
+// API Response Types
+export interface Branch {
+  branchId: string;
+  name: string;
+}
+
+export interface Degree {
+  degreeId: string;
+  name: string;
+}
+
+export interface PlacementCellApiData {
+  placementCellId: string;
+  placementCellName: string;
+  branch: Branch;
+  placementCellDomains: string[];
+  placementCellDegrees: Degree[];
+}
+
+// Role Type
 type Role = 'student' | 'placement_cell' | 'recruiter';
 
+// API Data Types
 export interface StudentProfileData {
   enrollmentNumber: string;
   fullName: string;
   degreeId: string;
   placementCellId: string;
-  placementCellSearch: string;
 }
 
 export interface RecruiterProfileData {
@@ -19,7 +39,7 @@ export interface RecruiterProfileData {
 }
 
 export interface PlacementCellProfileData {
-  name: string;
+  placementCellName: string;
   domains: string[];
   branchName: string;
   degreeNames: string[];
@@ -35,8 +55,7 @@ export interface RegisterBaseData {
   role: Role;
 }
 
-
-export type FinalRegistrationPayload =
+export type RegisterInput =
   | (RegisterBaseData & {
       role: 'student';
       studentProfileData: StudentProfileData;
@@ -49,13 +68,13 @@ export type FinalRegistrationPayload =
       role: 'recruiter';
       recruiterProfileData: RecruiterProfileData;
     });
+
+// Form Types
 export interface StudentProfileFormModel {
   enrollmentNumber: string;
   fullName: string;
   degreeId: string;
-  branchId: string;
   placementCellId: string;
-  placementCellSearch: string;
 }
 
 export interface RecruiterProfileFormModel {

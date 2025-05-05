@@ -1,23 +1,19 @@
+import { Component, inject, OnInit, output } from '@angular/core';
 import {
-  Component,
-  inject,
-  output,
-} from '@angular/core';
-import {
+  ControlContainer,
   FormBuilder,
   FormControl,
   FormGroup,
+  FormGroupDirective,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import {
-  defaultValidationMessages,
-  ValidationMessages,
-} from '../../../../shared/types/validation.types';
+import { RegisterService } from '../register.service';
+import { catchError, throwError, tap } from 'rxjs';
+import { RecruiterProfileData } from '../register.models';
 import { SharedInputComponent } from '../../../../shared/components/shared-input/shared-input.component';
 import { ValidationErrorsComponent } from '../../../../shared/components/validation-errors/validation-errors.component';
-import { RegisterService } from '../register.service';
-import { Observable, catchError, throwError, tap } from 'rxjs';
+import { defaultValidationMessages, ValidationMessages } from '../../../../shared/types/validation.types';
 
 type RecruiterFormType = {
   companyName: FormControl<string>;
@@ -35,23 +31,34 @@ type RecruiterFormType = {
     SharedInputComponent,
     ValidationErrorsComponent,
   ],
+  viewProviders: [
+    {
+      provide: ControlContainer,
+      useExisting: FormGroupDirective,
+    },
+  ],
   templateUrl: './recruiter-form.component.html',
   styleUrl: './recruiter-form.component.css',
 })
-export class RecruiterFormComponent {
+export class RecruiterFormComponent implements OnInit {
   private fb = inject(FormBuilder);
   private registerService = inject(RegisterService);
+  parentContainer = inject(ControlContainer);
+
+  get parentFormGroup() {
+    return this.parentContainer.control as FormGroup;
+  }
 
   registrationSuccess = output<{ message: string }>();
 
-  recruiterForm: FormGroup<RecruiterFormType>;
+  // recruiterForm: FormGroup<RecruiterFormType>;
   validationMessages: ValidationMessages = {
     ...defaultValidationMessages,
     pattern: () => 'Please enter a valid website URL (e.g. https://...)',
   };
 
-  constructor() {
-    this.recruiterForm = this.fb.group<RecruiterFormType>({
+  ngOnInit(): void {
+    const recruiterForm = this.fb.group<RecruiterFormType>({
       companyName: this.fb.control('', {
         nonNullable: true,
         validators: [Validators.required, Validators.minLength(3)],
@@ -73,12 +80,26 @@ export class RecruiterFormComponent {
         validators: [Validators.required, Validators.email],
       }),
     });
-
-    // Load saved data if exists
-    const savedData = this.registerService.profileFormData();
+    this.parentFormGroup.addControl('recruiterForm', recruiterForm);
+    const savedData = this.registerService.recruiterProfile();
+    recruiterForm.valueChanges.subscribe((val) => {
+      if (
+        (val.companyEmail !== undefined &&
+          val.companyName !== undefined &&
+          val.description !== undefined &&
+          val.representativePosition !== undefined,
+        val.website !== undefined)
+      ) {
+        this.registerService.setRecruiterProfile(val as RecruiterProfileData);
+      }
+    });
     if (savedData) {
-      this.recruiterForm.patchValue(savedData);
+      recruiterForm.patchValue(savedData);
     }
+  }
+
+  get recruiterForm() {
+    return this.parentFormGroup.get('recruiterForm') as FormGroup;
   }
 
   get companyName() {
@@ -108,27 +129,30 @@ export class RecruiterFormComponent {
     }
 
     const formData = this.recruiterForm.getRawValue();
-    this.registerService.setProfileFormData(formData);
+    this.registerService.setRecruiterProfile(formData);
 
-    this.registerService.submitRegistration().pipe(
-      tap((response) => {
-        console.log('Registration succeeded with response:', response);
-        this.registrationSuccess.emit(response.message);
-      }),
-      catchError((err) => {
-        console.log('errror');
-        Object.entries(err).forEach(([key, message]) => {
-          const control = this.recruiterForm.get(key);
-          if (control) {
-            control.setErrors({ server: message });
-            control.markAsTouched();
-            control.markAsDirty();
-          } else {
-            this.recruiterForm.setErrors({ [key]: message });
-          }
-        });
-        return throwError(() => err);
-      })
-    ).subscribe();
+    this.registerService
+      .submitRegistration()
+      .pipe(
+        tap((response) => {
+          console.log('Registration succeeded with response:', response);
+          this.registrationSuccess.emit(response.message);
+        }),
+        catchError((err) => {
+          console.log('error');
+          Object.entries(err).forEach(([key, message]) => {
+            const control = this.recruiterForm.get(key);
+            if (control) {
+              control.setErrors({ server: message });
+              control.markAsTouched();
+              control.markAsDirty();
+            } else {
+              this.recruiterForm.setErrors({ [key]: message });
+            }
+          });
+          return throwError(() => err);
+        })
+      )
+      .subscribe();
   }
 }

@@ -20,6 +20,8 @@ export class DropdownAutocompleteComponentComponent<T> {
   canSearch = input<boolean>(false);
   placeholder = input<string>('Select…');
 
+  canEmitValue = input<boolean>(false)
+  added = output<string>()
   // Internal signals
   query = signal<string>('');
   open = signal(false);
@@ -50,6 +52,10 @@ export class DropdownAutocompleteComponentComponent<T> {
     const val = (e.target as HTMLInputElement).value;
     this.query.set(val);
     this.open.set(true);
+  }
+  onAdd(){
+    this.added.emit(this.query())
+    this.open.set(false);
   }
 
   // Close on blur (allow click)

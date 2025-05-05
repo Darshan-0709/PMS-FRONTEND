@@ -11,7 +11,8 @@ export interface PlacementCellApiData {
   placementCellId: string;
   placementCellName: string;
   branch: Branch;
-  placementCellDegrees: Degree[]
+  placementCellDomains: string[];
+  placementCellDegrees: Degree[];
 }
 export interface RegisterBaseData {
   email: string;

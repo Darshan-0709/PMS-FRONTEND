@@ -1,61 +1,66 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { catchError, map, throwError } from 'rxjs';
 import {
+  RegisterBaseData,
   Branch,
   Degree,
   PlacementCellApiData,
-  RegisterBaseData,
-} from '../user.mode';
-import { HttpClient } from '@angular/common/http';
-import { catchError, map, throwError } from 'rxjs';
+  RegisterInput,
+} from './register.models';
 import { ApiResponse } from '../../../models/api-response.model';
-import { FinalRegistrationPayload } from './register.models';
 
 @Injectable({
   providedIn: 'root',
 })
 export class RegisterAPIService {
   constructor(private http: HttpClient) {}
-  baseUrl = 'http://localhost:3000/api/v1';
 
   validateUserData(userData: RegisterBaseData) {
-    return this.http
-      .post('http://localhost:3000/api/v1/auth/validate-user', userData)
-      .pipe(
-        catchError((err) => {
-          console.error(err.error.errors);
-          return throwError(() => err.error.errors);
-        })
-      );
+    return this.http.post("", userData).pipe(
+      catchError((err) => {
+        console.error(err.error.errors);
+        return throwError(() => err.error.errors);
+      })
+    );
   }
 
   fetchBranches() {
     return this.http
-      .get<ApiResponse<Branch[]>>(`${this.baseUrl}/branches`)
+      .get<ApiResponse<Branch[]>>("")
       .pipe(
-        map((data) => {
-          return data.data;
-        }),
+        map((data) => data.data),
         catchError((err) => {
-          console.error(err.error.errors);
-          return throwError(() => err.error.errors);
+          console.error(err);
+          return throwError(() => err);
         })
       );
   }
 
   fetchDegrees() {
-    return this.http.get<ApiResponse<Degree[]>>(`${this.baseUrl}/degrees`).pipe(
+    return this.http.get<ApiResponse<Degree[]>>("").pipe(
       map((data) => data.data),
       catchError((err) => {
-        console.error(err.error.errors);
-        return throwError(() => err.error.errors);
+        console.error(err);
+        return throwError(() => err);
       })
     );
   }
 
   fetchPlacementCellDepartment() {
-    let url = `${this.baseUrl}/placement_cells_list`;
-    return this.http.get<ApiResponse<PlacementCellApiData[]>>(url).pipe(
-      map((data) => data.data),
+    return this.http
+      .get<ApiResponse<PlacementCellApiData[]>>("")
+      .pipe(
+        map((data) => data.data),
+        catchError((err) => {
+          console.error(err);
+          return throwError(() => err);
+        })
+      );
+  }
+
+  submitRegistrationData(payload: RegisterInput) {
+    return this.http.post("", payload).pipe(
       catchError((err) => {
         console.error(err.error.errors);
         return throwError(() => err.error.errors);
@@ -63,8 +68,8 @@ export class RegisterAPIService {
     );
   }
 
-  submitRegistrationData(payload: FinalRegistrationPayload) {
-    return this.http.post(`${this.baseUrl}/auth/register`, payload).pipe(
+  submitRegistration(userData: RegisterBaseData) {
+    return this.http.post("", userData).pipe(
       catchError((err) => {
         console.error(err.error.errors);
         return throwError(() => err.error.errors);
