@@ -14,52 +14,55 @@ export class AuthGuard implements CanActivate {
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): boolean | UrlTree {
-    console.log('AuthGuard: canActivate called');
-    console.log(
-      'AuthGuard: isAuthenticated:',
-      this.authService.isAuthenticated()
-    );
-    console.log('AuthGuard: user:', this.authService.user());
+    console.log('=== AuthGuard Debug ===');
+    console.log('Current URL:', state.url);
+    console.log('Route Config:', route.routeConfig);
+    console.log('Route Data:', route.data);
+    console.log('Route Params:', route.params);
+    console.log('Route Query Params:', route.queryParams);
+
+    const user = this.authService.user();
+    console.log('Current User:', user);
+    console.log('User Role:', user?.role);
+    console.log('Is Authenticated:', this.authService.isAuthenticated());
 
     if (!this.authService.isAuthenticated()) {
-      console.log('AuthGuard: Not authenticated, redirecting to /auth/login');
+      console.log('Not authenticated, redirecting to login');
       return this.router.createUrlTree(['/auth/login']);
     }
 
-    const user = this.authService.user();
     if (!user) {
-      console.log('AuthGuard: No user, redirecting to /auth/login');
+      console.log('No user data, redirecting to login');
       return this.router.createUrlTree(['/auth/login']);
     }
 
     const url = state.url;
     const rolePath = this.getRolePath(user.role);
+    const rolePrefix = this.getRolePrefix(user.role);
+
+    console.log('Role Path:', rolePath);
+    console.log('Role Prefix:', rolePrefix);
+    console.log('URL starts with role prefix:', url.startsWith(rolePrefix));
 
     if (url === '/auth/login') {
-      console.log(
-        'AuthGuard: On login page but authenticated, redirecting to',
-        rolePath
-      );
+      console.log('On login page, redirecting to role dashboard');
       return this.router.createUrlTree([rolePath]);
     }
 
-    if (!url.startsWith(rolePath)) {
+    if (!url.startsWith(rolePrefix)) {
       console.log(
-        'AuthGuard: URL does not match role, redirecting to',
-        rolePath
+        'URL does not match role prefix, redirecting to role dashboard'
       );
       return this.router.createUrlTree([rolePath]);
     }
 
     if (url === '/') {
-      console.log(
-        'AuthGuard: On root, redirecting to role dashboard',
-        rolePath
-      );
+      console.log('On root, redirecting to role dashboard');
       return this.router.createUrlTree([rolePath]);
     }
 
-    console.log('AuthGuard: Access granted');
+    console.log('Access granted');
+    console.log('=== End AuthGuard Debug ===');
     return true;
   }
 
@@ -73,6 +76,19 @@ export class AuthGuard implements CanActivate {
         return '/placement-cell/dashboard';
       default:
         return '/auth/login';
+    }
+  }
+
+  private getRolePrefix(role: Role): string {
+    switch (role) {
+      case 'student':
+        return '/student';
+      case 'recruiter':
+        return '/recruiter';
+      case 'placement_cell':
+        return '/placement-cell';
+      default:
+        return '/auth';
     }
   }
 }

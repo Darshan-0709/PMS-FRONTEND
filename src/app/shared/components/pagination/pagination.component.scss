@@ -1,0 +1,18 @@
+/* Additional pagination styles - most styling is handled by Tailwind */
+
+:host {
+  display: block;
+}
+
+/* Add a subtle scale animation on hover for buttons */
+button:not(:disabled):hover {
+  transform: scale(1.05);
+  transition: transform 0.15s ease-in-out;
+}
+
+/* Disable hover effects on mobile touch devices */
+@media (hover: none) {
+  button:hover {
+    transform: none;
+  }
+} 

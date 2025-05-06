@@ -121,38 +121,4 @@ export class RecruiterFormComponent implements OnInit {
   get companyEmail() {
     return this.recruiterForm.get('companyEmail') as FormControl;
   }
-
-  onSubmit() {
-    if (this.recruiterForm.invalid) {
-      this.recruiterForm.markAllAsTouched();
-      return;
-    }
-
-    const formData = this.recruiterForm.getRawValue();
-    this.registerService.setRecruiterProfile(formData);
-
-    this.registerService
-      .submitRegistration()
-      .pipe(
-        tap((response) => {
-          console.log('Registration succeeded with response:', response);
-          this.registrationSuccess.emit(response.message);
-        }),
-        catchError((err) => {
-          console.log('error');
-          Object.entries(err).forEach(([key, message]) => {
-            const control = this.recruiterForm.get(key);
-            if (control) {
-              control.setErrors({ server: message });
-              control.markAsTouched();
-              control.markAsDirty();
-            } else {
-              this.recruiterForm.setErrors({ [key]: message });
-            }
-          });
-          return throwError(() => err);
-        })
-      )
-      .subscribe();
-  }
 }

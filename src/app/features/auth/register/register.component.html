@@ -99,13 +99,23 @@
     </div>
     }
     <!-- Submit Button -->
-     @if(currentStep() === 3){
-       <button
-         type="submit"
-         class="shadow-layered block ml-auto btn btn-md btn-soft btn-success mt-4"
-       >
-         Submit
-       </button>
-     }
+    @if(currentStep() === 3){
+    <button
+      type="submit"
+      class="shadow-layered block ml-auto btn btn-md btn-soft btn-success mt-4"
+    >
+      Submit
+    </button>
+    }
+
+    <div class="text-center mt-6 text-gray-600">
+      Already have an account?
+      <a
+        routerLink="/auth/login"
+        class="text-blue-600 hover:text-blue-800 font-medium"
+      >
+        Log in
+      </a>
+    </div>
   </form>
 </div>

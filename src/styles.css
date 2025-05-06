@@ -1,11 +1,12 @@
 /* You can add global styles to this file, and also import other style files */
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@theme {
+:root {
   --color-primary: #0d141c; /* Dark text color */
   --color-secondary: #4f7396; /* Muted secondary text color */
   --color-box-background: #e8edf2; /* Light background for boxes */
-  --color-table-column: #e5e8eb; /* Light gray for table columns */
   --color-table-column: #e5e8eb; /* Light gray for table columns */
   --color-soft-white: #e5e8eb; /* Light gray for table columns */
 

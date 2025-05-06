@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RegisterService } from './register.service';
 import { UserFormComponent } from './user-form/user-form.component';
 import { RecruiterFormComponent } from './recruiter-form/recruiter-form.component';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { StudentFormComponent } from './student-form/student-form.component';
 import { PlacementCellFormComponent } from './placement-cell-form/placement-cell-form.component';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
@@ -19,7 +19,8 @@ import { RoleSelectButtonComponent } from "../../../shared/components/role-selec
     StudentFormComponent,
     ReactiveFormsModule,
     PlacementCellFormComponent,
-    RoleSelectButtonComponent
+    RoleSelectButtonComponent,
+    RouterModule,
 ],
   templateUrl: './register.component.html',
 })

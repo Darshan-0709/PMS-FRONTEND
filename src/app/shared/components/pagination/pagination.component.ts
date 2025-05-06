@@ -1,172 +1,140 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+  SimpleChanges,
+  computed,
+  signal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-export interface PaginationConfig {
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
+export interface PaginationInfo {
+  total: number; // Total number of items
+  page: number; // Current page (1-based)
+  pageSize: number; // Items per page
+  totalPages?: number; // Optional: total pages (calculated if not provided)
 }
 
 @Component({
   selector: 'app-pagination',
   standalone: true,
   imports: [CommonModule],
-  template: `
-    <div class="pagination-container" *ngIf="config">
-      <div class="pagination-info">
-        Showing {{ startItem }}-{{ endItem }} of {{ config.total }} items
-      </div>
-      <div class="pagination-controls">
-        <button
-          class="pagination-button"
-          [disabled]="config.page === 1"
-          (click)="onPageChange(1)"
-        >
-          First
-        </button>
-        <button
-          class="pagination-button"
-          [disabled]="config.page === 1"
-          (click)="onPageChange(config.page - 1)"
-        >
-          Previous
-        </button>
-
-        <div class="page-numbers">
-          <button
-            *ngFor="let page of getPageNumbers()"
-            class="page-number"
-            [class.active]="page === config.page"
-            (click)="onPageChange(page)"
-          >
-            {{ page }}
-          </button>
-        </div>
-
-        <button
-          class="pagination-button"
-          [disabled]="config.page === config.totalPages"
-          (click)="onPageChange(config.page + 1)"
-        >
-          Next
-        </button>
-        <button
-          class="pagination-button"
-          [disabled]="config.page === config.totalPages"
-          (click)="onPageChange(config.totalPages)"
-        >
-          Last
-        </button>
-      </div>
-    </div>
-  `,
-  styles: [
-    `
-      .pagination-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 1rem;
-        padding: 1rem;
-      }
-
-      .pagination-info {
-        color: #666;
-        font-size: 0.875rem;
-      }
-
-      .pagination-controls {
-        display: flex;
-        gap: 0.5rem;
-        align-items: center;
-      }
-
-      .pagination-button,
-      .page-number {
-        padding: 0.5rem 1rem;
-        border: 1px solid #ddd;
-        background: white;
-        border-radius: 4px;
-        cursor: pointer;
-        transition: all 0.2s;
-      }
-
-      .pagination-button:hover:not([disabled]),
-      .page-number:hover:not(.active) {
-        background: #f5f5f5;
-      }
-
-      .pagination-button:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-
-      .page-number {
-        min-width: 2.5rem;
-        text-align: center;
-      }
-
-      .page-number.active {
-        background: #007bff;
-        color: white;
-        border-color: #007bff;
-      }
-
-      .page-numbers {
-        display: flex;
-        gap: 0.5rem;
-      }
-    `,
-  ],
+  templateUrl: './pagination.component.html',
+  styleUrls: ['./pagination.component.scss'],
 })
-export class PaginationComponent {
-  @Input() config: PaginationConfig | null = null;
+export class PaginationComponent implements OnChanges {
+  @Input() pagination!: PaginationInfo;
+  @Input() visiblePages: number = 5; // Number of page buttons to show
+  @Input() showFirstLast: boolean = true;
+  @Input() showPrevNext: boolean = true;
+  @Input() ariaLabel: string = 'Pagination';
+  @Input() showTotal: boolean = true;
+  @Input() showPageSize: boolean = false;
+  @Input() pageSizeOptions: number[] = [10, 25, 50, 100];
+
   @Output() pageChange = new EventEmitter<number>();
+  @Output() pageSizeChange = new EventEmitter<number>();
 
-  get startItem(): number {
-    if (!this.config) return 0;
-    return (this.config.page - 1) * this.config.pageSize + 1;
+  currentPage = signal<number>(1);
+  totalPages = signal<number>(1);
+
+  // Make Math available to the template
+  protected Math = Math;
+
+  // Compute array of page numbers to display
+  displayedPages = computed(() => {
+    const totalPgs = this.totalPages();
+    const current = this.currentPage();
+
+    if (totalPgs <= this.visiblePages) {
+      // If we have fewer pages than the visible count, show all pages
+      return Array.from({ length: totalPgs }, (_, i) => i + 1);
+    }
+
+    // Calculate the range to show
+    const halfVisible = Math.floor(this.visiblePages / 2);
+    let start = Math.max(current - halfVisible, 1);
+    let end = Math.min(start + this.visiblePages - 1, totalPgs);
+
+    // Adjust start if we're near the end
+    if (end === totalPgs) {
+      start = Math.max(end - this.visiblePages + 1, 1);
+    }
+
+    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+  });
+
+  // Reactive states for button enabled/disabled
+  hasNext = computed(() => this.currentPage() < this.totalPages());
+  hasPrev = computed(() => this.currentPage() > 1);
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['pagination']) {
+      this.updatePagination();
+    }
   }
 
-  get endItem(): number {
-    if (!this.config) return 0;
-    return Math.min(this.config.page * this.config.pageSize, this.config.total);
+  private updatePagination(): void {
+    if (!this.pagination) return;
+
+    // Set current page from input
+    this.currentPage.set(this.pagination.page || 1);
+
+    // Calculate total pages if not provided
+    const calculatedTotal =
+      this.pagination.totalPages ||
+      Math.ceil(this.pagination.total / this.pagination.pageSize);
+    this.totalPages.set(Math.max(calculatedTotal, 1)); // Ensure at least 1 page
   }
 
-  getPageNumbers(): number[] {
-    if (!this.config) return [];
-
-    const currentPage = this.config.page;
-    const totalPages = this.config.totalPages;
-    const delta = 2; // Number of pages to show before and after current page
-    const range: number[] = [];
-
-    for (
-      let i = Math.max(2, currentPage - delta);
-      i <= Math.min(totalPages - 1, currentPage + delta);
-      i++
-    ) {
-      range.push(i);
+  // Navigation methods
+  goToPage(page: number): void {
+    if (page === this.currentPage() || page < 1 || page > this.totalPages()) {
+      return; // Don't do anything if trying to go to current page or invalid page
     }
 
-    if (currentPage - delta > 2) {
-      range.unshift(-1); // Add ellipsis
-    }
-    if (currentPage + delta < totalPages - 1) {
-      range.push(-1); // Add ellipsis
-    }
-
-    range.unshift(1);
-    if (totalPages > 1) {
-      range.push(totalPages);
-    }
-
-    return range;
-  }
-
-  onPageChange(page: number): void {
-    if (page === -1) return; // Skip ellipsis clicks
+    this.currentPage.set(page);
     this.pageChange.emit(page);
+  }
+
+  goToFirstPage(): void {
+    console.log("First Page")
+    this.goToPage(1);
+  }
+  
+  goToLastPage(): void {
+    console.log("Last Page")
+    this.goToPage(this.totalPages());
+  }
+  
+  goToPreviousPage(): void {
+    console.log("Previous Page")
+    if (this.hasPrev()) {
+      this.goToPage(this.currentPage() - 1);
+    }
+  }
+  
+  goToNextPage(): void {
+    console.log("Next Page")
+    if (this.hasNext()) {
+      this.goToPage(this.currentPage() + 1);
+    }
+  }
+  
+  changePageSize(event: Event): void {
+    console.log("Change Page Size")
+    const select = event.target as HTMLSelectElement;
+    const newSize = parseInt(select.value, 10);
+    
+    if (newSize !== this.pagination.pageSize) {
+      this.pageSizeChange.emit(newSize);
+    }
+  }
+  
+  // Helper to track items by their index in ngFor
+  trackByIndex(index: number): number {
+    return index;
   }
 }

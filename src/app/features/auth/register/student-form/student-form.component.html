@@ -1,11 +1,11 @@
 <fieldset formGroupName="studentForm">
   @if (domainMismatchWarning()) {
   <div
-    class="flex items-center p-4 mb-4 text-xs text-yellow-800 rounded-lg bg-yellow-50"
+    class="flex p-4 mb-4 text-yellow-800 rounded-lg bg-yellow-50"
     role="alert"
   >
     <svg
-      class="shrink-0 inline w-4 h-4 me-3"
+      class="shrink-0 inline w-4 h-4 me-3 mt-1"
       aria-hidden="true"
       xmlns="http://www.w3.org/2000/svg"
       fill="currentColor"
@@ -15,10 +15,28 @@
         d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"
       />
     </svg>
-    <span class="sr-only">Info</span>
-    <div>
-      <span class="font-medium">Warning alert!</span> Your email domain does not
-      match the allowed domain. Please go back and ensure your email address is correct.
+    <div class="ml-3 flex flex-col w-full">
+      <span class="font-medium">Email Domain Warning</span>
+      <p class="text-xs mt-1">
+        Your email domain does not match any allowed domains for this placement
+        cell. Registration may be rejected.
+      </p>
+      <div class="flex mt-2 gap-3">
+        <button
+          type="button"
+          class="text-xs px-3 py-1.5 bg-white text-yellow-800 border border-yellow-300 rounded hover:bg-yellow-100"
+          (click)="goBackToEmailForm()"
+        >
+          Change Email
+        </button>
+        <button
+          type="button"
+          class="text-xs px-3 py-1.5 text-blue-800 hover:underline"
+          (click)="dismissWarning()"
+        >
+          Proceed Anyway
+        </button>
+      </div>
     </div>
   </div>
   }

@@ -9,6 +9,7 @@ import {
   RegisterInput,
 } from './register.models';
 import { ApiResponse } from '../../../models/api-response.model';
+import { API_CONFIG } from '../../../core/config/api.config';
 
 @Injectable({
   providedIn: 'root',
@@ -17,17 +18,24 @@ export class RegisterAPIService {
   constructor(private http: HttpClient) {}
 
   validateUserData(userData: RegisterBaseData) {
-    return this.http.post("", userData).pipe(
-      catchError((err) => {
-        console.error(err.error.errors);
-        return throwError(() => err.error.errors);
-      })
-    );
+    return this.http
+      .post<ApiResponse<any>>(
+        `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.auth.validateUser}`,
+        userData
+      )
+      .pipe(
+        catchError((err) => {
+          console.error(err.error.errors);
+          return throwError(() => err.error.errors);
+        })
+      );
   }
 
   fetchBranches() {
     return this.http
-      .get<ApiResponse<Branch[]>>("")
+      .get<ApiResponse<Branch[]>>(
+        `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.branches}`
+      )
       .pipe(
         map((data) => data.data),
         catchError((err) => {
@@ -38,18 +46,24 @@ export class RegisterAPIService {
   }
 
   fetchDegrees() {
-    return this.http.get<ApiResponse<Degree[]>>("").pipe(
-      map((data) => data.data),
-      catchError((err) => {
-        console.error(err);
-        return throwError(() => err);
-      })
-    );
+    return this.http
+      .get<ApiResponse<Degree[]>>(
+        `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.degrees}`
+      )
+      .pipe(
+        map((data) => data.data),
+        catchError((err) => {
+          console.error(err);
+          return throwError(() => err);
+        })
+      );
   }
 
   fetchPlacementCellDepartment() {
     return this.http
-      .get<ApiResponse<PlacementCellApiData[]>>("")
+      .get<ApiResponse<PlacementCellApiData[]>>(
+        `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.placementCell.list}`
+      )
       .pipe(
         map((data) => data.data),
         catchError((err) => {
@@ -60,20 +74,30 @@ export class RegisterAPIService {
   }
 
   submitRegistrationData(payload: RegisterInput) {
-    return this.http.post("", payload).pipe(
-      catchError((err) => {
-        console.error(err.error.errors);
-        return throwError(() => err.error.errors);
-      })
-    );
+    return this.http
+      .post<ApiResponse<any>>(
+        `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.auth.register}`,
+        payload
+      )
+      .pipe(
+        catchError((err) => {
+          console.error(err.error.errors);
+          return throwError(() => err.error.errors);
+        })
+      );
   }
 
   submitRegistration(userData: RegisterBaseData) {
-    return this.http.post("", userData).pipe(
-      catchError((err) => {
-        console.error(err.error.errors);
-        return throwError(() => err.error.errors);
-      })
-    );
+    return this.http
+      .post<ApiResponse<any>>(
+        `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.auth.register}`,
+        userData
+      )
+      .pipe(
+        catchError((err) => {
+          console.error(err.error.errors);
+          return throwError(() => err.error.errors);
+        })
+      );
   }
 }

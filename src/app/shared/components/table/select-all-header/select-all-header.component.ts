@@ -4,7 +4,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
   selector: 'app-select-all-header',
   imports: [],
   templateUrl: './select-all-header.component.html',
-  styleUrl: './select-all-header.component.css'
+  styleUrl: './select-all-header.component.css',
 })
 export class SelectAllHeaderComponent<T> {
   @Input() data: T[] = [];
@@ -12,7 +12,9 @@ export class SelectAllHeaderComponent<T> {
   @Output() selectAllChange = new EventEmitter<T[]>();
 
   get allSelected(): boolean {
-    return this.data.length > 0 && this.selectedItems.length === this.data.length;
+    return (
+      this.data.length > 0 && this.selectedItems.length === this.data.length
+    );
   }
 
   toggleAll(event: Event) {

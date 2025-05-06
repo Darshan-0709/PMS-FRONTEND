@@ -1,4 +1,3 @@
-
 import { inject, Injectable, signal } from '@angular/core';
 import { RegisterAPIService } from './register-api.service';
 import {
@@ -12,7 +11,7 @@ import {
   Branch,
   RegisterInput,
 } from './register.models';
-import { Observable, map, tap, catchError, throwError } from 'rxjs';
+import { Observable, map, tap, catchError, throwError, of } from 'rxjs';
 @Injectable({
   providedIn: 'root',
 })
@@ -21,9 +20,7 @@ export class RegisterService {
 
   // State signals
   currentStep = signal(1);
-  selectedRole = signal<'student' | 'placement_cell' | 'recruiter'>(
-    'student'
-  );
+  selectedRole = signal<'student' | 'placement_cell' | 'recruiter'>('student');
   userFormData = signal<UserFormModel | null>(null);
   studentProfile = signal<StudentProfileData | null>(null);
   recruiterProfile = signal<RecruiterProfileData | null>(null);
@@ -31,7 +28,6 @@ export class RegisterService {
   errors = signal<Record<string, string>>({});
 
   // Computed signals
-
 
   // API data
   placementCells = signal<PlacementCellApiData[]>([]);
@@ -41,7 +37,7 @@ export class RegisterService {
   // Step management
   nextStep() {
     this.currentStep.update((step) => Math.min(step + 1, 3));
-    console.log(this.currentStep())
+    console.log(this.currentStep());
   }
 
   previousStep() {
@@ -112,11 +108,27 @@ export class RegisterService {
     this.placementCellProfile.set(data);
   }
 
-  getUserDataEmail():string | undefined{
-    return this.userFormData()?.email
+  getUserDataEmail(): string | undefined {
+    return this.userFormData()?.email;
   }
 
+  // Check if student email domain is allowed for placement cell
+  isStudentEmailDomainAllowed(email: string, placementCellId: string): boolean {
+    if (!email || !placementCellId) return false;
 
+    const emailDomain = email.split('@')[1];
+    if (!emailDomain) return false;
+
+    const selectedCell = this.placementCells().find(
+      (cell) => cell.placementCellId === placementCellId
+    );
+
+    if (!selectedCell) return false;
+
+    return selectedCell.placementCellDomains.some((domain) =>
+      emailDomain.endsWith(domain)
+    );
+  }
 
   // Error management
   setErrors(errors: Record<string, string>) {
@@ -127,12 +139,34 @@ export class RegisterService {
     this.errors.set({});
   }
 
-
   validateUserData(userData: UserFormModel): Observable<boolean> {
     const payload: RegisterBaseData = {
       ...userData,
       role: this.selectedRole(),
     };
+
+    // For student role, check local validation before sending to server
+    if (this.selectedRole() === 'student') {
+      // If student profile already exists with a placement cell selected
+      const studentProfileData = this.studentProfile();
+      if (studentProfileData?.placementCellId) {
+        const isEmailValid = this.isStudentEmailDomainAllowed(
+          userData.email,
+          studentProfileData.placementCellId
+        );
+
+        if (!isEmailValid) {
+          return throwError(() => ({
+            error: {
+              errors: {
+                email:
+                  "Student's email domain is not allowed for this placement cell.",
+              },
+            },
+          }));
+        }
+      }
+    }
 
     return this.api.validateUserData(payload).pipe(
       tap(() => {

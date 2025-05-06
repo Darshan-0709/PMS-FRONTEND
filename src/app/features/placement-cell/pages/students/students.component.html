@@ -1,1 +1,47 @@
-<p>students works!</p>
+     <!-- <div class="mb-10">
+        <h2 class="text-xl font-semibold mb-3">Advanced Table</h2>
+        <p class="text-gray-600 mb-4">
+          Table with all features enabled: sorting, searching, selection,
+          pagination, and actions.
+        </p>
+
+        <div class="mb-4" *ngIf="selectedUsers.length > 0">
+          <div class="bg-blue-50 p-3 rounded border border-blue-200">
+            <p class="text-sm text-blue-800">
+              {{ selectedUsers.length }} users selected.
+              <button
+                class="ml-2 text-blue-600 hover:text-blue-800 underline"
+                (click)="clearSelection()"
+              >
+                Clear selection
+              </button>
+            </p>
+          </div>
+        </div>
+
+        <app-table
+          [data]="users"
+          [config]="advancedTableConfig"
+          (tableEvent)="onAdvancedTableEvent($event)"
+        ></app-table>
+      </div>
+
+      <ng-template #statusTemplate let-user>
+        <span
+          class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
+          [ngClass]="{
+            'bg-green-100 text-green-800': user.status === 'active',
+            'bg-red-100 text-red-800': user.status === 'inactive',
+            'bg-yellow-100 text-yellow-800': user.status === 'pending'
+          }"
+        >
+          {{ user.status }}
+        </span>
+      </ng-template>
+
+      <ng-template #dateTemplate let-user>
+        {{ user.lastLogin | date : 'medium' }}
+      </ng-template>
+    </div> -->
+
+    <app-table-demo></app-table-demo>

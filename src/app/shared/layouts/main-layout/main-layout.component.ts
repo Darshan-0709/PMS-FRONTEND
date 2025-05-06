@@ -1,67 +1,71 @@
-import { Component, Input } from '@angular/core';
+import { Component, OnInit, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
+import { StudentNavigationComponent } from '../../../features/student/components/navigation/student-navigation.component';
+import { RecruiterNavigationComponent } from '../../../features/recruiter/components/navigation/recruiter-navigation.component';
+import { PlacementCellNavigationComponent } from '../../../features/placement-cell/components/navigation/placement-cell-navigation.component';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-main-layout',
   standalone: true,
-  imports: [CommonModule, RouterModule],
-  template: `
-    <div class="layout-container">
-      <header class="header">
-        <div class="logo">PMS</div>
-        <nav class="nav">
-          <ng-content select="[nav]"></ng-content>
-        </nav>
-        <div class="user-menu">
-          <ng-content select="[user-menu]"></ng-content>
-        </div>
-      </header>
-      <div class="content">
-        <ng-content></ng-content>
-      </div>
-    </div>
-  `,
-  styles: [
-    `
-      .layout-container {
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-      }
-
-      .header {
-        display: flex;
-        align-items: center;
-        padding: 1rem;
-        background-color: #fff;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      }
-
-      .logo {
-        font-size: 1.5rem;
-        font-weight: bold;
-        margin-right: 2rem;
-      }
-
-      .nav {
-        flex: 1;
-        display: flex;
-        gap: 1rem;
-      }
-
-      .user-menu {
-        margin-left: auto;
-      }
-
-      .content {
-        flex: 1;
-        padding: 2rem;
-        background-color: #f8f9fa;
-      }
-    `,
+  imports: [
+    CommonModule,
+    RouterModule,
+    StudentNavigationComponent,
+    RecruiterNavigationComponent,
+    PlacementCellNavigationComponent,
   ],
+  template: `
+    @switch (userRole()) { @case ('student') {
+    <app-student-navigation>
+      <router-outlet />
+    </app-student-navigation>
+    } @case ('recruiter') {
+    <app-recruiter-navigation>
+      <router-outlet />
+    </app-recruiter-navigation>
+    } @case ('placement_cell') {
+    <app-placement-cell-navigation>
+      <router-outlet />
+    </app-placement-cell-navigation>
+    } @default {
+    <!-- Fallback navigation based on URL path if role is not available -->
+    @if (currentPath.startsWith('/student/')) {
+    <app-student-navigation>
+      <router-outlet />
+    </app-student-navigation>
+    } @else if (currentPath.startsWith('/recruiter/')) {
+    <app-recruiter-navigation>
+      <router-outlet />
+    </app-recruiter-navigation>
+    } @else if (currentPath.startsWith('/placement-cell/')) {
+    <app-placement-cell-navigation>
+      <router-outlet />
+    </app-placement-cell-navigation>
+    } } }
+  `,
 })
-export class MainLayoutComponent {
-  @Input() title = 'Placement Management System';
+export class MainLayoutComponent implements OnInit {
+  currentPath: string = '';
+  userRole = computed(() => this.authService.user()?.role || null);
+
+  constructor(private router: Router, private authService: AuthService) {}
+
+  ngOnInit() {
+    // Get initial path
+    this.currentPath = this.router.url;
+    console.log('MainLayout: Initial path:', this.currentPath);
+    console.log('MainLayout: User role:', this.userRole());
+
+    // Subscribe to route changes
+    this.router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe((event: any) => {
+        this.currentPath = event.url;
+        console.log('MainLayout: Path changed to:', this.currentPath);
+        console.log('MainLayout: Current user role:', this.userRole());
+      });
+  }
 }

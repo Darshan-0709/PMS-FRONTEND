@@ -7,7 +7,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { SharedInputComponent } from '../../../shared/components/shared-input/shared-input.component';
 import { ValidationErrorsComponent } from '../../../shared/components/validation-errors/validation-errors.component';
 import {
@@ -34,6 +34,7 @@ type LoginFormType = {
     ReactiveFormsModule,
     SharedInputComponent,
     ValidationErrorsComponent,
+    RouterModule,
   ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
@@ -47,10 +48,6 @@ export class LoginComponent {
     ...defaultValidationMessages,
     required: (_, label = 'This field') => `${label} is required`,
     email: () => 'Please enter a valid email address',
-    minlength: (c, label = 'This field') =>
-      `${label} must be at least ${
-        c.getError('minlength')?.requiredLength
-      } characters`,
   };
 
   constructor(
@@ -65,7 +62,7 @@ export class LoginComponent {
       }),
       password: this.fb.control('', {
         nonNullable: true,
-        validators: [Validators.required, Validators.minLength(6)],
+        validators: [Validators.required],
       }),
     });
   }

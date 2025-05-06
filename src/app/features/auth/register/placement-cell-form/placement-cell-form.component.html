@@ -23,13 +23,13 @@
       placeholder="Domains allowed for student register(@college.edu.id)"
       class="grow"
     >
-      <button
-        class="btn btn-sm btn-solid btn-primary hover:opacity-70"
-        (click)="onDomainAdd()"
-      >
-        Add
-      </button>
-    </app-shared-input>
+  </app-shared-input>
+  <button
+    class="btn btn-sm btn-solid btn-primary hover:opacity-70"
+    (click)="onDomainAdd()"
+  >
+    Add
+  </button>
     <app-validation-errors
       [control]="domainsControl"
       label="Domains"

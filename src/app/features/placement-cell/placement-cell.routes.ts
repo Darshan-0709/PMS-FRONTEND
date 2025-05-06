@@ -1,10 +1,9 @@
 import { Routes } from '@angular/router';
-import { PlacementCellLayoutComponent } from './components/placement-cell-layout/placement-cell-layout.component';
-
+import { MainLayoutComponent } from '../../shared/layouts/main-layout/main-layout.component';
 export const PLACEMENT_CELL_ROUTES: Routes = [
   {
     path: '',
-    component: PlacementCellLayoutComponent,
+    component: MainLayoutComponent,
     children: [
       {
         path: 'dashboard',

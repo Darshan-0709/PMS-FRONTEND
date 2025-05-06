@@ -18,7 +18,10 @@ import {
 import { StudentProfileFormModel } from '../register.models';
 import { SharedInputComponent } from '../../../../shared/components/shared-input/shared-input.component';
 import { ValidationErrorsComponent } from '../../../../shared/components/validation-errors/validation-errors.component';
-import { DropdownAutocompleteComponentComponent, SelectOption } from '../../../../shared/components/dropdown-autocomplete-component/dropdown-autocomplete-component.component';
+import {
+  DropdownAutocompleteComponentComponent,
+  SelectOption,
+} from '../../../../shared/components/dropdown-autocomplete-component/dropdown-autocomplete-component.component';
 import { AlertModalComponent } from '../../../../shared/components/alert-modal/alert-modal.component';
 import { defaultValidationMessages } from '../../../../shared/types/validation.types';
 import { RegisterService } from '../register.service';
@@ -32,7 +35,6 @@ import { RegisterService } from '../register.service';
     ValidationErrorsComponent,
     DropdownAutocompleteComponentComponent,
     ReactiveFormsModule,
-    AlertModalComponent,
   ],
   viewProviders: [
     {
@@ -58,6 +60,7 @@ export class StudentFormComponent implements OnInit {
   degrees = signal<SelectOption<string>[]>([]);
 
   domainMismatchWarning = signal<boolean>(false);
+  forceIgnoreDomainMismatch = signal<boolean>(false);
 
   constructor() {
     effect(() => {
@@ -145,9 +148,14 @@ export class StudentFormComponent implements OnInit {
 
       if (userEmail) {
         const emailDomain = userEmail.split('@')[1];
-        const placementCellDomain = selectedCell.placementCellDomains;
+        const placementCellDomains = selectedCell.placementCellDomains;
 
-        if (placementCellDomain.some((domain) => domain === emailDomain)) {
+        // Check if the email domain is allowed for this placement cell
+        const isDomainAllowed = placementCellDomains.some((domain) =>
+          emailDomain.endsWith(domain)
+        );
+
+        if (isDomainAllowed || this.forceIgnoreDomainMismatch()) {
           this.domainMismatchWarning.set(false);
           this.studentForm.setErrors(null); // Clear errors on the parent group
         } else {
@@ -163,6 +171,17 @@ export class StudentFormComponent implements OnInit {
 
     // Log the current errors on the parent form group
     console.log('Parent Form Group Errors:', this.parentFormGroup.errors);
+  }
+
+  goBackToEmailForm() {
+    // Go back to step 2 (email form)
+    this.registerService.setStep(2);
+  }
+
+  dismissWarning() {
+    this.forceIgnoreDomainMismatch.set(true);
+    this.domainMismatchWarning.set(false);
+    this.studentForm.setErrors(null); // Clear domain mismatch error
   }
 
   onDegreeSelected(degreeId: string) {

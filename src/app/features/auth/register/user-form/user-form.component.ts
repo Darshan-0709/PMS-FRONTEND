@@ -15,7 +15,10 @@ import { RegisterService } from '../register.service';
 import { UserFormModel } from '../register.models';
 import { SharedInputComponent } from '../../../../shared/components/shared-input/shared-input.component';
 import { ValidationErrorsComponent } from '../../../../shared/components/validation-errors/validation-errors.component';
-import { defaultValidationMessages, ValidationMessages } from '../../../../shared/types/validation.types';
+import {
+  defaultValidationMessages,
+  ValidationMessages,
+} from '../../../../shared/types/validation.types';
 
 @Component({
   selector: 'app-user-form',
@@ -41,6 +44,7 @@ export class UserFormComponent {
   parentContainer = inject(ControlContainer);
 
   currentStep = this.registerService.currentStep;
+  emailDomainError = '';
 
   get parentFormGroup() {
     return this.parentContainer.control as FormGroup;
@@ -49,6 +53,9 @@ export class UserFormComponent {
   validationMessages: ValidationMessages = {
     ...defaultValidationMessages,
     passwordsMismatch: () => 'Passwords do not match',
+    emailDomain: () =>
+      this.emailDomainError ||
+      'Email domain is not allowed for the selected placement cell',
   };
 
   @Output() validationSuccess = new EventEmitter<void>();
@@ -120,16 +127,29 @@ export class UserFormComponent {
       this.registerService.validateUserData(data).subscribe({
         next: () => this.validationSuccess.emit(),
         error: (errors) => {
-          Object.entries(errors).forEach(([key, msg]) => {
-            const ctl = userForm.get(key);
-            if (ctl) {
-              ctl.setErrors({ server: msg });
-              ctl.markAsTouched();
-              ctl.markAsDirty();
-            } else {
-              userForm.setErrors({ [key]: msg });
+          // If error is specifically about email domain, handle it specially
+          if (
+            errors.error?.errors?.email?.includes('email domain is not allowed')
+          ) {
+            this.emailDomainError = errors.error.errors.email;
+            const emailControl = userForm.get('email');
+            if (emailControl) {
+              emailControl.setErrors({ emailDomain: true });
+              emailControl.markAsTouched();
             }
-          });
+          } else {
+            // Handle other validation errors
+            Object.entries(errors.error?.errors || {}).forEach(([key, msg]) => {
+              const ctl = userForm.get(key);
+              if (ctl) {
+                ctl.setErrors({ server: msg });
+                ctl.markAsTouched();
+                ctl.markAsDirty();
+              } else {
+                userForm.setErrors({ [key]: msg });
+              }
+            });
+          }
           this.validationError.emit();
         },
       });

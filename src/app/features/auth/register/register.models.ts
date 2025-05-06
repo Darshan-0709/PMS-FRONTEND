@@ -15,6 +15,7 @@ export interface PlacementCellApiData {
   placementCellId: string;
   placementCellName: string;
   branch: Branch;
+  domain: string[];
   placementCellDomains: string[];
   placementCellDegrees: Degree[];
 }
