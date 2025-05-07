@@ -30,6 +30,13 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'forbidden',
+    loadComponent: () =>
+      import('./shared/pages/forbidden/forbidden.component').then(
+        (m) => m.ForbiddenComponent
+      ),
+  },
+  {
     path: '',
     redirectTo: 'auth/login',
     pathMatch: 'full',

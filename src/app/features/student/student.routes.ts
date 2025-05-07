@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { MainLayoutComponent } from '../../shared/layouts/main-layout/main-layout.component';
 import { StudentNavigationComponent } from './components/navigation/student-navigation.component';
+import { ProfileComponent } from './pages/profile/profile.component';
 
 export const STUDENT_ROUTES: Routes = [
   {
@@ -16,10 +17,8 @@ export const STUDENT_ROUTES: Routes = [
       },
       {
         path: 'profile',
-        loadComponent: () =>
-          import('./pages/profile/profile.component').then(
-            (m) => m.ProfileComponent
-          ),
+        component: ProfileComponent,
+        title: 'My Profile'
       },
       {
         path: 'jobs',

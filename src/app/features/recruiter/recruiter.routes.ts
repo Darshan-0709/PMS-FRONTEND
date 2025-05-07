@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { MainLayoutComponent } from '../../shared/layouts/main-layout/main-layout.component';
+import { ProfileComponent } from './pages/profile/profile.component';
 
 export const RECRUITER_ROUTES: Routes = [
   {
@@ -15,10 +16,8 @@ export const RECRUITER_ROUTES: Routes = [
       },
       {
         path: 'profile',
-        loadComponent: () =>
-          import('./pages/profile/profile.component').then(
-            (m) => m.ProfileComponent
-          ),
+        component: ProfileComponent,
+        title: 'Recruiter Profile'
       },
       {
         path: 'post-jobs',

@@ -96,7 +96,7 @@ export class PlacementCellFormComponent implements OnInit {
       ]),
       website: new FormControl('', [
         Validators.required,
-        Validators.pattern('https?://.+'),
+        Validators.pattern('^(https?:\\/\\/)([\\da-z.-]+)\\.([a-z.]{2,6})([\\/\\w .-]*)*\\/?$'),
       ]),
     });
 

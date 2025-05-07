@@ -19,9 +19,10 @@ export class DropdownAutocompleteComponentComponent<T> {
   title = input<string>();
   canSearch = input<boolean>(false);
   placeholder = input<string>('Select…');
+  selectedValue = input<T | null>(null);
 
-  canEmitValue = input<boolean>(false)
-  added = output<string>()
+  canEmitValue = input<boolean>(false);
+  added = output<string>();
   // Internal signals
   query = signal<string>('');
   open = signal(false);
@@ -53,8 +54,8 @@ export class DropdownAutocompleteComponentComponent<T> {
     this.query.set(val);
     this.open.set(true);
   }
-  onAdd(){
-    this.added.emit(this.query())
+  onAdd() {
+    this.added.emit(this.query());
     this.open.set(false);
   }
 

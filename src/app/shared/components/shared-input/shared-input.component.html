@@ -2,10 +2,12 @@
 <div class="mt-0.5">
   <div class="flex gap-2">
     <input
-    [type]="type()"
-    [formControl]="control()"
-    [placeholder]="placeholder()"
-    class="block w-full rounded-md px-3 py-1.5 text-base text-primary outline-1 outline-soft-white hover:outline-secondary focus:outline-secondary placeholder:text-secondary/50 focus:outline-2 hover:outline-2 focus:-outline-offset-2 sm:text-sm/6"
+      [type]="type()"
+      [formControl]="control()"
+      [placeholder]="placeholder()"
+      [readonly]="readonly()"
+      class="block w-full rounded-md px-3 py-1.5 text-base  text-primary outline-2 outline-soft-white hover:outline-secondary focus:outline-secondary placeholder:text-secondary/50 focus:outline-2 hover:outline-2 focus:-outline-offset-2 sm:text-sm/6"
+      [ngClass]="{ 'bg-white bg-opacity-50': readonly() }"
     />
   </div>
 </div>

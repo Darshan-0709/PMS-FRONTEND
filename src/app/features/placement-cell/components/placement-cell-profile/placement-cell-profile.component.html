@@ -1,0 +1,152 @@
+<div class="bg-white shadow-md rounded-lg p-6 max-w-4xl mx-auto">
+  <div class="flex justify-between items-center mb-6">
+    <h2 class="text-2xl font-semibold text-gray-800">Placement Cell Profile</h2>
+
+    <div class="flex space-x-2">
+      @if ((isEditMode$ | async) === false) {
+      <button
+        type="button"
+        class="btn btn-sm btn-soft btn-primary"
+        (click)="onEdit()"
+      >
+        Edit Profile
+      </button>
+      } @else {
+      <button
+        type="button"
+        class="btn btn-sm btn-soft btn-danger"
+        (click)="onCancel()"
+      >
+        Cancel
+      </button>
+      <button
+        type="submit"
+        class="btn btn-sm btn-soft btn-success"
+        (click)="onSubmit()"
+      >
+        Save Changes
+      </button>
+      }
+    </div>
+  </div>
+
+  @if (profile$ | async; as profile) {
+  <form [formGroup]="profileForm" class="space-y-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Basic Information -->
+      <div class="space-y-4">
+        <h3 class="text-lg font-medium text-gray-900 border-b pb-2">
+          Basic Information
+        </h3>
+
+        <!-- Placement Cell Name -->
+        <app-shared-input
+          [control]="placementCellNameControl"
+          label="Placement Cell Name"
+          placeholder="Enter placement cell name"
+          [readonly]="true"
+        ></app-shared-input>
+
+        <!-- Email -->
+        <app-shared-input
+          [control]="placementCellEmailControl"
+          label="Email"
+          placeholder="Enter placement cell email"
+          type="email"
+          [readonly]="!canEditField().placementCellEmail"
+        ></app-shared-input>
+        <app-validation-errors
+          [control]="placementCellEmailControl"
+          label="Email"
+        ></app-validation-errors>
+
+        <!-- Website -->
+        <app-shared-input
+          [control]="websiteControl"
+          label="Website"
+          placeholder="Enter website URL"
+          [readonly]="!canEditField().website"
+        ></app-shared-input>
+        <app-validation-errors
+          [control]="websiteControl"
+          label="Website"
+        ></app-validation-errors>
+      </div>
+
+      <!-- Branch, Domains and Degrees -->
+      <div class="space-y-4">
+        <!-- Branch Name (Read-only) -->
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700">Branch</label>
+          <input
+            formControlName="branchName"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none bg-gray-50"
+            readonly
+          />
+        </div>
+
+        <!-- Domains -->
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700">Domains</label>
+
+          <!-- Domain Input (shown only in edit mode) -->
+          @if (canEditField().domains) {
+          <div class="flex mt-2 mb-4">
+            <input
+              formControlName="domainInput"
+              placeholder="Add domain (e.g. @web)"
+              class="w-full px-3 py-2 border border-gray-300 rounded-l-md shadow-sm focus:outline-none"
+            />
+            <button
+              type="button"
+              class="px-4 py-2 bg-blue-500 text-white rounded-r-md hover:bg-blue-600"
+              (click)="onDomainAdd()"
+            >
+              Add
+            </button>
+          </div>
+          }
+
+          <!-- Domain Chips -->
+          <div class="flex flex-wrap gap-2 mt-2">
+            @for (domain of domains(); track domain) {
+            <div
+              class="inline-flex items-center bg-blue-100 text-blue-800 rounded-full px-3 py-1 text-sm"
+            >
+              {{ domain }}
+              @if (canEditField().domains) {
+              <button
+                type="button"
+                class="ml-1 text-blue-500 hover:text-blue-700"
+                (click)="onRemoveDomain(domain)"
+              >
+                ×
+              </button>
+              }
+            </div>
+            } @empty {
+            <p class="text-gray-500 text-sm">No domains added yet</p>
+            }
+          </div>
+        </div>
+
+        <!-- Degrees (Read-only) -->
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700">Degrees</label>
+          <div class="flex flex-wrap gap-2 mt-2">
+            @for (degree of degreeNames(); track degree.value) {
+            <div
+              class="inline-flex items-center bg-green-100 text-green-800 rounded-full px-3 py-1 text-sm"
+            >
+              {{ degree.label }}
+            </div>
+            } @empty {
+            <p class="text-gray-500 text-sm">No degrees available</p>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+  }
+</div>

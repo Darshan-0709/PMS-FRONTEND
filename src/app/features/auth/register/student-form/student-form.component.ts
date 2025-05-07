@@ -60,7 +60,6 @@ export class StudentFormComponent implements OnInit {
   degrees = signal<SelectOption<string>[]>([]);
 
   domainMismatchWarning = signal<boolean>(false);
-  forceIgnoreDomainMismatch = signal<boolean>(false);
 
   constructor() {
     effect(() => {
@@ -150,12 +149,16 @@ export class StudentFormComponent implements OnInit {
         const emailDomain = userEmail.split('@')[1];
         const placementCellDomains = selectedCell.placementCellDomains;
 
+        console.log({emailDomain});
         // Check if the email domain is allowed for this placement cell
-        const isDomainAllowed = placementCellDomains.some((domain) =>
-          emailDomain.endsWith(domain)
-        );
+        const isDomainAllowed = placementCellDomains.some((domain) => {
+          // Remove @ prefix if it exists in the domain
+          const cleanDomain = domain.startsWith('@') ? domain.substring(1) : domain;
+          console.log({domain, cleanDomain});
+          return emailDomain === cleanDomain;
+        });
 
-        if (isDomainAllowed || this.forceIgnoreDomainMismatch()) {
+        if (isDomainAllowed) {
           this.domainMismatchWarning.set(false);
           this.studentForm.setErrors(null); // Clear errors on the parent group
         } else {
@@ -176,12 +179,6 @@ export class StudentFormComponent implements OnInit {
   goBackToEmailForm() {
     // Go back to step 2 (email form)
     this.registerService.setStep(2);
-  }
-
-  dismissWarning() {
-    this.forceIgnoreDomainMismatch.set(true);
-    this.domainMismatchWarning.set(false);
-    this.studentForm.setErrors(null); // Clear domain mismatch error
   }
 
   onDegreeSelected(degreeId: string) {

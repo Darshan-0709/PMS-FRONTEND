@@ -1,0 +1,258 @@
+<div class="bg-white shadow-md rounded-lg p-6 max-w-4xl mx-auto">
+  <div class="flex justify-between items-center mb-6">
+    <h2 class="text-2xl font-semibold text-gray-800">Student Profile</h2>
+
+    <div class="flex space-x-2">
+      @if ((isEditMode | async) === false) {
+      <button type="button" class="btn btn-soft btn-primary" (click)="onEdit()">
+        Edit Profile
+      </button>
+      } @else {
+      <button
+        type="button"
+        class="btn btn-soft btn-danger"
+        (click)="onCancel()"
+      >
+        Cancel
+      </button>
+      <button
+        type="submit"
+        class="btn btn-soft btn-success"
+        (click)="onSubmit()"
+      >
+        Save Changes
+      </button>
+      }
+    </div>
+  </div>
+
+  @if (studentProfile | async; as profile) {
+  <form [formGroup]="profileForm" class="space-y-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Basic Info Section -->
+      <div class="space-y-4">
+        <h3 class="text-lg font-medium text-gray-900 border-b pb-2">
+          Basic Information
+        </h3>
+
+        <!-- Full Name -->
+        <app-shared-input
+          [control]="fullNameControl"
+          label="Full Name"
+          placeholder="Enter full name"
+        ></app-shared-input>
+        <app-validation-errors
+          [control]="fullNameControl"
+          label="Full Name"
+        ></app-validation-errors>
+
+        <!-- Enrollment Number -->
+        <app-shared-input
+          [control]="enrollmentNumberControl"
+          label="Enrollment Number"
+          placeholder="Enter enrollment number"
+          [readonly]="!canEditField().enrollmentNumber"
+        ></app-shared-input>
+        <app-validation-errors
+          [control]="enrollmentNumberControl"
+          label="Enrollment Number"
+        ></app-validation-errors>
+
+        <!-- Degree & Placement Cell (Read-only) -->
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700">Degree</label>
+          <input
+            type="text"
+            [value]="profile.degree.name"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none bg-gray-50"
+            readonly
+          />
+        </div>
+
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700"
+            >Placement Cell</label
+          >
+          <input
+            type="text"
+            [value]="profile.placement_cell.placementCellName"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none bg-gray-50"
+            readonly
+          />
+        </div>
+      </div>
+
+      <!-- Academic Info Section -->
+      <div class="space-y-4">
+        <h3 class="text-lg font-medium text-gray-900 border-b pb-2">
+          Academic Information
+        </h3>
+
+        <!-- CGPA -->
+        <app-shared-input
+          [control]="cgpaControl"
+          label="CGPA"
+          placeholder="Enter CGPA"
+          type="number"
+        ></app-shared-input>
+        <app-validation-errors
+          [control]="cgpaControl"
+          label="CGPA"
+        ></app-validation-errors>
+
+        <!-- Bachelors GPA -->
+        <app-shared-input
+          [control]="bachelorsGpaControl"
+          label="Bachelors GPA"
+          placeholder="Enter bachelors GPA"
+          type="number"
+        ></app-shared-input>
+        <app-validation-errors
+          [control]="bachelorsGpaControl"
+          label="Bachelors GPA"
+        ></app-validation-errors>
+
+        <!-- 10th Percentage -->
+        <app-shared-input
+          [control]="tenthPercentageControl"
+          label="10th Percentage"
+          placeholder="Enter 10th percentage"
+          type="number"
+        ></app-shared-input>
+        <app-validation-errors
+          [control]="tenthPercentageControl"
+          label="10th Percentage"
+        ></app-validation-errors>
+
+        <!-- 12th Percentage -->
+        <app-shared-input
+          [control]="twelfthPercentageControl"
+          label="12th Percentage"
+          placeholder="Enter 12th percentage"
+          type="number"
+        ></app-shared-input>
+        <app-validation-errors
+          [control]="twelfthPercentageControl"
+          label="12th Percentage"
+        ></app-validation-errors>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+      <!-- Additional Academic Info -->
+      <div class="space-y-4">
+        <h3 class="text-lg font-medium text-gray-900 border-b pb-2">
+          Additional Information
+        </h3>
+
+        <!-- Diploma Percentage -->
+        <app-shared-input
+          [control]="diplomaPercentageControl"
+          label="Diploma Percentage"
+          placeholder="Enter diploma percentage"
+          type="number"
+        ></app-shared-input>
+        <app-validation-errors
+          [control]="diplomaPercentageControl"
+          label="Diploma Percentage"
+        ></app-validation-errors>
+
+        <!-- Backlogs -->
+        <app-shared-input
+          [control]="backlogsControl"
+          label="Backlogs"
+          placeholder="Enter number of backlogs"
+          type="number"
+        ></app-shared-input>
+        <app-validation-errors
+          [control]="backlogsControl"
+          label="Backlogs"
+        ></app-validation-errors>
+
+        <!-- Live Backlogs -->
+        <app-shared-input
+          [control]="liveBacklogsControl"
+          label="Live Backlogs"
+          placeholder="Enter number of live backlogs"
+          type="number"
+        ></app-shared-input>
+        <app-validation-errors
+          [control]="liveBacklogsControl"
+          label="Live Backlogs"
+        ></app-validation-errors>
+      </div>
+
+      <!-- Placement Info -->
+      <div class="space-y-4">
+        <h3 class="text-lg font-medium text-gray-900 border-b pb-2">
+          Placement Information
+        </h3>
+
+        <!-- Placement Status -->
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700"
+            >Placement Status</label
+          >
+          @if (canEditField().placementStatus) {
+          <app-dropdown-autocomplete-component
+            [options]="placementStatusOptions()"
+            [placeholder]="'Select Placement Status…'"
+            [title]="'Placement Status'"
+            [selectedValue]="placementStatusControl.value"
+            (selection)="onPlacementStatusChange($event)"
+          ></app-dropdown-autocomplete-component>
+          } @else {
+          <input
+            type="text"
+            [value]="
+              profile.placementStatus === 'not_placed'
+                ? 'Not Placed'
+                : profile.placementStatus === 'placed'
+                ? 'Placed'
+                : profile.placementStatus === 'offered'
+                ? 'Offered'
+                : profile.placementStatus
+            "
+            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none bg-gray-50"
+            readonly
+          />
+          }
+        </div>
+
+        <!-- Verified by Placement Cell -->
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700"
+            >Verified by Placement Cell</label
+          >
+          <div class="flex items-center mt-2">
+            <input
+              type="checkbox"
+              id="verifiedStatus"
+              formControlName="isVerifiedByPlacementCell"
+              class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+              [disabled]="!canEditField().isVerifiedByPlacementCell"
+            />
+            <label
+              for="verifiedStatus"
+              class="ml-2 block text-sm text-gray-900"
+            >
+              {{ profile.isVerifiedByPlacementCell ? "Yes" : "No" }}
+            </label>
+          </div>
+        </div>
+
+        <!-- Resume URL -->
+        <app-shared-input
+          [control]="resumeUrlControl"
+          label="Resume URL"
+          placeholder="Enter resume URL"
+        ></app-shared-input>
+        <app-validation-errors
+          [control]="resumeUrlControl"
+          label="Resume URL"
+        ></app-validation-errors>
+      </div>
+    </div>
+  </form>
+  }
+</div>

@@ -1,55 +1,6 @@
-/* You can add global styles to this file, and also import other style files */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-:root {
-  --color-primary: #0d141c; /* Dark text color */
-  --color-secondary: #4f7396; /* Muted secondary text color */
-  --color-box-background: #e8edf2; /* Light background for boxes */
-  --color-table-column: #e5e8eb; /* Light gray for table columns */
-  --color-soft-white: #e5e8eb; /* Light gray for table columns */
-
-  /* Info Alert */
-  --color-info-bg-light: #eff6ff;
-  --color-info-text-light: #1e40af;
-  --color-info-border-light: #bfdbfe;
-  --color-info-bg-dark: #1e3a8a;
-  --color-info-text-dark: #93c5fd;
-  --color-info-border-dark: #1e40af;
-
-  /* Danger Alert */
-  --color-danger-bg-light: #fee2e2;
-  --color-danger-text-light: #991b1b;
-  --color-danger-border-light: #fca5a5;
-  --color-danger-bg-dark: #7f1d1d;
-  --color-danger-text-dark: #f87171;
-  --color-danger-border-dark: #991b1b;
-
-  /* Success Alert */
-  --color-success-bg-light: #d1fae5;
-  --color-success-text-light: #065f46;
-  --color-success-border-light: #6ee7b7;
-  --color-success-bg-dark: #064e3b;
-  --color-success-text-dark: #34d399;
-  --color-success-border-dark: #065f46;
-
-  /* Warning Alert */
-  --color-warning-bg-light: #fef3c7;
-  --color-warning-text-light: #92400e;
-  --color-warning-border-light: #fcd34d;
-  --color-warning-bg-dark: #78350f;
-  --color-warning-text-dark: #fbbf24;
-  --color-warning-border-dark: #92400e;
-
-  /* Dark Alert */
-  --color-dark-bg-light: #f3f4f6;
-  --color-dark-text-light: #1f2937;
-  --color-dark-border-light: #d1d5db;
-  --color-dark-bg-dark: #1f2937;
-  --color-dark-text-dark: #9ca3af;
-  --color-dark-border-dark: #374151;
-}
 
 @layer components {
   .shadow-layered {
@@ -57,133 +8,88 @@
       0 2px 2px hsl(0deg 0% 0% / 0.075), 0 4px 4px hsl(0deg 0% 0% / 0.075),
       0 8px 8px hsl(0deg 0% 0% / 0.075), 0 16px 16px hsl(0deg 0% 0% / 0.075);
   }
+
   .shadow-layered-hover {
     box-shadow: 6.7px 13.4px 13.4px hsl(0deg 0% 0% / 0.29);
-    /* box-shadow: 0 1px 1px hsl(0deg 0% 0% / 0.075),
-      0 2px 2px hsl(0deg 0% 0% / 0.075), 0 4px 4px hsl(0deg 0% 0% / 0.075),
-      0 8px 8px hsl(0deg 0% 0% / 0.075), 0 16px 16px hsl(0deg 0% 0% / 0.075); */
   }
 
-  /* .custom-layered-box {
-    box-shadow: 0 1px 2px hsl(0deg 0% 0% / 0.1), 0 3px 6px hsl(0deg 0% 0% / 0.1),
-      0 5px 10px hsl(0deg 0% 0% / 0.1), 0 8px 16px hsl(0deg 0% 0% / 0.1),
-      0 12px 24px hsl(0deg 0% 0% / 0.1);
-  } */
-  .modal-success {
-    @apply bg-green-100 text-green-800 border border-green-200 dark:bg-green-800 dark:text-green-200;
-  }
-  .modal-info {
-    @apply bg-blue-100 text-blue-800 border border-blue-200 dark:bg-blue-800 dark:text-blue-200;
-  }
-  .modal-error {
-    @apply bg-red-100 text-red-800 border border-red-200 dark:bg-red-800 dark:text-red-200;
-  }
-  .modal-warning {
-    @apply bg-yellow-100 text-yellow-800 border border-yellow-200 dark:bg-yellow-800 dark:text-yellow-200;
-  }
-  .modal-success-button {
-    @apply bg-green-100 text-green-800 border border-green-200 dark:bg-green-800 dark:text-green-200;
-  }
-  .modal-info-button {
-    @apply bg-blue-100 text-blue-800 border border-blue-200 dark:bg-blue-800 dark:text-blue-200;
-  }
-  .modal-error-button {
-    @apply bg-red-100 text-red-800 border border-red-200 dark:bg-red-800 dark:text-red-200;
-  }
-  .modal-warning-button {
-    @apply bg-yellow-100 text-yellow-800 border border-yellow-200 dark:bg-yellow-800 dark:text-yellow-200;
-  }
-
-  /* Base Button Styles */
   .btn {
     @apply inline-flex items-center justify-center font-medium cursor-pointer rounded-md transition-colors focus:outline-none disabled:opacity-50 disabled:pointer-events-none;
   }
 
-  /* Solid State */
+  /* Solid Buttons */
   .btn-solid.btn-primary {
-    @apply bg-[color:var(--color-primary)] text-white hover:brightness-90;
+    @apply bg-blue-600 text-white hover:brightness-90;
   }
   .btn-solid.btn-danger {
-    @apply bg-[color:var(--color-danger-bg-light)] text-[color:var(--color-danger-text-light)] hover:brightness-95;
+    @apply bg-red-500 text-white hover:brightness-95;
   }
   .btn-solid.btn-success {
-    @apply bg-[color:var(--color-success-bg-light)] text-[color:var(--color-success-text-light)] hover:brightness-95;
+    @apply bg-green-500 text-white hover:brightness-95;
   }
   .btn-solid.btn-info {
-    @apply bg-[color:var(--color-info-bg-light)] text-[color:var(--color-info-text-light)] hover:brightness-95;
+    @apply bg-cyan-500 text-white hover:brightness-95;
   }
-
   .btn-solid.btn-warning {
-    @apply bg-[color:var(--color-warning-bg-light)] text-[color:var(--color-warning-text-light)] hover:brightness-95;
+    @apply bg-yellow-400 text-black hover:brightness-95;
   }
-
   .btn-solid.btn-secondary {
-    @apply bg-[color:var(--color-secondary-bg-light)] text-[color:var(--color-secondary-text-light)] hover:brightness-95;
+    @apply bg-gray-500 text-white hover:brightness-95;
   }
-
   .btn-solid.btn-dark {
-    @apply bg-[color:var(--color-dark-bg-light)] text-[color:var(--color-dark-text-light)] hover:brightness-95;
+    @apply bg-gray-800 text-white hover:brightness-95;
   }
 
-  /* Outline State */
+  /* Outline Buttons */
   .btn-outline.btn-primary {
-    @apply border border-[color:var(--color-primary)] text-[color:var(--color-primary)] bg-transparent hover:bg-[color:var(--color-primary)] hover:text-white;
+    @apply border border-blue-600 text-blue-600 bg-transparent hover:bg-blue-600 hover:text-white;
   }
   .btn-outline.btn-danger {
-    @apply border border-[color:var(--color-danger-text-light)] text-[color:var(--color-danger-text-light)] bg-transparent hover:bg-[color:var(--color-danger-text-light)] hover:text-white;
+    @apply border border-red-500 text-red-500 bg-transparent hover:bg-red-500 hover:text-white;
   }
   .btn-outline.btn-success {
-    @apply border border-[color:var(--color-success-text-light)] text-[color:var(--color-success-text-light)] bg-transparent hover:bg-[color:var(--color-success-text-light)] hover:text-white;
+    @apply border border-green-500 text-green-500 bg-transparent hover:bg-green-500 hover:text-white;
   }
   .btn-outline.btn-info {
-    @apply border border-[color:var(--color-info-text-light)] text-[color:var(--color-info-text-light)] bg-transparent hover:bg-[color:var(--color-info-text-light)] hover:text-white;
+    @apply border border-cyan-500 text-cyan-500 bg-transparent hover:bg-cyan-500 hover:text-white;
   }
-
   .btn-outline.btn-warning {
-    @apply border border-[color:var(--color-warning-text-light)] text-[color:var(--color-warning-text-light)] bg-transparent hover:bg-[color:var(--color-warning-text-light)] hover:text-white;
+    @apply border border-yellow-400 text-yellow-400 bg-transparent hover:bg-yellow-400 hover:text-black;
   }
-
   .btn-outline.btn-secondary {
-    @apply border border-[color:var(--color-secondary-text-light)] text-[color:var(--color-secondary-text-light)] bg-transparent hover:bg-[color:var(--color-secondary-text-light)] hover:text-white;
+    @apply border border-gray-500 text-gray-500 bg-transparent hover:bg-gray-500 hover:text-white;
   }
-
   .btn-outline.btn-dark {
-    @apply border border-[color:var(--color-dark-text-light)] text-[color:var(--color-dark-text-light)] bg-transparent hover:bg-[color:var(--color-dark-text-light)] hover:text-white;
+    @apply border border-gray-800 text-gray-800 bg-transparent hover:bg-gray-800 hover:text-white;
   }
 
-  /* Soft (Ghost) State */
+  /* Soft Buttons */
   .btn-soft.btn-primary {
-    @apply bg-[color:var(--color-primary-bg-light)] text-[color:var(--color-primary-text-light)] hover:bg-[color:var(--color-primary-border-light)];
+    @apply bg-blue-100 text-blue-700 hover:bg-blue-200;
   }
-
   .btn-soft.btn-danger {
-    @apply bg-[color:var(--color-danger-bg-light)] text-[color:var(--color-danger-text-light)] hover:bg-[color:var(--color-danger-border-light)];
+    @apply bg-red-100 text-red-700 hover:bg-red-200;
   }
-
   .btn-soft.btn-success {
-    @apply bg-[color:var(--color-success-bg-light)] text-[color:var(--color-success-text-light)] hover:bg-[color:var(--color-success-border-light)];
+    @apply bg-green-100 text-green-700 hover:bg-green-200;
   }
-
   .btn-soft.btn-info {
-    @apply bg-[color:var(--color-info-bg-light)] text-[color:var(--color-info-text-light)] hover:bg-[color:var(--color-info-border-light)];
+    @apply bg-cyan-100 text-cyan-700 hover:bg-cyan-200;
   }
-
   .btn-soft.btn-warning {
-    @apply bg-[color:var(--color-warning-bg-light)] text-[color:var(--color-warning-text-light)] hover:bg-[color:var(--color-warning-border-light)];
+    @apply bg-yellow-100 text-yellow-700 hover:bg-yellow-200;
   }
-
   .btn-soft.btn-secondary {
-    @apply bg-[color:var(--color-secondary-bg-light)] text-[color:var(--color-secondary-text-light)] hover:bg-[color:var(--color-secondary-border-light)];
+    @apply bg-gray-100 text-gray-700 hover:bg-gray-200;
   }
-
   .btn-soft.btn-dark {
-    @apply bg-[color:var(--color-dark-bg-light)] text-[color:var(--color-dark-text-light)] hover:bg-[color:var(--color-dark-border-light)];
+    @apply bg-gray-200 text-gray-900 hover:bg-gray-300;
   }
 
+  /* Sizes */
   .btn-xs {
     @apply px-1 py-0.5 text-xs;
   }
-  /* py-0.5 */
   .btn-sm {
     @apply px-3 py-1 text-sm;
   }
@@ -194,64 +100,45 @@
     @apply px-6 py-3 text-lg;
   }
 
+  /* Alerts */
   .alert-info {
-    background-color: var(--info-bg-light);
-    color: var(--info-text-light);
-    border: 1px solid var(--info-border-light);
+    @apply bg-cyan-100 text-cyan-700 border border-cyan-300;
   }
   .alert-info.dark {
-    background-color: var(--info-bg-dark);
-    color: var(--info-text-dark);
-    border: 1px solid var(--info-border-dark);
+    @apply bg-cyan-900 text-cyan-100 border border-cyan-800;
   }
 
   .alert-danger {
-    background-color: var(--danger-bg-light);
-    color: var(--danger-text-light);
-    border: 1px solid var(--danger-border-light);
+    @apply bg-red-100 text-red-700 border border-red-300;
   }
   .alert-danger.dark {
-    background-color: var(--danger-bg-dark);
-    color: var(--danger-text-dark);
-    border: 1px solid var(--danger-border-dark);
+    @apply bg-red-900 text-red-100 border border-red-800;
   }
 
   .alert-success {
-    background-color: var(--success-bg-light);
-    color: var(--success-text-light);
-    border: 1px solid var(--success-border-light);
+    @apply bg-green-100 text-green-700 border border-green-300;
   }
   .alert-success.dark {
-    background-color: var(--success-bg-dark);
-    color: var(--success-text-dark);
-    border: 1px solid var(--success-border-dark);
+    @apply bg-green-900 text-green-100 border border-green-800;
   }
 
   .alert-warning {
-    background-color: var(--warning-bg-light);
-    color: var(--warning-text-light);
-    border: 1px solid var(--warning-border-light);
+    @apply bg-yellow-100 text-yellow-700 border border-yellow-300;
   }
   .alert-warning.dark {
-    background-color: var(--warning-bg-dark);
-    color: var(--warning-text-dark);
-    border: 1px solid var(--warning-border-dark);
+    @apply bg-yellow-900 text-yellow-100 border border-yellow-800;
   }
 
   .alert-dark {
-    background-color: var(--dark-bg-light);
-    color: var(--dark-text-light);
-    border: 1px solid var(--dark-border-light);
+    @apply bg-gray-200 text-gray-900 border border-gray-400;
   }
   .alert-dark.dark {
-    background-color: var(--dark-bg-dark);
-    color: var(--dark-text-dark);
-    border: 1px solid var(--dark-border-dark);
+    @apply bg-gray-900 text-gray-100 border border-gray-800;
   }
 }
 
 body {
   background-color: #f7fafc;
   min-width: 100vh;
-  font-family: Lexend;
+  font-family: 'Lexend', sans-serif;
 }

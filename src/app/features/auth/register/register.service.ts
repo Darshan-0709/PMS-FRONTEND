@@ -124,10 +124,14 @@ export class RegisterService {
     );
 
     if (!selectedCell) return false;
-
-    return selectedCell.placementCellDomains.some((domain) =>
-      emailDomain.endsWith(domain)
-    );
+    console.log(emailDomain);
+    return selectedCell.placementCellDomains.some((domain) => {
+      // Remove @ prefix if it exists in the domain
+      return domain.endsWith(emailDomain)
+      const cleanDomain = domain.startsWith('@') ? domain.substring(1) : domain;
+      console.log({domain, cleanDomain});
+      return emailDomain === cleanDomain;
+    });
   }
 
   // Error management

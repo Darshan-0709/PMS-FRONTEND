@@ -59,13 +59,24 @@ export class RegisterComponent implements OnInit {
   }
 
   onSubmit() {
-    // // Ensure the entire registration form is valid
+    // Ensure the entire registration form is valid
     console.log(this.registrationForm.getRawValue());
-    if (this.registrationForm.invalid) {
-      console.log('Parent Form Group Errors:', this.registrationForm.errors);
+    
+    // Check if there's a domain mismatch that was ignored
+    const studentForm = this.registrationForm.get('studentForm') as FormGroup;
+    const hasDomainMismatchIgnored = studentForm?.errors?.['domainMismatchIgnored'] === true;
 
-      this.registrationForm.markAllAsTouched();
-      console.log('return');
+    if (this.registrationForm.invalid) {
+      // If the only error is domainMismatchIgnored and we're allowing navigation but not submission
+      if (hasDomainMismatchIgnored && Object.keys(studentForm?.errors || {}).length === 1) {
+        // Show specific error about domain mismatch
+        this.registerService.setErrors({
+          submission: 'Cannot submit registration with email domain mismatch. Please change your email or select a different placement cell.'
+        });
+      } else {
+        console.log('Parent Form Group Errors:', this.registrationForm.errors);
+        this.registrationForm.markAllAsTouched();
+      }
       return;
     }
 
