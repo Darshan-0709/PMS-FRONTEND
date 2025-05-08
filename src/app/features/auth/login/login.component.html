@@ -1,11 +1,10 @@
-<div
-  class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-2 max-w-2xl m-auto"
->
+<div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+  <app-toast></app-toast>
   <div class="sm:mx-auto sm:w-full sm:max-w-sm">
     <h2
-      class="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900"
+      class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900"
     >
-      Login
+      Sign in to your account
     </h2>
   </div>
   <form
@@ -45,9 +44,8 @@
       <button
         type="submit"
         [disabled]="loginForm.invalid || isLoading"
-        class="shadow-layered block ml-auto btn btn-md btn-soft btn-success mt-4 w-full cursor-pointer"
+        class="shadow-layered block ml-auto btn btn-md btn-soft btn-success mt-4 w-full cursor-pointer disabled:cursor-not-allowed"
       >
-        <!-- [ngClass]="['cursor-pointer': loginForm.invalid]" -->
         {{ isLoading ? "Logging in..." : "Login" }}
       </button>
     </div>
@@ -61,7 +59,7 @@
       Don't have an account?
       <a
         routerLink="/auth/register"
-        class="text-blue-600 hover:text-blue-800 font-medium"
+        class="text-blue-600 hover:text-blue-800 font-medium hover:underline"
       >
         Sign up
       </a>

@@ -1,4 +1,15 @@
 <div class="bg-white shadow-md rounded-lg p-6 max-w-4xl mx-auto">
+  @if (isLoading()) {
+  <div class="flex justify-center items-center h-60">
+    <div
+      class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"
+    ></div>
+  </div>
+  } @else if (!recruiterId) {
+  <div class="text-center p-6">
+    <p class="text-lg text-gray-600">No recruiter information available.</p>
+  </div>
+  } @else {
   <div class="flex justify-between items-center mb-6">
     <h2 class="text-2xl font-semibold text-gray-800">Recruiter Profile</h2>
 
@@ -49,6 +60,7 @@
         <app-validation-errors
           [control]="companyNameControl"
           label="Company Name"
+          [messages]="validationMessages"
         ></app-validation-errors>
 
         <!-- Representative Position -->
@@ -61,6 +73,7 @@
         <app-validation-errors
           [control]="representativePositionControl"
           label="Position"
+          [messages]="validationMessages"
         ></app-validation-errors>
 
         <!-- Description -->
@@ -77,6 +90,11 @@
             placeholder="Enter company description"
             [readonly]="!canEditField().description"
           ></textarea>
+          <app-validation-errors
+            [control]="descriptionControl"
+            label="Description"
+            [messages]="validationMessages"
+          ></app-validation-errors>
         </div>
       </div>
 
@@ -96,22 +114,24 @@
         <app-validation-errors
           [control]="websiteControl"
           label="Website"
+          [messages]="validationMessages"
         ></app-validation-errors>
 
-        <!-- Company Email -->
+        <!-- Contact  Email -->
         <app-shared-input
           [control]="companyEmailControl"
-          label="Company Email"
-          placeholder="Enter company email"
+          label="Contact Email"
+          placeholder="Enter Contact  Email"
           type="email"
           [readonly]="!canEditField().companyEmail"
         ></app-shared-input>
         <app-validation-errors
           [control]="companyEmailControl"
-          label="Company Email"
+          label="Contact  Email"
+          [messages]="validationMessages"
         ></app-validation-errors>
       </div>
     </div>
   </form>
-  }
+  } }
 </div>

@@ -13,7 +13,6 @@ import {
   StudentApiResponse,
   StudentProfile,
   StudentProfileUpdatePayload,
-  StudentProfilePlacementCellUpdatePayload,
 } from '../models/student.model';
 import { Router } from '@angular/router';
 import { environment } from '../../../../environments/environment';
@@ -42,33 +41,58 @@ export class StudentProfileService {
       .get<StudentApiResponse>(`${this.apiUrl}/students/${studentId}`)
       .pipe(
         tap((response) => {
-          if (response.success) {
+          if (response.success && response.data) {
             this.studentProfileSubject.next(response.data);
           }
         }),
         catchError(this.handleError),
-        // Map the API response to StudentProfile
-        map((response) => response.data as StudentProfile)
+        map((response) => {
+          if (!response.data) {
+            throw new Error('Profile data not found');
+          }
+          return response.data;
+        })
       );
   }
 
   updateStudentProfile(
     studentId: string,
-    data: StudentProfileUpdatePayload | StudentProfilePlacementCellUpdatePayload
+    payload: StudentProfileUpdatePayload
   ): Observable<StudentProfile> {
+    console.log('Updating student profile:', payload);
+
     return this.http
-      .patch<StudentApiResponse>(`${this.apiUrl}/students/${studentId}`, data)
+      .patch<StudentApiResponse>(
+        `${this.apiUrl}/students/${studentId}`,
+        payload
+      )
       .pipe(
         tap((response) => {
-          if (response.success) {
+          if (response.success && response.data) {
+            // Update the local subject with the updated profile
             this.studentProfileSubject.next(response.data);
-            this.setEditMode(false);
           }
         }),
         catchError(this.handleError),
-        // Map the API response to StudentProfile
-        map((response) => response.data as StudentProfile)
+        map((response) => {
+          if (!response.data) {
+            throw new Error('Updated profile data not found');
+          }
+          return response.data;
+        })
       );
+  }
+
+  resetProfile(): void {
+    // Reset form to original values without saving
+    const currentProfile = this.studentProfileSubject.getValue();
+    if (currentProfile) {
+      // Create a deep copy to ensure no references are shared
+      const profileCopy = JSON.parse(JSON.stringify(currentProfile));
+      // Re-emit the current profile to reset the form
+      this.studentProfileSubject.next(profileCopy);
+    }
+    this.setEditMode(false);
   }
 
   setEditMode(isEdit: boolean): void {
@@ -79,33 +103,22 @@ export class StudentProfileService {
     this.isPlacementCellViewSubject.next(isPlacementCellView);
   }
 
-  resetProfile(): void {
-    // Reset to the last saved profile (useful for cancel operations)
-    const currentProfile = this.studentProfileSubject.getValue();
-    if (currentProfile) {
-      this.studentProfileSubject.next({ ...currentProfile });
-    }
-    this.setEditMode(false);
-  }
-
-  private handleError = (error: HttpErrorResponse) => {
+  private handleError(error: HttpErrorResponse): Observable<never> {
     let errorMessage = 'An unknown error occurred';
 
-    if (error.error instanceof ErrorEvent) {
-      // Client-side or network error
-      errorMessage = `Error: ${error.error.message}`;
-    } else {
-      // Backend returned an unsuccessful response code
-      if (error.status === 403) {
-        // Redirect to appropriate page for forbidden access
-        this.router.navigate(['/forbidden']);
-        return throwError(() => new Error('Access forbidden'));
-      }
+    if (error.error && error.error.message) {
+      errorMessage = error.error.message;
+    } else if (error.message) {
+      errorMessage = error.message;
+    }
 
-      errorMessage =
-        error.error?.message || `Server returned code ${error.status}`;
+    console.error('API Error:', errorMessage);
+
+    // Redirect to forbidden page if unauthorized or forbidden
+    if (error.status === 401 || error.status === 403) {
+      this.router.navigate(['/forbidden']);
     }
 
     return throwError(() => new Error(errorMessage));
-  };
+  }
 }

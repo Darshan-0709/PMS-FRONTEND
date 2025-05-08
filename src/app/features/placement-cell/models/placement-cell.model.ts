@@ -28,7 +28,8 @@ export interface PlacementCellUpdatePayload {
   placementCellName?: string;
   placementCellEmail?: string;
   website?: string;
-  // Other fields that can be updated if needed
+  domains?: string[];
+  degrees?: string[];
 }
 
 export interface PlacementCellApiResponse {

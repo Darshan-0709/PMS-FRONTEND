@@ -9,6 +9,11 @@ export const API_CONFIG = {
     placementCell: {
       list: '/placement_cells_list',
     },
+    students: {
+      list: '/students',
+      byId: (id: string) => `/students/${id}`,
+      verify: '/students/batch-verify',
+    },
     degrees: '/degrees',
     branches: '/branches',
   },
@@ -29,4 +34,4 @@ export interface Pagination {
   totalPages: number;
 }
 
-export type ApiError  = Record<string, string>
+export type ApiError = Record<string, string>;

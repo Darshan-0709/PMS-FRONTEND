@@ -127,11 +127,11 @@ export class UserFormComponent {
       this.registerService.validateUserData(data).subscribe({
         next: () => this.validationSuccess.emit(),
         error: (errors) => {
+          console.log('Received validation errors:', errors);
+
           // If error is specifically about email domain, handle it specially
-          if (
-            errors.error?.errors?.email?.includes('email domain is not allowed')
-          ) {
-            this.emailDomainError = errors.error.errors.email;
+          if (errors?.email?.includes('email domain is not allowed')) {
+            this.emailDomainError = errors.email;
             const emailControl = userForm.get('email');
             if (emailControl) {
               emailControl.setErrors({ emailDomain: true });
@@ -139,7 +139,7 @@ export class UserFormComponent {
             }
           } else {
             // Handle other validation errors
-            Object.entries(errors.error?.errors || {}).forEach(([key, msg]) => {
+            Object.entries(errors || {}).forEach(([key, msg]) => {
               const ctl = userForm.get(key);
               if (ctl) {
                 ctl.setErrors({ server: msg });

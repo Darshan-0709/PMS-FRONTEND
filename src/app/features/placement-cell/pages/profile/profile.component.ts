@@ -1,28 +1,35 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PlacementCellProfileComponent } from '../../components/placement-cell-profile/placement-cell-profile.component';
 import { ToastComponent } from '../../../../shared/components/toast/toast.component';
 import { AuthService } from '../../../../core/services/auth.service';
+import { PlacementCellProfileComponent } from '../../components/placement-cell-profile/placement-cell-profile.component';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
   imports: [CommonModule, PlacementCellProfileComponent, ToastComponent],
-  templateUrl: "profile.component.html",
+  template: `
+  @if(placementCellId){
+    <div class="container mx-auto px-4 py-8">
+      <h1 class="text-3xl font-semibold mb-6">Recruiter Profile</h1>
+      <app-placement-cell-profile
+      [placementCellId]="placementCellId"
+      ></app-placement-cell-profile>
+      <app-toast></app-toast>
+    </div>
+  }
+  `,
   styles: [],
 })
 export class ProfileComponent implements OnInit {
   private authService = inject(AuthService);
-  currentUserId: string = '';
+  placementCellId: string = '';
 
   ngOnInit(): void {
     // Get current user ID from auth service
     const currentUser = this.authService.user();
-    if (currentUser) {
-      this.currentUserId = currentUser.placementCellId || '123'; // Fallback to mock ID
-    } else {
-      // Use a mock ID if no user is found
-      this.currentUserId = '123';
+    if (currentUser && currentUser.placementCellId) {
+      this.placementCellId = currentUser.placementCellId; // Fallback to mock ID
     }
   }
 }

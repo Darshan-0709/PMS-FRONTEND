@@ -13,7 +13,10 @@ import { catchError, throwError, tap } from 'rxjs';
 import { RecruiterProfileData } from '../register.models';
 import { SharedInputComponent } from '../../../../shared/components/shared-input/shared-input.component';
 import { ValidationErrorsComponent } from '../../../../shared/components/validation-errors/validation-errors.component';
-import { defaultValidationMessages, ValidationMessages } from '../../../../shared/types/validation.types';
+import {
+  defaultValidationMessages,
+  ValidationMessages,
+} from '../../../../shared/types/validation.types';
 
 type RecruiterFormType = {
   companyName: FormControl<string>;
@@ -73,7 +76,10 @@ export class RecruiterFormComponent implements OnInit {
       }),
       website: this.fb.control('', {
         nonNullable: true,
-        validators: [Validators.required, Validators.pattern('https?://.+')],
+        validators: [
+          Validators.required,
+          Validators.pattern(/^https?:\/\/[^\s$.?#].[^\s]*$/)
+        ],
       }),
       companyEmail: this.fb.control('', {
         nonNullable: true,

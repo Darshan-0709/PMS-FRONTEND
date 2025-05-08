@@ -1,5 +1,4 @@
 <fieldset formGroupName="placementCellForm">
-
   <!-- Placement Cell Name -->
   <div>
     <app-shared-input
@@ -17,19 +16,22 @@
 
   <!-- Domains -->
   <div class="mt-3">
-    <app-shared-input
-      [control]="domainInputControl"
-      label="Domains"
-      placeholder="Domains allowed for student register(@college.edu.id)"
-      class="grow"
-    >
-  </app-shared-input>
-  <button
-    class="btn btn-sm btn-solid btn-primary hover:opacity-70"
-    (click)="onDomainAdd()"
-  >
-    Add
-  </button>
+    <div class="flex gap-2 items-end">
+      <app-shared-input
+        [control]="domainInputControl"
+        label="Domains"
+        placeholder="Domains allowed for student register(@college.edu.id)"
+        class="grow"
+      >
+      </app-shared-input>
+      <button
+        class="btn btn-md btn-solid btn-primary hover:opacity-70"
+        (click)="onDomainAdd()"
+        type="button"
+      >
+        Add
+      </button>
+    </div>
     <app-validation-errors
       [control]="domainsControl"
       label="Domains"
@@ -154,5 +156,4 @@
     label="Website"
     [messages]="validationMessages"
   />
-
 </fieldset>

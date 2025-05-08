@@ -14,17 +14,8 @@ export class AuthGuard implements CanActivate {
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): boolean | UrlTree {
-    console.log('=== AuthGuard Debug ===');
-    console.log('Current URL:', state.url);
-    console.log('Route Config:', route.routeConfig);
-    console.log('Route Data:', route.data);
-    console.log('Route Params:', route.params);
-    console.log('Route Query Params:', route.queryParams);
 
     const user = this.authService.user();
-    console.log('Current User:', user);
-    console.log('User Role:', user?.role);
-    console.log('Is Authenticated:', this.authService.isAuthenticated());
 
     if (!this.authService.isAuthenticated()) {
       console.log('Not authenticated, redirecting to login');
@@ -40,9 +31,6 @@ export class AuthGuard implements CanActivate {
     const rolePath = this.getRolePath(user.role);
     const rolePrefix = this.getRolePrefix(user.role);
 
-    console.log('Role Path:', rolePath);
-    console.log('Role Prefix:', rolePrefix);
-    console.log('URL starts with role prefix:', url.startsWith(rolePrefix));
 
     if (url === '/auth/login') {
       console.log('On login page, redirecting to role dashboard');
@@ -50,19 +38,12 @@ export class AuthGuard implements CanActivate {
     }
 
     if (!url.startsWith(rolePrefix)) {
-      console.log(
-        'URL does not match role prefix, redirecting to role dashboard'
-      );
       return this.router.createUrlTree([rolePath]);
     }
 
     if (url === '/') {
-      console.log('On root, redirecting to role dashboard');
       return this.router.createUrlTree([rolePath]);
     }
-
-    console.log('Access granted');
-    console.log('=== End AuthGuard Debug ===');
     return true;
   }
 

@@ -22,7 +22,6 @@ import {
   DropdownAutocompleteComponentComponent,
   SelectOption,
 } from '../../../../shared/components/dropdown-autocomplete-component/dropdown-autocomplete-component.component';
-import { AlertModalComponent } from '../../../../shared/components/alert-modal/alert-modal.component';
 import { defaultValidationMessages } from '../../../../shared/types/validation.types';
 import { RegisterService } from '../register.service';
 
@@ -149,13 +148,12 @@ export class StudentFormComponent implements OnInit {
         const emailDomain = userEmail.split('@')[1];
         const placementCellDomains = selectedCell.placementCellDomains;
 
-        console.log({emailDomain});
+        console.log({ emailDomain });
         // Check if the email domain is allowed for this placement cell
         const isDomainAllowed = placementCellDomains.some((domain) => {
-          // Remove @ prefix if it exists in the domain
-          const cleanDomain = domain.startsWith('@') ? domain.substring(1) : domain;
-          console.log({domain, cleanDomain});
-          return emailDomain === cleanDomain;
+          console.log({domain})
+          console.log({emailDomain})
+          return domain.endsWith(emailDomain);
         });
 
         if (isDomainAllowed) {
@@ -163,11 +161,12 @@ export class StudentFormComponent implements OnInit {
           this.studentForm.setErrors(null); // Clear errors on the parent group
         } else {
           this.domainMismatchWarning.set(true);
-          this.studentForm.setErrors({ domainMismatch: true }); // Set error on the parent group
+          // Set a blocking error for domain mismatch
+          this.studentForm.setErrors({ domainMismatch: true });
         }
       } else {
-        this.domainMismatchWarning.set(true);
-        this.studentForm.setErrors({ domainMismatch: true }); // Set error if no email
+        this.domainMismatchWarning.set(false); // No email, no warning yet
+        this.studentForm.setErrors(null);
       }
       console.log(this.studentForm.errors);
     }

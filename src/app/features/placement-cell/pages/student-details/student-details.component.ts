@@ -13,7 +13,7 @@ import { ToastComponent } from '../../../../shared/components/toast/toast.compon
       <div class="flex items-center mb-6">
         <button 
           (click)="goBack()" 
-          class="btn btn-soft btn-info mr-4"
+          class="btn btn-md btn-soft btn-info mr-4"
         >
           &larr; Back to Students
         </button>

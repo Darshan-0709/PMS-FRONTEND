@@ -1,367 +1,480 @@
-import { Component } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  TemplateRef,
+  inject,
+  signal,
+} from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+import { TableComponent } from '../../../../shared/components/table/table.component';
+import { PaginationComponent } from '../../../../shared/components/pagination/pagination.component';
+import { StudentService } from '../../services/student.service';
+import { Student } from '../../models/student.model';
 import {
   TableConfig,
   TableEvent,
+  SearchConfig,
+  SortConfig,
 } from '../../../../shared/components/table/models/table.model';
-import { TableComponent } from '../../../../shared/components/table/table.component';
-import {
-  PaginationInfo,
-} from '../../../../shared/components/pagination/pagination.component';
-import { CommonModule } from '@angular/common';
-import { TableDemoComponent } from "../../../../shared/components/table/table-demo/table-demo.component";
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  role: string;
-  status: 'active' | 'inactive' | 'pending';
-  lastLogin: Date;
-}
+import { ToastService } from '../../../../shared/services/toast.service';
+import { Pagination } from '../../../../core/config/api.config';
+
 @Component({
   selector: 'app-students',
-  imports: [CommonModule, TableDemoComponent],
+  standalone: true,
+  imports: [CommonModule, TableComponent, PaginationComponent],
   templateUrl: './students.component.html',
-  styleUrl: './students.component.css',
+  styleUrls: ['./students.component.css'],
 })
-export class StudentsComponent {
-  // users: User[] = [
-  //   {
-  //     id: 1,
-  //     name: 'John Doe',
-  //     email: 'john@example.com',
-  //     role: 'Admin',
-  //     status: 'active',
-  //     lastLogin: new Date(2023, 8, 15),
-  //   },
-  //   {
-  //     id: 2,
-  //     name: 'Jane Smith',
-  //     email: 'jane@example.com',
-  //     role: 'User',
-  //     status: 'active',
-  //     lastLogin: new Date(2023, 8, 20),
-  //   },
-  //   {
-  //     id: 3,
-  //     name: 'Bob Johnson',
-  //     email: 'bob@example.com',
-  //     role: 'Editor',
-  //     status: 'inactive',
-  //     lastLogin: new Date(2023, 7, 25),
-  //   },
-  //   {
-  //     id: 4,
-  //     name: 'Alice Williams',
-  //     email: 'alice@example.com',
-  //     role: 'User',
-  //     status: 'pending',
-  //     lastLogin: new Date(2023, 8, 1),
-  //   },
-  //   {
-  //     id: 5,
-  //     name: 'Charlie Brown',
-  //     email: 'charlie@example.com',
-  //     role: 'Admin',
-  //     status: 'active',
-  //     lastLogin: new Date(2023, 8, 18),
-  //   },
-  //   {
-  //     id: 6,
-  //     name: 'Diana Prince',
-  //     email: 'diana@example.com',
-  //     role: 'Editor',
-  //     status: 'active',
-  //     lastLogin: new Date(2023, 8, 10),
-  //   },
-  //   {
-  //     id: 7,
-  //     name: 'Edward Miller',
-  //     email: 'edward@example.com',
-  //     role: 'User',
-  //     status: 'inactive',
-  //     lastLogin: new Date(2023, 6, 5),
-  //   },
-  //   {
-  //     id: 8,
-  //     name: 'Fiona Carter',
-  //     email: 'fiona@example.com',
-  //     role: 'User',
-  //     status: 'active',
-  //     lastLogin: new Date(2023, 8, 12),
-  //   },
-  //   {
-  //     id: 9,
-  //     name: 'George Wilson',
-  //     email: 'george@example.com',
-  //     role: 'Editor',
-  //     status: 'pending',
-  //     lastLogin: new Date(2023, 8, 3),
-  //   },
-  //   {
-  //     id: 10,
-  //     name: 'Helen Davis',
-  //     email: 'helen@example.com',
-  //     role: 'Admin',
-  //     status: 'active',
-  //     lastLogin: new Date(2023, 8, 22),
-  //   },
-  //   {
-  //     id: 11,
-  //     name: 'Ian Lewis',
-  //     email: 'ian@example.com',
-  //     role: 'User',
-  //     status: 'active',
-  //     lastLogin: new Date(2023, 8, 19),
-  //   },
-  //   {
-  //     id: 12,
-  //     name: 'Julia Martin',
-  //     email: 'julia@example.com',
-  //     role: 'User',
-  //     status: 'inactive',
-  //     lastLogin: new Date(2023, 7, 29),
-  //   },
-  // ];
+export class StudentsComponent implements OnInit {
+  // Inject required services
+  private studentService = inject(StudentService);
+  private toastService = inject(ToastService);
+  private router = inject(Router);
 
-  // selectedUsers: User[] = [];
+  // Template references for custom cell templates
+  @ViewChild('statusTemplate', { static: true })
+  statusTemplate!: TemplateRef<any>;
+  @ViewChild('actionsTemplate', { static: true })
+  actionsTemplate!: TemplateRef<any>;
+  @ViewChild('verifiedTemplate', { static: true })
+  verifiedTemplate!: TemplateRef<any>;
 
-  // basicTableConfig: TableConfig<User> = {
-  //   columns: [
-  //     { field: 'id', header: 'ID', sortable: true },
-  //     { field: 'name', header: 'Name', sortable: true },
-  //     { field: 'email', header: 'Email', sortable: true },
-  //     { field: 'role', header: 'Role', sortable: true },
-  //   ],
-  //   uniqueIdField: 'id',
-  //   enableSorting: true,
-  //   enablePagination: true,
-  //   sortConfig: {
-  //     active: 'name',
-  //     direction: 'asc',
-  //   },
-  //   paginationConfig: {
-  //     total: this.users.length,
-  //     page: 1,
-  //     pageSize: 5,
-  //   },
-  // };
+  // State management
+  students = signal<Student[]>([]);
+  filteredStudents = signal<Student[]>([]); // For client-side filtering
+  isLoading = signal(true);
+  pagination = signal<Pagination>({
+    total: 0,
+    page: 1,
+    pageSize: 5,
+    totalPages: 0,
+  });
+  selectedStudents = signal<string[]>([]);
 
-  // advancedTableConfig!: TableConfig<User>;
+  // Sort and search state
+  currentSort = signal<SortConfig<Student> | undefined>(undefined);
+  currentSearch = signal<SearchConfig<Student> | undefined>(undefined);
 
-  // ngAfterViewInit() {
-  //   // Need to set this after view init to get the template references
-  //   this.advancedTableConfig = {
-  //     columns: [
-  //       { field: 'id', header: 'ID', sortable: true, width: '80px' },
-  //       { field: 'name', header: 'Name', sortable: true, searchable: true },
-  //       { field: 'email', header: 'Email', sortable: true, searchable: true },
-  //       { field: 'role', header: 'Role', sortable: true, searchable: true },
-  //       {
-  //         field: 'status',
-  //         header: 'Status',
-  //         sortable: true,
-  //         cellTemplate: this.statusTemplate,
-  //       },
-  //       {
-  //         field: 'lastLogin',
-  //         header: 'Last Login',
-  //         sortable: true,
-  //         cellTemplate: this.dateTemplate,
-  //       },
-  //     ],
-  //     uniqueIdField: 'id',
-  //     enableSorting: true,
-  //     enableSearch: true,
-  //     enableSelection: true,
-  //     enablePagination: true,
-  //     enableActions: true,
-  //     sortConfig: {
-  //       active: 'name',
-  //       direction: 'asc',
-  //     },
-  //     searchConfig: {
-  //       term: '',
-  //       fields: ['name', 'email', 'role'],
-  //       caseSensitive: false,
-  //     },
-  //     selectionConfig: {
-  //       mode: 'multiple',
-  //       selectedItems: this.selectedUsers,
-  //     },
-  //     paginationConfig: {
-  //       total: this.users.length,
-  //       page: 1,
-  //       pageSize: 5,
-  //     },
-  //     actionsConfig: {
-  //       actions: [
-  //         {
-  //           type: 'view',
-  //           label: 'View',
-  //           icon: 'fa-eye',
-  //           handler: (user) => this.viewUser(user),
-  //         },
-  //         {
-  //           type: 'edit',
-  //           label: 'Edit',
-  //           icon: 'fa-edit',
-  //           handler: (user) => this.editUser(user),
-  //         },
-  //         {
-  //           type: 'delete',
-  //           label: 'Delete',
-  //           icon: 'fa-trash',
-  //           isDisabled: (user) => user.role === 'Admin', // Disable for Admin users
-  //           handler: (user) => this.deleteUser(user),
-  //         },
-  //       ],
-  //       showLabels: true,
-  //     },
-  //   };
-  // }
+  // Table configuration
+  tableConfig!: TableConfig<Student>;
 
-  // onTableEvent(event: TableEvent<User>): void {
-  //   console.log('Table event:', event.type, event.payload);
+  ngOnInit(): void {
+    this.loadStudents();
+  }
 
-  //   // Handle pagination config updates
-  //   if (event.type === 'page' || event.type === 'pageSize') {
-  //     // Create the updated pagination config
-  //     const paginationConfig: PaginationInfo = {
-  //       ...this.basicTableConfig.paginationConfig!,
-  //       total: this.users.length, // Ensure total is always set
-  //     };
+  ngAfterViewInit(): void {
+    // Initialize table configuration after view is initialized to access templates
+    this.initializeTableConfig();
+  }
 
-  //     // Update specific properties based on event type
-  //     if (event.type === 'page') {
-  //       paginationConfig.page = event.payload.page;
-  //     } else if (event.type === 'pageSize') {
-  //       paginationConfig.pageSize = event.payload.pageSize;
-  //       paginationConfig.page = 1; // Reset to first page when changing page size
-  //     }
+  // Initialize table configuration with columns and features
+  private initializeTableConfig(): void {
+    this.tableConfig = {
+      columns: [
+        {
+          field: 'enrollmentNumber',
+          header: 'Enrollment',
+          sortable: true,
+          searchable: true,
+        },
+        {
+          field: 'fullName',
+          header: 'Name',
+          sortable: true,
+          searchable: true,
+        },
+        {
+          field: 'degree.name',
+          header: 'Degree',
+          sortable: true,
+        },
+        {
+          field: 'cgpa',
+          header: 'CGPA',
+          sortable: true,
+        },
+        {
+          field: 'placementStatus',
+          header: 'Status',
+          sortable: true,
+          cellTemplate: this.statusTemplate,
+        },
+        {
+          field: 'isVerifiedByPlacementCell',
+          header: 'Verified',
+          sortable: true,
+          cellTemplate: this.verifiedTemplate,
+        },
+        {
+          field: 'actions',
+          header: 'Actions',
+          sortable: false,
+          cellTemplate: this.actionsTemplate,
+        },
+      ],
+      uniqueIdField: 'studentId',
+      enableSorting: true,
+      enableSearch: true,
+      enableSelection: true,
+      enablePagination: false, // We'll handle pagination separately
+      enableActions: true,
+      selectionConfig: {
+        mode: 'multiple',
+      },
+    };
+  }
 
-  //     // Update the config
-  //     this.basicTableConfig = {
-  //       ...this.basicTableConfig,
-  //       paginationConfig,
-  //     };
-  //   }
+  // Helper method to convert selection payload to studentIds
+  private extractStudentIds(payload: any): string[] {
+    // If it's already an array of IDs, return it
+    if (Array.isArray(payload) && typeof payload[0] === 'string') {
+      return payload;
+    }
 
-  //   // Handle sorting
-  //   if (event.type === 'sort') {
-  //     this.basicTableConfig = {
-  //       ...this.basicTableConfig,
-  //       sortConfig: {
-  //         active: event.payload.field,
-  //         direction: event.payload.direction,
-  //       },
-  //     };
-  //   }
-  // }
+    // If it's an array of student objects
+    if (
+      Array.isArray(payload) &&
+      payload.length > 0 &&
+      typeof payload[0] === 'object'
+    ) {
+      return payload.map((student) => student.studentId);
+    }
 
-  // onAdvancedTableEvent(event: TableEvent<User>): void {
-  //   console.log('Advanced table event:', event.type, event.payload);
+    // If it has a selectedIds property
+    if (payload && Array.isArray(payload.selectedIds)) {
+      return payload.selectedIds;
+    }
 
-  //   // Update selected users when selection changes
-  //   if (event.type === 'select') {
-  //     this.selectedUsers = event.payload;
-  //   }
+    // If it has a selectedItems property containing student objects
+    if (payload && Array.isArray(payload.selectedItems)) {
+      return payload.selectedItems.map((student: Student) => student.studentId);
+    }
 
-  //   // Update pagination config
-  //   if (event.type === 'page' || event.type === 'pageSize') {
-  //     // Create the updated pagination config
-  //     const paginationConfig: PaginationInfo = {
-  //       ...this.advancedTableConfig.paginationConfig!,
-  //       total: this.users.length, // Ensure total is always set
-  //     };
+    // Default case - empty array
+    return [];
+  }
 
-  //     // Update specific properties based on event type
-  //     if (event.type === 'page') {
-  //       paginationConfig.page = event.payload.page;
-  //     } else if (event.type === 'pageSize') {
-  //       paginationConfig.pageSize = event.payload.pageSize;
-  //       paginationConfig.page = 1; // Reset to first page when changing page size
-  //     }
+  // Load students from the API with pagination
+  loadStudents(page: number = 1): void {
+    this.isLoading.set(true);
+    const currentPagination = this.pagination();
 
-  //     // Update the config
-  //     this.advancedTableConfig = {
-  //       ...this.advancedTableConfig,
-  //       paginationConfig,
-  //     };
-  //   }
+    this.studentService
+      .getStudents(page, currentPagination.pageSize)
+      .subscribe({
+        next: (response) => {
+          if (response.success && response.data) {
+            const loadedStudents = response.data;
+            this.students.set(loadedStudents);
+            this.filteredStudents.set(loadedStudents);
 
-  //   // Update search config
-  //   if (event.type === 'search') {
-  //     this.advancedTableConfig = {
-  //       ...this.advancedTableConfig,
-  //       searchConfig: event.payload,
-  //     };
-  //   }
+            // Apply current sort and filter if they exist
+            this.applyClientSideFilters();
 
-  //   // Update sorting config
-  //   if (event.type === 'sort') {
-  //     this.advancedTableConfig = {
-  //       ...this.advancedTableConfig,
-  //       sortConfig: {
-  //         active: event.payload.field,
-  //         direction: event.payload.direction,
-  //       },
-  //     };
-  //   }
-  // }
+            if (response.pagination) {
+              this.pagination.set(response.pagination);
+            }
 
-  // clearSelection(): void {
-  //   this.selectedUsers = [];
-  //   this.advancedTableConfig = {
-  //     ...this.advancedTableConfig,
-  //     selectionConfig: {
-  //       ...this.advancedTableConfig.selectionConfig,
-  //       selectedItems: [],
-  //     },
-  //   };
-  // }
+            // Reset selection when loading new data
+            this.selectedStudents.set([]);
+          } else {
+            this.toastService.show('Failed to load students', 'error');
+          }
+          this.isLoading.set(false);
+        },
+        error: (error) => {
+          this.toastService.show(`Error: ${error.message}`, 'error');
+          this.isLoading.set(false);
+        },
+      });
+  }
 
-  // // Action handlers
-  // viewUser(user: User): void {
-  //   console.log('View user:', user);
-  //   alert(`Viewing user: ${user.name}`);
-  // }
+  // Apply current client-side sorting and filtering
+  private applyClientSideFilters(): void {
+    let processedData = [...this.students()];
 
-  // editUser(user: User): void {
-  //   console.log('Edit user:', user);
-  //   alert(`Editing user: ${user.name}`);
-  // }
+    // Apply search if exists
+    if (this.currentSearch()) {
+      processedData = this.applySearch(processedData, this.currentSearch()!);
+    }
 
-  // deleteUser(user: User): void {
-  //   console.log('Delete user:', user);
-  //   if (confirm(`Are you sure you want to delete ${user.name}?`)) {
-  //     // Remove user from the array
-  //     this.users = this.users.filter((u) => u.id !== user.id);
+    // Apply sort if exists
+    if (this.currentSort()) {
+      processedData = this.applySort(processedData, this.currentSort()!);
+    }
 
-  //     // Update both configs with new total
-  //     if (this.basicTableConfig.paginationConfig) {
-  //       this.basicTableConfig = {
-  //         ...this.basicTableConfig,
-  //         paginationConfig: {
-  //           ...this.basicTableConfig.paginationConfig,
-  //           total: this.users.length,
-  //         },
-  //       };
-  //     }
+    this.filteredStudents.set(processedData);
 
-  //     if (this.advancedTableConfig.paginationConfig) {
-  //       this.advancedTableConfig = {
-  //         ...this.advancedTableConfig,
-  //         paginationConfig: {
-  //           ...this.advancedTableConfig.paginationConfig,
-  //           total: this.users.length,
-  //         },
-  //       };
-  //     }
+    // Update table config to ensure the UI reflects current state
+    this.updateTableConfig();
+  }
 
-  //     // Also remove from selection if selected
-  //     if (this.selectedUsers.some((u) => u.id === user.id)) {
-  //       this.selectedUsers = this.selectedUsers.filter((u) => u.id !== user.id);
-  //     }
-  //   }
-  // }
+  // Apply search filter to data
+  private applySearch(
+    data: Student[],
+    searchConfig: SearchConfig<Student>
+  ): Student[] {
+    if (!searchConfig.term) {
+      return data;
+    }
+
+    let term = searchConfig.term;
+    if (!searchConfig.caseSensitive) {
+      term = term.toLowerCase();
+    }
+
+    const fields = searchConfig.fields || [];
+
+    return data.filter((item) => {
+      return fields.some((field) => {
+        let value = this.getNestedValue(item, field as string);
+
+        if (value === null || value === undefined) {
+          return false;
+        }
+
+        value = String(value);
+
+        if (!searchConfig.caseSensitive) {
+          value = value.toLowerCase();
+        }
+
+        // Apply match mode
+        switch (searchConfig.matchMode) {
+          case 'startsWith':
+            return value.startsWith(term);
+          case 'exact':
+            return value === term;
+          case 'contains':
+          default:
+            return value.includes(term);
+        }
+      });
+    });
+  }
+
+  // Apply sort to data
+  private applySort(
+    data: Student[],
+    sortConfig: SortConfig<Student>
+  ): Student[] {
+    if (!sortConfig.active || !sortConfig.direction) {
+      return data;
+    }
+
+    const field = sortConfig.active;
+    const direction = sortConfig.direction;
+
+    console.log(`Sorting by ${field} in ${direction} direction`);
+
+    return [...data].sort((a, b) => {
+      if (sortConfig.comparator) {
+        return sortConfig.comparator(a, b, field as string);
+      }
+
+      const valueA = this.getNestedValue(a, field as string);
+      const valueB = this.getNestedValue(b, field as string);
+
+      if (valueA === valueB) return 0;
+
+      // Handle numbers and strings differently
+      let result;
+      if (typeof valueA === 'number' && typeof valueB === 'number') {
+        result = valueA - valueB;
+      } else {
+        const strA = String(valueA || '');
+        const strB = String(valueB || '');
+        result = strA.localeCompare(strB);
+      }
+
+      return direction === 'asc' ? result : -result;
+    });
+  }
+
+  // Get a nested property value using dot notation
+  private getNestedValue(obj: any, path: string): any {
+    return path.split('.').reduce((o, p) => (o ? o[p] : undefined), obj);
+  }
+
+  // Update table configuration to match current state
+  private updateTableConfig(): void {
+    // Only update if table config exists
+    if (!this.tableConfig) return;
+
+    // Update sort config
+    const currentSort = this.currentSort();
+    if (currentSort) {
+      this.tableConfig = {
+        ...this.tableConfig,
+        sortConfig: {
+          ...this.tableConfig.sortConfig,
+          active: currentSort.active,
+          direction: currentSort.direction,
+        },
+      };
+    }
+
+    // Update search config
+    const currentSearch = this.currentSearch();
+    if (currentSearch) {
+      this.tableConfig = {
+        ...this.tableConfig,
+        searchConfig: {
+          ...this.tableConfig.searchConfig,
+          ...currentSearch,
+        },
+      };
+    }
+  }
+
+  // Handle table events (sorting, selection, etc.)
+  onTableEvent(event: TableEvent<Student>): void {
+    console.log('Table event received:', event.type);
+    console.log('Event payload:', JSON.stringify(event.payload, null, 2));
+
+    switch (event.type) {
+      case 'select':
+        // Use the helper method to extract student IDs consistently
+        const selectedIds = this.extractStudentIds(event.payload);
+        console.log('Extracted student IDs:', selectedIds);
+        this.selectedStudents.set(selectedIds);
+        console.log(
+          'After setting, selectedStudents value:',
+          this.selectedStudents()
+        );
+        break;
+
+      case 'sort':
+        // Handle sorting
+        if (event.payload && event.payload.field) {
+          const currentField = event.payload.field;
+          const requestedDirection = event.payload.direction;
+
+          console.log(
+            `Sort event: ${currentField} in ${requestedDirection} direction`
+          );
+
+          // Get current sort state
+          const currentSort = this.currentSort();
+
+          // Determine new direction based on current state
+          let newDirection = requestedDirection;
+
+          // If same field is clicked, check if we need to toggle direction
+          if (currentSort && currentSort.active === currentField) {
+            // Force direction toggle if needed
+            if (currentSort.direction === requestedDirection) {
+              // Toggle direction when clicking same column twice with same direction
+              newDirection = currentSort.direction === 'asc' ? 'desc' : 'asc';
+              console.log(`Toggling direction to ${newDirection}`);
+            }
+          }
+
+          // Update sort config
+          this.currentSort.set({
+            active: currentField,
+            direction: newDirection,
+          });
+
+          // Apply sorting - this will also update the table config
+          this.applyClientSideFilters();
+        }
+        break;
+
+      case 'search':
+        // Handle search
+        if (event.payload) {
+          // Update search config
+          this.currentSearch.set(event.payload);
+
+          // Apply filtering
+          this.applyClientSideFilters();
+        }
+        break;
+
+      case 'action':
+        if (event.payload.action === 'view') {
+          this.viewStudent(event.payload.data.studentId);
+        } else if (event.payload.action === 'edit') {
+          this.editStudent(event.payload.data.studentId);
+        }
+        break;
+    }
+  }
+
+  // Handle pagination events
+  onPageChange(page: number): void {
+    this.loadStudents(page);
+  }
+
+  // Navigation to student details page
+  viewStudent(studentId: string): void {
+    this.router.navigate(['/placement-cell/students', studentId]);
+  }
+
+  // Navigation to student edit page
+  editStudent(studentId: string): void {
+    this.router.navigate(['/placement-cell/students', studentId, 'edit']);
+  }
+
+  // Batch verify selected students
+  verifySelectedStudents(verified: boolean): void {
+    const selectedIds = this.selectedStudents();
+    if (!selectedIds.length) {
+      this.toastService.show('Please select students to verify', 'warning');
+      return;
+    }
+
+    this.studentService
+      .batchVerifyStudents({
+        studentIds: selectedIds,
+        isVerifiedByPlacementCell: verified,
+      })
+      .subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.toastService.show(
+              `Successfully ${verified ? 'verified' : 'unverified'} ${
+                response.data.count
+              } students`,
+              'success'
+            );
+            this.loadStudents(this.pagination().page);
+          } else {
+            this.toastService.show('Operation failed', 'error');
+          }
+        },
+        error: (error) => {
+          this.toastService.show(`Error: ${error.message}`, 'error');
+        },
+      });
+  }
+
+  // Manual toggle for student selection - can be used as a fallback
+  toggleStudentSelection(studentId: string): void {
+    const currentlySelected = this.selectedStudents();
+
+    if (currentlySelected.includes(studentId)) {
+      // Remove from selection
+      this.selectedStudents.set(
+        currentlySelected.filter((id) => id !== studentId)
+      );
+    } else {
+      // Add to selection
+      this.selectedStudents.set([...currentlySelected, studentId]);
+    }
+
+    console.log(
+      'After manual toggle, selectedStudents:',
+      this.selectedStudents()
+    );
+  }
+
+  // Check if a specific student is selected
+  isStudentSelected(studentId: string): boolean {
+    return this.selectedStudents().includes(studentId);
+  }
 }

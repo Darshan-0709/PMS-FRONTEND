@@ -10,13 +10,14 @@ import {
 } from '@angular/forms';
 import { SharedInputComponent } from '../../../../shared/components/shared-input/shared-input.component';
 import { ValidationErrorsComponent } from '../../../../shared/components/validation-errors/validation-errors.component';
-import { DropdownAutocompleteComponentComponent } from '../../../../shared/components/dropdown-autocomplete-component/dropdown-autocomplete-component.component';
+import {
+  DropdownAutocompleteComponentComponent,
+  SelectOption,
+} from '../../../../shared/components/dropdown-autocomplete-component/dropdown-autocomplete-component.component';
 import { defaultValidationMessages } from '../../../../shared/types/validation.types';
 import { RegisterService } from '../register.service';
-import { SelectOption } from '../../../../shared/components/auto-complete/auto-complete.component';
 import { PlacementCellProfileData } from '../register.models';
 import { catchError, tap, throwError } from 'rxjs';
-
 
 @Component({
   selector: 'app-placement-cell-form',
@@ -57,7 +58,7 @@ export class PlacementCellFormComponent implements OnInit {
         this.branches.set(
           branches.map((branch) => ({
             label: branch.name,
-            value: branch.branchId,
+            value: branch.name,
           }))
         );
       }
@@ -96,7 +97,7 @@ export class PlacementCellFormComponent implements OnInit {
       ]),
       website: new FormControl('', [
         Validators.required,
-        Validators.pattern('^(https?:\\/\\/)([\\da-z.-]+)\\.([a-z.]{2,6})([\\/\\w .-]*)*\\/?$'),
+        Validators.pattern(/^https?:\/\/[^\s$.?#].[^\s]*$/),
       ]),
     });
 

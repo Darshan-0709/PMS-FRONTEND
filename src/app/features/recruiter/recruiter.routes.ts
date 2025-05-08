@@ -17,14 +17,45 @@ export const RECRUITER_ROUTES: Routes = [
       {
         path: 'profile',
         component: ProfileComponent,
-        title: 'Recruiter Profile'
+        title: 'Recruiter Profile',
       },
       {
-        path: 'post-jobs',
+        path: 'jobs',
         loadComponent: () =>
-          import('./pages/post-jobs/post-jobs.component').then(
-            (m) => m.PostJobsComponent
+          import('./pages/jobs/jobs.component').then((m) => m.JobsComponent),
+        title: 'Job Postings',
+      },
+      {
+        path: 'criteria',
+        loadComponent: () =>
+          import('./pages/criteria/criteria.component').then(
+            (m) => m.CriteriaComponent
           ),
+        title: 'Eligibility Criteria',
+      },
+      {
+        path: 'target-colleges',
+        loadComponent: () =>
+          import('./pages/target-colleges/target-colleges.component').then(
+            (m) => m.TargetCollegesComponent
+          ),
+        title: 'Target Colleges',
+      },
+      {
+        path: 'drives',
+        loadComponent: () =>
+          import('./pages/drives/drives.component').then(
+            (m) => m.DrivesComponent
+          ),
+        title: 'Drive Schedule',
+      },
+      {
+        path: 'selection',
+        loadComponent: () =>
+          import('./pages/selection/selection.component').then(
+            (m) => m.SelectionComponent
+          ),
+        title: 'Selection Process',
       },
       {
         path: 'applications',
@@ -32,6 +63,15 @@ export const RECRUITER_ROUTES: Routes = [
           import('./pages/applications/applications.component').then(
             (m) => m.ApplicationsComponent
           ),
+        title: 'Applications',
+      },
+      {
+        path: 'results',
+        loadComponent: () =>
+          import('./pages/results/results.component').then(
+            (m) => m.ResultsComponent
+          ),
+        title: 'Results & Offers',
       },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ],

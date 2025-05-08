@@ -92,10 +92,6 @@ export class RegisterService {
     this.userFormData.set(data);
   }
 
-  // setUserData(data: UserFormModel) {
-  //   this.userFormData.set(data);
-  // }
-
   setStudentProfile(data: StudentProfileData) {
     this.studentProfile.set(data);
   }
@@ -124,23 +120,35 @@ export class RegisterService {
     );
 
     if (!selectedCell) return false;
-    console.log(emailDomain);
+    console.log('Email domain:', emailDomain);
+
     return selectedCell.placementCellDomains.some((domain) => {
-      // Remove @ prefix if it exists in the domain
-      return domain.endsWith(emailDomain)
-      const cleanDomain = domain.startsWith('@') ? domain.substring(1) : domain;
-      console.log({domain, cleanDomain});
-      return emailDomain === cleanDomain;
+      // The placementCellDomains array contains domains without @ prefix
+      return domain.endsWith(emailDomain);
     });
   }
 
   // Error management
   setErrors(errors: Record<string, string>) {
+    // Just store the errors for reference, but actual application to form controls
+    // will be done at the component level
     this.errors.set(errors);
+    console.log(this.errors());
   }
 
   clearErrors() {
     this.errors.set({});
+  }
+
+  // Method to clear all form data on component destruction
+  clearAllData() {
+    this.userFormData.set(null);
+    this.studentProfile.set(null);
+    this.recruiterProfile.set(null);
+    this.placementCellProfile.set(null);
+    this.currentStep.set(1);
+    this.selectedRole.set('student');
+    this.clearErrors();
   }
 
   validateUserData(userData: UserFormModel): Observable<boolean> {
@@ -159,15 +167,13 @@ export class RegisterService {
           studentProfileData.placementCellId
         );
 
+        // Instead of throwing an error, we'll just log a warning
+        // The UI will handle showing a warning to the user
         if (!isEmailValid) {
-          return throwError(() => ({
-            error: {
-              errors: {
-                email:
-                  "Student's email domain is not allowed for this placement cell.",
-              },
-            },
-          }));
+          console.warn(
+            "Student's email domain is not allowed for this placement cell, but we'll allow it."
+          );
+          // We don't return an error anymore, just continue
         }
       }
     }
@@ -179,9 +185,9 @@ export class RegisterService {
       }),
       map(() => true),
       catchError((error) => {
-        if (error.error?.errors) {
-          this.setErrors(error.error.errors);
-        }
+        // The error is already in the correct format from the API service
+        console.log('Error in validateUserData:', error);
+        this.setErrors(error);
         return throwError(() => error);
       })
     );

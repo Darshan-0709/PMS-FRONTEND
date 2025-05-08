@@ -2,7 +2,7 @@ import { Component, Input, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
-import { NavItem, NAVIGATION_CONFIG } from '../navbar/navbar.component';
+import { NavItem, NAVIGATION_CONFIG } from '../../config/navigation.config';
 
 @Component({
   selector: 'app-sidebar',
@@ -53,7 +53,7 @@ export class SidebarComponent implements OnInit {
     return this.navItems.filter(
       (item) =>
         !item.roles ||
-        item.roles.map((r) => r.toLowerCase()).includes(userRole || '')
+        item.roles.map((r: string) => r.toLowerCase()).includes(userRole || '')
     );
   }
 

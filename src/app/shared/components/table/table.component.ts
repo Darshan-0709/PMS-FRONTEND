@@ -40,7 +40,7 @@ import {
       class="table-container overflow-hidden rounded-lg border border-gray-200 shadow"
     >
       <!-- Search Section -->
-      @if (config?.enableSearch) {
+      @if (config.enableSearch) {
       <app-table-search
         [searchConfig]="config.searchConfig || {}"
         [columns]="columns()"
@@ -53,10 +53,10 @@ import {
         <table class="min-w-full divide-y divide-gray-200">
           <app-table-header
             [columns]="visibleColumns()"
-            [enableSelection]="config?.enableSelection || false"
+            [enableSelection]="config.enableSelection || false"
             [hasActions]="hasActions()"
             [allSelected]="allSelected()"
-            [sortConfig]="config?.sortConfig"
+            [sortConfig]="config.sortConfig"
             (sort)="onSort($event)"
             (selectAll)="onSelectAll($event)"
           ></app-table-header>
@@ -64,10 +64,10 @@ import {
           <app-table-body
             [data]="processedData()"
             [columns]="visibleColumns()"
-            [uniqueIdField]="config?.uniqueIdField"
-            [enableSelection]="config?.enableSelection || false"
+            [uniqueIdField]="config.uniqueIdField"
+            [enableSelection]="config.enableSelection || false"
             [selectedItems]="selectedItems()"
-            [actionsConfig]="config?.actionsConfig"
+            [actionsConfig]="config.actionsConfig"
             (select)="onSelect($event)"
             (action)="onAction($event)"
           ></app-table-body>
@@ -75,7 +75,7 @@ import {
       </div>
 
       <!-- Pagination Section -->
-      @if (config?.enablePagination) {
+      @if (config.enablePagination) {
       <div
         class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6"
       >
@@ -271,7 +271,7 @@ export class TableComponent<T> implements OnChanges {
           ...this.config.paginationConfig,
           page,
           total: this.filteredData().length, // Ensure total is always set
-          pageSize: this.config.paginationConfig.pageSize || 10,
+          pageSize: this.config.paginationConfig.pageSize || 15,
         },
       };
     } else if (this.config) {
@@ -281,7 +281,7 @@ export class TableComponent<T> implements OnChanges {
         paginationConfig: {
           page,
           total: this.filteredData().length,
-          pageSize: 10,
+          pageSize: 5,
         },
       };
     }

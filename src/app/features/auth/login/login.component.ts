@@ -20,6 +20,8 @@ import {
 } from '../../../core/services/auth.service';
 import { AuthResponse } from '../../../shared/types/auth.types';
 import { ApiResponse } from '../../../core/config/api.config';
+import { ToastService } from '../../../shared/services/toast.service';
+import { ToastComponent } from '../../../shared/components/toast/toast.component';
 
 type LoginFormType = {
   email: FormControl<string>;
@@ -35,6 +37,7 @@ type LoginFormType = {
     SharedInputComponent,
     ValidationErrorsComponent,
     RouterModule,
+    ToastComponent,
   ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
@@ -53,7 +56,8 @@ export class LoginComponent {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private toastService: ToastService
   ) {
     this.loginForm = this.fb.group<LoginFormType>({
       email: this.fb.control('', {
@@ -65,6 +69,16 @@ export class LoginComponent {
         validators: [Validators.required],
       }),
     });
+
+    // Check for success message from previous navigation (like registration success)
+    const navigation = this.router.getCurrentNavigation();
+    if (
+      navigation?.extras.state &&
+      'successMessage' in navigation.extras.state
+    ) {
+      const message = navigation.extras.state['successMessage'] as string;
+      this.toastService.show(message, 'success');
+    }
   }
 
   get emailControl(): FormControl<string> {
@@ -89,6 +103,8 @@ export class LoginComponent {
         next: (response: ApiResponse<AuthResponse>) => {
           this.isLoading = false;
           if (response.success && response.data) {
+            // Show success toast
+            this.toastService.show('Login successful!', 'success');
             console.log(
               'LoginComponent: Login successful, redirecting based on role'
             );
@@ -97,8 +113,11 @@ export class LoginComponent {
         },
         error: (error) => {
           this.isLoading = false;
-          this.errorMessage =
+          const errorMessage =
             error.error?.message || 'Login failed. Please try again.';
+          this.errorMessage = errorMessage;
+          // Show error toast
+          this.toastService.show(errorMessage, 'error');
         },
       });
     }

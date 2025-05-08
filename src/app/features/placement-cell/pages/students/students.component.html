@@ -1,47 +1,92 @@
-     <!-- <div class="mb-10">
-        <h2 class="text-xl font-semibold mb-3">Advanced Table</h2>
-        <p class="text-gray-600 mb-4">
-          Table with all features enabled: sorting, searching, selection,
-          pagination, and actions.
-        </p>
+<div class="container mx-auto px-4 py-6">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold text-gray-800">Student Management</h1>
+    <div class="flex space-x-2">
+      <!-- Batch action buttons - only enabled when students are selected -->
+      <button
+        class="btn btn-sm btn-soft btn-success"
+        [class.opacity-50]="selectedStudents().length === 0"
+        [disabled]="selectedStudents().length === 0"
+        (click)="verifySelectedStudents(true)"
+      >
+        Verify Selected
+      </button>
+      <button
+        class="btn btn-sm btn-soft btn-danger"
+        [class.opacity-50]="selectedStudents().length === 0"
+        [disabled]="selectedStudents().length === 0"
+        (click)="verifySelectedStudents(false)"
+      >
+        Unverify Selected
+      </button>
+    </div>
+  </div>
 
-        <div class="mb-4" *ngIf="selectedUsers.length > 0">
-          <div class="bg-blue-50 p-3 rounded border border-blue-200">
-            <p class="text-sm text-blue-800">
-              {{ selectedUsers.length }} users selected.
-              <button
-                class="ml-2 text-blue-600 hover:text-blue-800 underline"
-                (click)="clearSelection()"
-              >
-                Clear selection
-              </button>
-            </p>
-          </div>
-        </div>
+  <!-- Loading spinner -->
+  @if (isLoading()) {
+  <div class="flex justify-center items-center h-64">
+    <div
+      class="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-blue-500"
+    ></div>
+  </div>
+  } @else {
+  <!-- Table -->
+  <div class="bg-white rounded-lg shadow-md overflow-hidden">
+    <app-table
+      [data]="filteredStudents()"
+      [config]="tableConfig"
+      (tableEvent)="onTableEvent($event)"
+    ></app-table>
+  </div>
 
-        <app-table
-          [data]="users"
-          [config]="advancedTableConfig"
-          (tableEvent)="onAdvancedTableEvent($event)"
-        ></app-table>
-      </div>
+  <!-- Pagination -->
+  <div class="mt-4 flex justify-center">
+    <app-pagination
+      [pagination]="pagination()"
+      (pageChange)="onPageChange($event)"
+    ></app-pagination>
+  </div>
+  }
+</div>
 
-      <ng-template #statusTemplate let-user>
-        <span
-          class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
-          [ngClass]="{
-            'bg-green-100 text-green-800': user.status === 'active',
-            'bg-red-100 text-red-800': user.status === 'inactive',
-            'bg-yellow-100 text-yellow-800': user.status === 'pending'
-          }"
-        >
-          {{ user.status }}
-        </span>
-      </ng-template>
+<!-- Templates for custom cell rendering -->
 
-      <ng-template #dateTemplate let-user>
-        {{ user.lastLogin | date : 'medium' }}
-      </ng-template>
-    </div> -->
+<!-- Status template -->
+<ng-template #statusTemplate let-item>
+  <span
+    [ngClass]="{
+      'px-2 py-1 rounded-full text-xs font-medium': true,
+      'bg-green-100 text-green-800': item.placementStatus === 'placed',
+      'bg-blue-100 text-blue-800': item.placementStatus === 'eligible',
+      'bg-yellow-100 text-yellow-800': item.placementStatus === 'pending',
+      'bg-red-100 text-red-800': item.placementStatus === 'ineligible'
+    }"
+  >
+    {{ item.placementStatus }}
+  </span>
+</ng-template>
 
-    <app-table-demo></app-table-demo>
+<!-- Verification status template -->
+<ng-template #verifiedTemplate let-item>
+  <span
+    [ngClass]="{
+      'px-2 py-1 rounded-full text-xs font-medium': true,
+      'bg-green-100 text-green-800': item.isVerifiedByPlacementCell,
+      'bg-red-100 text-red-800': !item.isVerifiedByPlacementCell
+    }"
+  >
+    {{ item.isVerifiedByPlacementCell ? "Verified" : "Not Verified" }}
+  </span>
+</ng-template>
+
+<!-- Actions template -->
+<ng-template #actionsTemplate let-item>
+  <div class="flex space-x-2">
+    <button
+      class="btn btn-sm btn-solid btn-primary"
+      (click)="viewStudent(item.studentId)"
+    >
+      View
+    </button>
+  </div>
+</ng-template>

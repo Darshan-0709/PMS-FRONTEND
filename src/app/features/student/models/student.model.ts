@@ -1,51 +1,51 @@
-export interface Degree {
-  degreeId: string;
-  name: string;
-}
+import { Degree } from '../../../shared/types/common.types';
+import { ApiResponse } from '../../../models/api-response.model';
 
-export interface PlacementCell {
-  placementCellId: string;
-  placementCellName: string;
-}
-
+// Student profile data model
 export interface StudentProfile {
   studentId: string;
-  enrollmentNumber: string;
   fullName: string;
-  cgpa: string;
-  bachelorsGpa: string;
-  tenthPercentage: string;
-  twelfthPercentage: string;
-  diplomaPercentage: string;
-  backlogs: number;
-  liveBacklogs: number;
-  placementStatus: 'not_placed' | 'placed' | 'offered';
+  enrollmentNumber: string;
+  cgpa: number | null;
+  bachelorsGpa: number | null;
+  tenthPercentage: number | null;
+  twelfthPercentage: number | null;
+  diplomaPercentage: number | null;
+  backlogs: number | null;
+  liveBacklogs: number | null;
   resumeUrl: string | null;
+  placementStatus: string;
   isVerifiedByPlacementCell: boolean;
-  degree: Degree;
-  placement_cell: PlacementCell;
+  degree: {
+    degreeId: string;
+    name: string;
+  };
+  placement_cell: {
+    placementCellId: string;
+    placementCellName: string;
+  };
 }
 
+// Student API response type
+export interface StudentApiResponse extends ApiResponse<StudentProfile> {}
+
+// Basic update payload for student (used by student themselves)
 export interface StudentProfileUpdatePayload {
   fullName?: string;
-  cgpa?: string;
-  bachelorsGpa?: string;
-  tenthPercentage?: string;
-  twelfthPercentage?: string;
-  diplomaPercentage?: string;
-  backlogs?: number;
-  liveBacklogs?: number;
-  resumeUrl?: string | null;
+  cgpa?: number | null;
+  bachelorsGpa?: number | null;
+  tenthPercentage?: number | null;
+  twelfthPercentage?: number | null;
+  diplomaPercentage?: number | null;
+  backlogs?: number | null;
+  liveBacklogs?: number | null;
 }
 
-export interface StudentProfilePlacementCellUpdatePayload extends StudentProfileUpdatePayload {
+// Extended update payload for placement cell
+export interface StudentProfilePlacementCellUpdatePayload
+  extends StudentProfileUpdatePayload {
   enrollmentNumber?: string;
-  placementStatus?: 'not_placed' | 'placed' | 'offered';
+  placementStatus?: string;
   isVerifiedByPlacementCell?: boolean;
+  degreeId?: string;
 }
-
-export interface StudentApiResponse {
-  success: boolean;
-  message: string;
-  data: StudentProfile;
-} 

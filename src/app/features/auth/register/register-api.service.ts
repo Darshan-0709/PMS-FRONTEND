@@ -25,8 +25,14 @@ export class RegisterAPIService {
       )
       .pipe(
         catchError((err) => {
-          console.error(err.error.errors);
-          return throwError(() => err.error.errors);
+          console.error(
+            'API Error - validateUserData:',
+            err.error?.errors || err
+          );
+          // Return just the errors object for consistent error handling
+          return throwError(
+            () => err.error?.errors || { general: 'Unknown error occurred' }
+          );
         })
       );
   }
@@ -39,8 +45,10 @@ export class RegisterAPIService {
       .pipe(
         map((data) => data.data),
         catchError((err) => {
-          console.error(err);
-          return throwError(() => err);
+          console.error('API Error - fetchBranches:', err);
+          return throwError(
+            () => err.error?.errors || { general: 'Failed to fetch branches' }
+          );
         })
       );
   }
@@ -53,8 +61,10 @@ export class RegisterAPIService {
       .pipe(
         map((data) => data.data),
         catchError((err) => {
-          console.error(err);
-          return throwError(() => err);
+          console.error('API Error - fetchDegrees:', err);
+          return throwError(
+            () => err.error?.errors || { general: 'Failed to fetch degrees' }
+          );
         })
       );
   }
@@ -67,8 +77,13 @@ export class RegisterAPIService {
       .pipe(
         map((data) => data.data),
         catchError((err) => {
-          console.error(err);
-          return throwError(() => err);
+          console.error('API Error - fetchPlacementCellDepartment:', err);
+          return throwError(
+            () =>
+              err.error?.errors || {
+                general: 'Failed to fetch placement cells',
+              }
+          );
         })
       );
   }
@@ -81,8 +96,13 @@ export class RegisterAPIService {
       )
       .pipe(
         catchError((err) => {
-          console.error(err.error.errors);
-          return throwError(() => err.error.errors);
+          console.error(
+            'API Error - submitRegistrationData:',
+            err.error?.errors || err
+          );
+          return throwError(
+            () => err.error?.errors || { general: 'Registration failed' }
+          );
         })
       );
   }
@@ -95,8 +115,13 @@ export class RegisterAPIService {
       )
       .pipe(
         catchError((err) => {
-          console.error(err.error.errors);
-          return throwError(() => err.error.errors);
+          console.error(
+            'API Error - submitRegistration:',
+            err.error?.errors || err
+          );
+          return throwError(
+            () => err.error?.errors || { general: 'Registration failed' }
+          );
         })
       );
   }

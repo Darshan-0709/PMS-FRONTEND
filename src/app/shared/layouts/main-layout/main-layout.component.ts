@@ -2,54 +2,53 @@ import { Component, OnInit, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
-import { StudentNavigationComponent } from '../../../features/student/components/navigation/student-navigation.component';
-import { RecruiterNavigationComponent } from '../../../features/recruiter/components/navigation/recruiter-navigation.component';
-import { PlacementCellNavigationComponent } from '../../../features/placement-cell/components/navigation/placement-cell-navigation.component';
 import { AuthService } from '../../../core/services/auth.service';
+import { SidebarComponent } from '../../components/sidebar/sidebar.component';
+import { NAVIGATION_CONFIG } from '../../config/navigation.config';
 
 @Component({
   selector: 'app-main-layout',
   standalone: true,
-  imports: [
-    CommonModule,
-    RouterModule,
-    StudentNavigationComponent,
-    RecruiterNavigationComponent,
-    PlacementCellNavigationComponent,
-  ],
+  imports: [CommonModule, RouterModule, SidebarComponent],
   template: `
     @switch (userRole()) { @case ('student') {
-    <app-student-navigation>
+    <app-sidebar brandName="Student Portal" [navItems]="studentNavItems">
       <router-outlet />
-    </app-student-navigation>
+    </app-sidebar>
     } @case ('recruiter') {
-    <app-recruiter-navigation>
+    <app-sidebar brandName="Recruiter Portal" [navItems]="recruiterNavItems">
       <router-outlet />
-    </app-recruiter-navigation>
+    </app-sidebar>
     } @case ('placement_cell') {
-    <app-placement-cell-navigation>
+    <app-sidebar brandName="Placement Cell" [navItems]="placementCellNavItems">
       <router-outlet />
-    </app-placement-cell-navigation>
+    </app-sidebar>
     } @default {
     <!-- Fallback navigation based on URL path if role is not available -->
     @if (currentPath.startsWith('/student/')) {
-    <app-student-navigation>
+    <app-sidebar brandName="Student Portal" [navItems]="studentNavItems">
       <router-outlet />
-    </app-student-navigation>
+    </app-sidebar>
     } @else if (currentPath.startsWith('/recruiter/')) {
-    <app-recruiter-navigation>
+    <app-sidebar brandName="Recruiter Portal" [navItems]="recruiterNavItems">
       <router-outlet />
-    </app-recruiter-navigation>
+    </app-sidebar>
     } @else if (currentPath.startsWith('/placement-cell/')) {
-    <app-placement-cell-navigation>
+    <app-sidebar brandName="Placement Cell" [navItems]="placementCellNavItems">
       <router-outlet />
-    </app-placement-cell-navigation>
+    </app-sidebar>
     } } }
   `,
+  styleUrls: ['./main-layout.component.css'],
 })
 export class MainLayoutComponent implements OnInit {
   currentPath: string = '';
   userRole = computed(() => this.authService.user()?.role || null);
+
+  // Navigation items from config
+  studentNavItems = NAVIGATION_CONFIG['student'];
+  recruiterNavItems = NAVIGATION_CONFIG['recruiter'];
+  placementCellNavItems = NAVIGATION_CONFIG['placement_cell'];
 
   constructor(private router: Router, private authService: AuthService) {}
 

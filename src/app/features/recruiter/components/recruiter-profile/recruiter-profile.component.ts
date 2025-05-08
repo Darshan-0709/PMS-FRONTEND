@@ -2,6 +2,8 @@ import {
   Component,
   Input,
   OnInit,
+  OnChanges,
+  SimpleChanges,
   inject,
   signal,
   computed,
@@ -19,6 +21,7 @@ import { ToastService } from '../../../../shared/services/toast.service';
 import { SharedInputComponent } from '../../../../shared/components/shared-input/shared-input.component';
 import { ValidationErrorsComponent } from '../../../../shared/components/validation-errors/validation-errors.component';
 import { RecruiterProfile } from '../../models/recruiter.model';
+import { defaultValidationMessages } from '../../../../shared/types/validation.types';
 
 @Component({
   selector: 'app-recruiter-profile',
@@ -32,7 +35,7 @@ import { RecruiterProfile } from '../../models/recruiter.model';
   templateUrl: './recruiter-profile.component.html',
   styleUrls: ['./recruiter-profile.component.css'],
 })
-export class RecruiterProfileComponent implements OnInit {
+export class RecruiterProfileComponent implements OnInit, OnChanges {
   @Input() recruiterId!: string;
 
   private fb = inject(FormBuilder);
@@ -40,6 +43,9 @@ export class RecruiterProfileComponent implements OnInit {
   private toastService = inject(ToastService);
 
   profileForm!: FormGroup;
+  validationMessages = defaultValidationMessages;
+  isInitialized = signal(false);
+  isLoading = signal(true);
 
   profile$ = this.profileService.profile$;
   isEditMode$ = this.profileService.isEditMode$;
@@ -61,16 +67,20 @@ export class RecruiterProfileComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    // Initialize the form
+    // Initialize the form but don't load data yet
     this.initializeForm();
 
-    // Load recruiter profile
-    this.loadProfile();
+    // Only load profile if ID is provided during initialization
+    if (this.recruiterId) {
+      this.isInitialized.set(true);
+      this.loadProfile();
+    }
 
     // Subscribe to profile changes to update form
     this.profile$.subscribe((profile) => {
       if (profile) {
         this.updateFormValues(profile);
+        this.isLoading.set(false);
       }
     });
 
@@ -87,6 +97,18 @@ export class RecruiterProfileComponent implements OnInit {
     });
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    // If recruiterId changes and is now defined, and we haven't initialized yet
+    if (
+      changes['recruiterId'] &&
+      changes['recruiterId'].currentValue &&
+      !this.isInitialized()
+    ) {
+      this.isInitialized.set(true);
+      this.loadProfile();
+    }
+  }
+
   private initializeForm(): void {
     this.profileForm = this.fb.group({
       companyName: ['', Validators.required],
@@ -96,9 +118,7 @@ export class RecruiterProfileComponent implements OnInit {
         '',
         [
           Validators.required,
-          Validators.pattern(
-            '^(https?:\\/\\/)([\\da-z.-]+)\\.([a-z.]{2,6})([\\/\\w .-]*)*\\/?$'
-          ),
+          Validators.pattern(/^https?:\/\/[^\s$.?#].[^\s]*$/)
         ],
       ],
       companyEmail: ['', [Validators.required, Validators.email]],
@@ -109,16 +129,25 @@ export class RecruiterProfileComponent implements OnInit {
   }
 
   private loadProfile(): void {
+    if (!this.recruiterId) {
+      this.toastService.show('No recruiter ID provided', 'error');
+      this.isLoading.set(false);
+      return;
+    }
+
+    this.isLoading.set(true);
     this.profileService.getProfile(this.recruiterId).subscribe({
       next: (profile) => {
         // Success handling is done in the service via tap operator
-        this.toastService.show('Profile loaded successfully', 'success');
+        // this.toastService.show('Profile loaded successfully', 'success');
+        this.isLoading.set(false);
       },
       error: (error) => {
         this.toastService.show(
           'Failed to load profile: ' + error.message,
           'error'
         );
+        this.isLoading.set(false);
       },
     });
   }

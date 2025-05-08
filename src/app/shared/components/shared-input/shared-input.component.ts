@@ -15,4 +15,9 @@ export class SharedInputComponent {
   type = input<string>('text');
   placeholder = input<string>('');
   readonly = input<boolean>(false);
+  constructor(){
+    effect(()=> {
+      this.readonly()
+    })
+  }
 }

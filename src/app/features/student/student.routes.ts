@@ -1,7 +1,5 @@
 import { Routes } from '@angular/router';
 import { MainLayoutComponent } from '../../shared/layouts/main-layout/main-layout.component';
-import { StudentNavigationComponent } from './components/navigation/student-navigation.component';
-import { ProfileComponent } from './pages/profile/profile.component';
 
 export const STUDENT_ROUTES: Routes = [
   {
@@ -17,8 +15,10 @@ export const STUDENT_ROUTES: Routes = [
       },
       {
         path: 'profile',
-        component: ProfileComponent,
-        title: 'My Profile'
+        loadComponent: () =>
+          import('./pages/profile/profile.component').then(
+            (m) => m.ProfileComponent
+          ),
       },
       {
         path: 'jobs',
@@ -30,6 +30,20 @@ export const STUDENT_ROUTES: Routes = [
         loadComponent: () =>
           import('./pages/applications/applications.component').then(
             (m) => m.ApplicationsComponent
+          ),
+      },
+      {
+        path: 'selection',
+        loadComponent: () =>
+          import('./pages/selection/selection.component').then(
+            (m) => m.SelectionComponent
+          ),
+      },
+      {
+        path: 'results',
+        loadComponent: () =>
+          import('./pages/results/results.component').then(
+            (m) => m.ResultsComponent
           ),
       },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
