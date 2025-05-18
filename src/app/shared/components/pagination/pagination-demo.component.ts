@@ -18,16 +18,10 @@ import { PaginationComponent, PaginationInfo } from './pagination.component';
         ></app-pagination>
 
         <div class="mt-4 p-4 bg-gray-50 rounded">
-          <p class="text-sm text-gray-600">
-            Current page: {{ paginationConfig.page }}
-          </p>
+          <p class="text-sm text-gray-600">Current page: {{ paginationConfig.page }}</p>
           <p class="text-sm text-gray-600">Total pages: {{ totalPages }}</p>
-          <p class="text-sm text-gray-600">
-            Items per page: {{ paginationConfig.pageSize }}
-          </p>
-          <p class="text-sm text-gray-600">
-            Total items: {{ paginationConfig.total }}
-          </p>
+          <p class="text-sm text-gray-600">Items per page: {{ paginationConfig.pageSize }}</p>
+          <p class="text-sm text-gray-600">Total items: {{ paginationConfig.total }}</p>
         </div>
       </div>
 
@@ -41,9 +35,7 @@ import { PaginationComponent, PaginationInfo } from './pagination.component';
         ></app-pagination>
 
         <div class="mt-4 p-4 bg-gray-50 rounded">
-          <p class="text-sm text-gray-600">
-            Current page: {{ paginationWithPageSizeConfig.page }}
-          </p>
+          <p class="text-sm text-gray-600">Current page: {{ paginationWithPageSizeConfig.page }}</p>
           <p class="text-sm text-gray-600">
             Items per page: {{ paginationWithPageSizeConfig.pageSize }}
           </p>
@@ -51,9 +43,7 @@ import { PaginationComponent, PaginationInfo } from './pagination.component';
       </div>
 
       <div class="bg-white p-6 rounded-lg shadow">
-        <h2 class="text-lg font-semibold mb-4">
-          Compact Pagination (Without Total & First/Last)
-        </h2>
+        <h2 class="text-lg font-semibold mb-4">Compact Pagination (Without Total & First/Last)</h2>
         <app-pagination
           [pagination]="compactPaginationConfig"
           [showTotal]="false"
@@ -86,9 +76,7 @@ export class PaginationDemoComponent {
 
   // Computed property
   get totalPages(): number {
-    return Math.ceil(
-      this.paginationConfig.total / this.paginationConfig.pageSize
-    );
+    return Math.ceil(this.paginationConfig.total / this.paginationConfig.pageSize);
   }
 
   // Event handlers
@@ -119,8 +107,7 @@ export class PaginationDemoComponent {
 
     // Calculate the first item index on the current page
     const firstItemIndex =
-      (this.paginationWithPageSizeConfig.page - 1) *
-      this.paginationWithPageSizeConfig.pageSize;
+      (this.paginationWithPageSizeConfig.page - 1) * this.paginationWithPageSizeConfig.pageSize;
 
     // Calculate the new page number to keep the user at approximately the same position
     const newPage = Math.floor(firstItemIndex / pageSize) + 1;

@@ -25,11 +25,7 @@ type RecruiterFormType = {
 @Component({
   selector: 'app-recruiter-form',
   standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    SharedInputComponent,
-    ValidationErrorsComponent,
-  ],
+  imports: [ReactiveFormsModule, SharedInputComponent, ValidationErrorsComponent],
   viewProviders: [
     {
       provide: ControlContainer,
@@ -72,10 +68,7 @@ export class RecruiterFormComponent implements OnInit {
       }),
       website: this.fb.control('', {
         nonNullable: true,
-        validators: [
-          Validators.required,
-          Validators.pattern(/^https?:\/\/[^\s$.?#].[^\s]*$/)
-        ],
+        validators: [Validators.required, Validators.pattern(/^https?:\/\/[^\s$.?#].[^\s]*$/)],
       }),
       companyEmail: this.fb.control('', {
         nonNullable: true,
@@ -84,7 +77,7 @@ export class RecruiterFormComponent implements OnInit {
     });
     this.parentFormGroup.addControl('recruiterForm', recruiterForm);
     const savedData = this.registerService.recruiterProfile();
-    recruiterForm.valueChanges.subscribe((val) => {
+    recruiterForm.valueChanges.subscribe(val => {
       if (
         (val.companyEmail !== undefined &&
           val.companyName !== undefined &&

@@ -7,7 +7,13 @@ import { ToastService } from './toast.service';
 
 import { Branch, Degree, PlacementCellListItem } from '../types/common.types';
 import { ApiResponse } from '../types/api-response.types';
-import { BaseRegisterRequest, PlacementCellProfileData, RecruiterProfileData, RegisterRequest, StudentProfileData } from '../types/auth.types';
+import {
+  BaseRegisterRequest,
+  PlacementCellProfileData,
+  RecruiterProfileData,
+  RegisterRequest,
+  StudentProfileData,
+} from '../types/auth.types';
 
 /**
  * Service for managing the registration flow
@@ -134,7 +140,9 @@ export class RegisterService {
 
   // Helper method to get placement cells
   private getPlacementCells(): Observable<PlacementCellListItem[]> {
-    return this.api.get<PlacementCellListItem[]>('placement_cells_list').pipe(map(response => response.data));
+    return this.api
+      .get<PlacementCellListItem[]>('placement_cells_list')
+      .pipe(map(response => response.data));
   }
 
   // Check if student email domain is allowed for placement cell

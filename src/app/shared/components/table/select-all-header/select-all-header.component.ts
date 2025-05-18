@@ -12,9 +12,7 @@ export class SelectAllHeaderComponent<T> {
   @Output() selectAllChange = new EventEmitter<T[]>();
 
   get allSelected(): boolean {
-    return (
-      this.data.length > 0 && this.selectedItems.length === this.data.length
-    );
+    return this.data.length > 0 && this.selectedItems.length === this.data.length;
   }
 
   toggleAll(event: Event) {

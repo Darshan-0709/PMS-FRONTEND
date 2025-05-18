@@ -1,10 +1,4 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  Output,
-  computed,
-} from '@angular/core';
+import { Component, EventEmitter, Input, Output, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ColumnDefinition, SortConfig } from '../models/table.model';
 
@@ -17,82 +11,77 @@ import { ColumnDefinition, SortConfig } from '../models/table.model';
       <tr>
         <!-- Selection checkbox column -->
         @if (enableSelection) {
-        <th class="w-14 px-3 py-3.5">
-          <div class="flex items-center">
-            <input
-              type="checkbox"
-              class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-              [checked]="allSelected"
-              (change)="onSelectAllChange($event)"
-              [disabled]="disabled"
-              aria-label="Select all rows"
-            />
-          </div>
-        </th>
+          <th class="w-14 px-3 py-3.5">
+            <div class="flex items-center">
+              <input
+                type="checkbox"
+                class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                [checked]="allSelected"
+                (change)="onSelectAllChange($event)"
+                [disabled]="disabled"
+                aria-label="Select all rows"
+              />
+            </div>
+          </th>
         }
 
         <!-- Column headers -->
         @for (column of columns; track column.field) {
-        <th
-          class="px-3 py-3.5 text-left text-sm font-semibold"
-          [ngClass]="{
-            'cursor-pointer hover:bg-gray-100': column.sortable
-          }"
-          [style.width]="column.width"
-          (click)="column.sortable ? onSortClick(column.field) : null"
-        >
-          <div class="group inline-flex items-center">
-            {{ column.header }}
+          <th
+            class="px-3 py-3.5 text-left text-sm font-semibold"
+            [ngClass]="{
+              'cursor-pointer hover:bg-gray-100': column.sortable,
+            }"
+            [style.width]="column.width"
+            (click)="column.sortable ? onSortClick(column.field) : null"
+          >
+            <div class="group inline-flex items-center">
+              {{ column.header }}
 
-            <!-- Sort icon -->
-            @if (column.sortable) {
-            <span class="ml-2 flex-none rounded">
-              @if (isSortedColumn(column.field)) {
-              <svg
-                class="h-5 w-5"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                aria-hidden="true"
-              >
-                @if (sortDirection() === 'asc') {
-                <path
-                  fill-rule="evenodd"
-                  d="M10 5a.75.75 0 01.75.75v6.638l2.96-3.027a.75.75 0 111.08 1.04l-4.25 4.35a.75.75 0 01-1.08 0l-4.25-4.35a.75.75 0 111.08-1.04l2.96 3.027V5.75A.75.75 0 0110 5z"
-                  clip-rule="evenodd"
-                />
-                } @else {
-                <path
-                  fill-rule="evenodd"
-                  d="M10 15a.75.75 0 01-.75-.75V7.612L6.29 10.64a.75.75 0 11-1.08-1.04l4.25-4.35a.75.75 0 011.08 0l4.25 4.35a.75.75 0 11-1.08 1.04l-2.96-3.027v6.638A.75.75 0 0110 15z"
-                  clip-rule="evenodd"
-                />
-                }
-              </svg>
-              } @else {
-              <svg
-                class="h-5 w-5 text-gray-400 group-hover:text-gray-500"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M10 3a.75.75 0 01.55.24l3.25 3.5a.75.75 0 11-1.1 1.02L10 4.852 7.3 7.76a.75.75 0 01-1.1-1.02l3.25-3.5A.75.75 0 0110 3zm-3.76 9.2a.75.75 0 011.06.04l2.7 2.908 2.7-2.908a.75.75 0 111.1 1.02l-3.25 3.5a.75.75 0 01-1.1 0l-3.25-3.5a.75.75 0 01.04-1.06z"
-                  clip-rule="evenodd"
-                />
-              </svg>
+              <!-- Sort icon -->
+              @if (column.sortable) {
+                <span class="ml-2 flex-none rounded">
+                  @if (isSortedColumn(column.field)) {
+                    <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      @if (sortDirection() === 'asc') {
+                        <path
+                          fill-rule="evenodd"
+                          d="M10 5a.75.75 0 01.75.75v6.638l2.96-3.027a.75.75 0 111.08 1.04l-4.25 4.35a.75.75 0 01-1.08 0l-4.25-4.35a.75.75 0 111.08-1.04l2.96 3.027V5.75A.75.75 0 0110 5z"
+                          clip-rule="evenodd"
+                        />
+                      } @else {
+                        <path
+                          fill-rule="evenodd"
+                          d="M10 15a.75.75 0 01-.75-.75V7.612L6.29 10.64a.75.75 0 11-1.08-1.04l4.25-4.35a.75.75 0 011.08 0l4.25 4.35a.75.75 0 11-1.08 1.04l-2.96-3.027v6.638A.75.75 0 0110 15z"
+                          clip-rule="evenodd"
+                        />
+                      }
+                    </svg>
+                  } @else {
+                    <svg
+                      class="h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      aria-hidden="true"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M10 3a.75.75 0 01.55.24l3.25 3.5a.75.75 0 11-1.1 1.02L10 4.852 7.3 7.76a.75.75 0 01-1.1-1.02l3.25-3.5A.75.75 0 0110 3zm-3.76 9.2a.75.75 0 011.06.04l2.7 2.908 2.7-2.908a.75.75 0 111.1 1.02l-3.25 3.5a.75.75 0 01-1.1 0l-3.25-3.5a.75.75 0 01.04-1.06z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                  }
+                </span>
               }
-            </span>
-            }
-          </div>
-        </th>
+            </div>
+          </th>
         }
 
         <!-- Actions column if needed -->
         @if (hasActions) {
-        <th class="relative py-3.5 pl-3 pr-4 sm:pr-6">
-          <span class="sr-only">Actions</span>
-        </th>
+          <th class="relative py-3.5 pl-3 pr-4 sm:pr-6">
+            <span class="sr-only">Actions</span>
+          </th>
         }
       </tr>
     </thead>

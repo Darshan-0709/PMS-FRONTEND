@@ -17,16 +17,10 @@ import { ValidationErrorsComponent } from '../../shared/components/validation-er
 import { defaultValidationMessages, ValidationMessages } from '../../types/validation.types';
 import { RegisterService } from '../../services/register.service';
 
-
 @Component({
   selector: 'app-user-form',
   standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    CommonModule,
-    SharedInputComponent,
-    ValidationErrorsComponent,
-  ],
+  imports: [ReactiveFormsModule, CommonModule, SharedInputComponent, ValidationErrorsComponent],
   viewProviders: [
     {
       provide: ControlContainer,
@@ -52,8 +46,7 @@ export class UserFormComponent {
     ...defaultValidationMessages,
     passwordsMismatch: () => 'Passwords do not match',
     emailDomain: () =>
-      this.emailDomainError ||
-      'Email domain is not allowed for the selected placement cell',
+      this.emailDomainError || 'Email domain is not allowed for the selected placement cell',
   };
 
   @Output() validationSuccess = new EventEmitter<void>();
@@ -83,7 +76,7 @@ export class UserFormComponent {
     );
     this.parentFormGroup.addControl('userForm', userGroup);
     const savedData = this.registerService.userFormData();
-    userGroup.valueChanges.subscribe((val) => {
+    userGroup.valueChanges.subscribe(val => {
       if (
         val.email !== undefined &&
         val.username !== undefined &&
@@ -124,7 +117,7 @@ export class UserFormComponent {
       this.registerService.setUserFormData(data);
       this.registerService.validateUserData(data).subscribe({
         next: () => this.validationSuccess.emit(),
-        error: (errors) => {
+        error: errors => {
           console.log('Received validation errors:', errors);
 
           // If error is specifically about email domain, handle it specially

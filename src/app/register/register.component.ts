@@ -122,7 +122,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
     }
 
     this.registerService.submitRegistration().subscribe({
-      next: (response) => {
+      next: response => {
         console.log('Registration successful:', response);
         this.showSuccessMessage = true;
         this.successMessage = 'Registration completed successfully!';
@@ -133,19 +133,15 @@ export class RegisterComponent implements OnInit, OnDestroy {
         // Redirect to login page after registration
         this.router.navigate(['/auth/login'], {
           state: {
-            successMessage:
-              'Registration completed successfully! Please log in.',
+            successMessage: 'Registration completed successfully! Please log in.',
           },
         });
       },
-      error: (error) => {
+      error: error => {
         console.error('Registration failed:', error);
 
         // Show error toast with a general message
-        this.toastService.show(
-          'Registration failed. Please check the form for errors.',
-          'error'
-        );
+        this.toastService.show('Registration failed. Please check the form for errors.', 'error');
 
         // Apply errors to specific form controls
         // The error is directly from the API service
@@ -163,10 +159,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
       const userForm = this.registrationForm.get('userForm') as FormGroup;
       if (
         userForm &&
-        (key === 'email' ||
-          key === 'username' ||
-          key === 'password' ||
-          key === 'confirmPassword')
+        (key === 'email' || key === 'username' || key === 'password' || key === 'confirmPassword')
       ) {
         const control = userForm.get(key);
         if (control) {
@@ -194,9 +187,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
       }
 
       // Handle placement cell form errors
-      const placementCellForm = this.registrationForm.get(
-        'placementCellForm'
-      ) as FormGroup;
+      const placementCellForm = this.registrationForm.get('placementCellForm') as FormGroup;
       if (
         placementCellForm &&
         (key === 'placementCellName' ||
@@ -215,9 +206,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
       }
 
       // Handle recruiter form errors
-      const recruiterForm = this.registrationForm.get(
-        'recruiterForm'
-      ) as FormGroup;
+      const recruiterForm = this.registrationForm.get('recruiterForm') as FormGroup;
       if (
         recruiterForm &&
         (key === 'companyName' ||

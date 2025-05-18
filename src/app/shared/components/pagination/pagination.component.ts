@@ -56,7 +56,7 @@ export class PaginationComponent implements OnChanges {
     // Calculate the range to show
     const halfVisible = Math.floor(this.visiblePages / 2);
     let start = Math.max(current - halfVisible, 1);
-    let end = Math.min(start + this.visiblePages - 1, totalPgs);
+    const end = Math.min(start + this.visiblePages - 1, totalPgs);
 
     // Adjust start if we're near the end
     if (end === totalPgs) {
@@ -84,8 +84,7 @@ export class PaginationComponent implements OnChanges {
 
     // Calculate total pages if not provided
     const calculatedTotal =
-      this.pagination.totalPages ||
-      Math.ceil(this.pagination.total / this.pagination.pageSize);
+      this.pagination.totalPages || Math.ceil(this.pagination.total / this.pagination.pageSize);
     this.totalPages.set(Math.max(calculatedTotal, 1)); // Ensure at least 1 page
   }
 
@@ -100,39 +99,39 @@ export class PaginationComponent implements OnChanges {
   }
 
   goToFirstPage(): void {
-    console.log("First Page")
+    console.log('First Page');
     this.goToPage(1);
   }
-  
+
   goToLastPage(): void {
-    console.log("Last Page")
+    console.log('Last Page');
     this.goToPage(this.totalPages());
   }
-  
+
   goToPreviousPage(): void {
-    console.log("Previous Page")
+    console.log('Previous Page');
     if (this.hasPrev()) {
       this.goToPage(this.currentPage() - 1);
     }
   }
-  
+
   goToNextPage(): void {
-    console.log("Next Page")
+    console.log('Next Page');
     if (this.hasNext()) {
       this.goToPage(this.currentPage() + 1);
     }
   }
-  
+
   changePageSize(event: Event): void {
-    console.log("Change Page Size")
+    console.log('Change Page Size');
     const select = event.target as HTMLSelectElement;
     const newSize = parseInt(select.value, 10);
-    
+
     if (newSize !== this.pagination.pageSize) {
       this.pageSizeChange.emit(newSize);
     }
   }
-  
+
   // Helper to track items by their index in ngFor
   trackByIndex(index: number): number {
     return index;

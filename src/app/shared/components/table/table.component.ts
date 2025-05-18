@@ -20,10 +20,7 @@ import {
 import { TableHeaderComponent } from './table-header/table-header.component';
 import { TableBodyComponent } from './table-body/table-body.component';
 import { TableSearchComponent } from './table-search/table-search.component';
-import {
-  PaginationComponent,
-  PaginationInfo,
-} from '../pagination/pagination.component';
+import { PaginationComponent, PaginationInfo } from '../pagination/pagination.component';
 
 @Component({
   selector: 'app-table',
@@ -36,16 +33,14 @@ import {
     PaginationComponent,
   ],
   template: `
-    <div
-      class="table-container overflow-hidden rounded-lg border border-gray-200 shadow"
-    >
+    <div class="table-container overflow-hidden rounded-lg border border-gray-200 shadow">
       <!-- Search Section -->
       @if (config.enableSearch) {
-      <app-table-search
-        [searchConfig]="config.searchConfig || {}"
-        [columns]="columns()"
-        (searchChange)="onSearchChange($event)"
-      ></app-table-search>
+        <app-table-search
+          [searchConfig]="config.searchConfig || {}"
+          [columns]="columns()"
+          (searchChange)="onSearchChange($event)"
+        ></app-table-search>
       }
 
       <!-- Table Section -->
@@ -76,17 +71,17 @@ import {
 
       <!-- Pagination Section -->
       @if (config.enablePagination) {
-      <div
-        class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6"
-      >
-        <app-pagination
-          [pagination]="paginationState()"
-          [showTotal]="true"
-          [showPageSize]="true"
-          (pageChange)="onPageChange($event)"
-          (pageSizeChange)="onPageSizeChange($event)"
-        ></app-pagination>
-      </div>
+        <div
+          class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6"
+        >
+          <app-pagination
+            [pagination]="paginationState()"
+            [showTotal]="true"
+            [showPageSize]="true"
+            (pageChange)="onPageChange($event)"
+            (pageSizeChange)="onPageSizeChange($event)"
+          ></app-pagination>
+        </div>
       }
     </div>
   `,
@@ -124,13 +119,9 @@ export class TableComponent<T> implements OnChanges {
   // Computed values
   columns = computed(() => this.config?.columns || []);
 
-  visibleColumns = computed(() =>
-    this.columns().filter((col) => col.visible !== false)
-  );
+  visibleColumns = computed(() => this.columns().filter(col => col.visible !== false));
 
-  searchableColumns = computed(() =>
-    this.columns().filter((col) => col.searchable)
-  );
+  searchableColumns = computed(() => this.columns().filter(col => col.searchable));
 
   selectedItems = signal<T[]>([]);
 
@@ -140,9 +131,7 @@ export class TableComponent<T> implements OnChanges {
   });
 
   hasActions = computed(
-    () =>
-      !!this.config?.actionsConfig &&
-      this.config.actionsConfig.actions.length > 0
+    () => !!this.config?.actionsConfig && this.config.actionsConfig.actions.length > 0
   );
 
   paginationState = computed<PaginationInfo>(() => ({
@@ -150,8 +139,7 @@ export class TableComponent<T> implements OnChanges {
     page: this.config.paginationConfig?.page || 1,
     pageSize: this.config.paginationConfig?.pageSize || 10,
     totalPages: Math.ceil(
-      this.filteredData().length /
-        (this.config.paginationConfig?.pageSize || 10)
+      this.filteredData().length / (this.config.paginationConfig?.pageSize || 10)
     ),
   }));
 
@@ -336,11 +324,10 @@ export class TableComponent<T> implements OnChanges {
       term = term.toLowerCase();
     }
 
-    const fields =
-      config.fields || this.searchableColumns().map((col) => col.field);
+    const fields = config.fields || this.searchableColumns().map(col => col.field);
 
-    return data.filter((item) => {
-      return fields.some((field) => {
+    return data.filter(item => {
+      return fields.some(field => {
         let value = this.getNestedValue(item, field as string);
 
         if (value === null || value === undefined) {

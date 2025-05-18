@@ -35,9 +35,7 @@ export class DropdownAutocompleteComponentComponent<T> {
     if (!this.canSearch()) {
       return this.options();
     }
-    return this.options().filter((o) =>
-      o.label.toLowerCase().includes(this.query().toLowerCase())
-    );
+    return this.options().filter(o => o.label.toLowerCase().includes(this.query().toLowerCase()));
   });
 
   // Emit when a selection happens

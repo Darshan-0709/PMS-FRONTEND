@@ -1,16 +1,6 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  Output,
-  computed,
-} from '@angular/core';
+import { Component, EventEmitter, Input, Output, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  ActionsConfig,
-  ColumnDefinition,
-  TableAction,
-} from '../models/table.model';
+import { ActionsConfig, ColumnDefinition, TableAction } from '../models/table.model';
 
 @Component({
   selector: 'app-table-body',
@@ -19,79 +9,73 @@ import {
   template: `
     <tbody class="divide-y divide-gray-200 bg-white">
       @if (data.length === 0) {
-      <tr>
-        <td
-          [attr.colspan]="totalColumns()"
-          class="py-10 text-center text-gray-500 text-sm"
-        >
-          {{ emptyMessage }}
-        </td>
-      </tr>
-      } @for (item of data; track trackBy(item); let i = $index) {
-      <tr class="hover:bg-gray-50" [class.bg-indigo-50]="isSelected(item)">
-        <!-- Selection checkbox column -->
-        @if (enableSelection) {
-        <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm">
-          <div class="flex items-center">
-            <input
-              type="checkbox"
-              class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-              [checked]="isSelected(item)"
-              (change)="onSelectChange($event, item)"
-              aria-label="Select row"
-            />
-          </div>
-        </td>
-        }
-
-        <!-- Data columns -->
-        @for (column of columns; track column.field) {
-        <td
-          class="whitespace-nowrap px-3 py-4 text-sm"
-          [class]="getCellClass(column, item)"
-        >
-          @if (column.cellTemplate) {
-          <ng-container
-            [ngTemplateOutlet]="column.cellTemplate"
-            [ngTemplateOutletContext]="{
-              $implicit: item,
-              index: i,
-              column: column
-            }"
-          ></ng-container>
-          } @else {
-          {{ getCellValue(item, column.field) }}
+        <tr>
+          <td [attr.colspan]="totalColumns()" class="py-10 text-center text-gray-500 text-sm">
+            {{ emptyMessage }}
+          </td>
+        </tr>
+      }
+      @for (item of data; track trackBy(item); let i = $index) {
+        <tr class="hover:bg-gray-50" [class.bg-indigo-50]="isSelected(item)">
+          <!-- Selection checkbox column -->
+          @if (enableSelection) {
+            <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm">
+              <div class="flex items-center">
+                <input
+                  type="checkbox"
+                  class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                  [checked]="isSelected(item)"
+                  (change)="onSelectChange($event, item)"
+                  aria-label="Select row"
+                />
+              </div>
+            </td>
           }
-        </td>
-        }
 
-        <!-- Actions column -->
-        @if (hasActions()) {
-        <td
-          class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium"
-        >
-          @for (action of getVisibleActions(item); track action.type) {
-          <button
-            type="button"
-            class="ml-2 px-2 py-1 rounded text-sm"
-            [ngClass]="[action.customClass || '', getActionColorClass(action)]"
-            [class.opacity-50]="isActionDisabled(action, item)"
-            [class.cursor-not-allowed]="isActionDisabled(action, item)"
-            [disabled]="isActionDisabled(action, item)"
-            [attr.aria-label]="action.label"
-            [title]="action.tooltip || action.label"
-            (click)="onActionClick(action, item)"
-          >
-            @if (action.icon) {
-            <i [ngClass]="action.icon"></i>
-            } @if (showActionLabels()) {
-            <span class="ml-1">{{ action.label }}</span>
-            }
-          </button>
+          <!-- Data columns -->
+          @for (column of columns; track column.field) {
+            <td class="whitespace-nowrap px-3 py-4 text-sm" [class]="getCellClass(column, item)">
+              @if (column.cellTemplate) {
+                <ng-container
+                  [ngTemplateOutlet]="column.cellTemplate"
+                  [ngTemplateOutletContext]="{
+                    $implicit: item,
+                    index: i,
+                    column: column,
+                  }"
+                ></ng-container>
+              } @else {
+                {{ getCellValue(item, column.field) }}
+              }
+            </td>
           }
-        </td>
-        }
-      </tr>
+
+          <!-- Actions column -->
+          @if (hasActions()) {
+            <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium">
+              @for (action of getVisibleActions(item); track action.type) {
+                <button
+                  type="button"
+                  class="ml-2 px-2 py-1 rounded text-sm"
+                  [ngClass]="[action.customClass || '', getActionColorClass(action)]"
+                  [class.opacity-50]="isActionDisabled(action, item)"
+                  [class.cursor-not-allowed]="isActionDisabled(action, item)"
+                  [disabled]="isActionDisabled(action, item)"
+                  [attr.aria-label]="action.label"
+                  [title]="action.tooltip || action.label"
+                  (click)="onActionClick(action, item)"
+                >
+                  @if (action.icon) {
+                    <i [ngClass]="action.icon"></i>
+                  }
+                  @if (showActionLabels()) {
+                    <span class="ml-1">{{ action.label }}</span>
+                  }
+                </button>
+              }
+            </td>
+          }
+        </tr>
       }
     </tbody>
   `,
@@ -119,9 +103,7 @@ export class TableBodyComponent<T> {
   protected hasActions = computed(
     () => !!this.actionsConfig && this.actionsConfig.actions.length > 0
   );
-  protected showActionLabels = computed(
-    () => this.actionsConfig?.showLabels ?? false
-  );
+  protected showActionLabels = computed(() => this.actionsConfig?.showLabels ?? false);
 
   // Calculate total number of columns including selection and actions
   protected totalColumns = computed(() => {
@@ -165,7 +147,7 @@ export class TableBodyComponent<T> {
 
   // Check if an item is selected
   isSelected(item: T): boolean {
-    return this.selectedItems.some((selected) =>
+    return this.selectedItems.some(selected =>
       this.uniqueIdField
         ? selected[this.uniqueIdField] === item[this.uniqueIdField]
         : selected === item
@@ -186,7 +168,7 @@ export class TableBodyComponent<T> {
         : [...this.selectedItems, item];
     } else {
       // Remove from selection
-      updatedSelection = this.selectedItems.filter((selected) =>
+      updatedSelection = this.selectedItems.filter(selected =>
         this.uniqueIdField
           ? selected[this.uniqueIdField] !== item[this.uniqueIdField]
           : selected !== item
@@ -200,7 +182,7 @@ export class TableBodyComponent<T> {
   getVisibleActions(item: T): TableAction<T>[] {
     if (!this.actionsConfig) return [];
 
-    return this.actionsConfig.actions.filter((action) => {
+    return this.actionsConfig.actions.filter(action => {
       if (action.isVisible) {
         return action.isVisible(item);
       }

@@ -9,12 +9,12 @@ import { ToastService, Toast } from '../../../services/toast.service';
   template: `
     <div class="fixed top-5 right-5 z-50 flex flex-col gap-2">
       @for (toast of toastService.toasts(); track toast.id) {
-        <div 
+        <div
           class="shadow-md rounded-md p-4 transition-all transform animate-slide-in-right min-w-80 flex justify-between"
           [ngClass]="getToastClass(toast)"
         >
           <span class="text-sm">{{ toast.message }}</span>
-          <button 
+          <button
             class="ml-4 text-sm font-semibold hover:text-opacity-80"
             (click)="toastService.remove(toast.id)"
           >
@@ -24,26 +24,28 @@ import { ToastService, Toast } from '../../../services/toast.service';
       }
     </div>
   `,
-  styles: [`
-    @keyframes slideInRight {
-      from {
-        transform: translateX(100%);
-        opacity: 0;
+  styles: [
+    `
+      @keyframes slideInRight {
+        from {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
       }
-      to {
-        transform: translateX(0);
-        opacity: 1;
+
+      .animate-slide-in-right {
+        animation: slideInRight 0.3s ease-out forwards;
       }
-    }
-    
-    .animate-slide-in-right {
-      animation: slideInRight 0.3s ease-out forwards;
-    }
-  `]
+    `,
+  ],
 })
 export class ToastComponent {
   toastService = inject(ToastService);
-  
+
   getToastClass(toast: Toast): string {
     switch (toast.type) {
       case 'success':
@@ -57,4 +59,4 @@ export class ToastComponent {
         return 'bg-[color:var(--color-info-bg-light)] text-[color:var(--color-info-text-light)]';
     }
   }
-} 
+}

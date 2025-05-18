@@ -24,9 +24,7 @@ interface User {
       <!-- Basic Table -->
       <div class="mb-10">
         <h2 class="text-xl font-semibold mb-3">Basic Table</h2>
-        <p class="text-gray-600 mb-4">
-          A simple table with sorting and pagination.
-        </p>
+        <p class="text-gray-600 mb-4">A simple table with sorting and pagination.</p>
 
         <app-table
           [data]="users"
@@ -39,8 +37,7 @@ interface User {
       <div class="mb-10">
         <h2 class="text-xl font-semibold mb-3">Advanced Table</h2>
         <p class="text-gray-600 mb-4">
-          Table with all features enabled: sorting, searching, selection,
-          pagination, and actions.
+          Table with all features enabled: sorting, searching, selection, pagination, and actions.
         </p>
 
         <div class="mb-4" *ngIf="selectedUsers.length > 0">
@@ -79,7 +76,7 @@ interface User {
       </ng-template>
 
       <ng-template #dateTemplate let-user>
-        {{ user.lastLogin | date : 'medium' }}
+        {{ user.lastLogin | date: 'medium' }}
       </ng-template>
     </div>
   `,
@@ -284,20 +281,20 @@ export class TableDemoComponent {
             type: 'view',
             label: 'View',
             icon: 'fa-eye',
-            handler: (user) => this.viewUser(user),
+            handler: user => this.viewUser(user),
           },
           {
             type: 'edit',
             label: 'Edit',
             icon: 'fa-edit',
-            handler: (user) => this.editUser(user),
+            handler: user => this.editUser(user),
           },
           {
             type: 'delete',
             label: 'Delete',
             icon: 'fa-trash',
-            isDisabled: (user) => user.role === 'Admin', // Disable for Admin users
-            handler: (user) => this.deleteUser(user),
+            isDisabled: user => user.role === 'Admin', // Disable for Admin users
+            handler: user => this.deleteUser(user),
           },
         ],
         showLabels: true,
@@ -416,7 +413,7 @@ export class TableDemoComponent {
     console.log('Delete user:', user);
     if (confirm(`Are you sure you want to delete ${user.name}?`)) {
       // Remove user from the array
-      this.users = this.users.filter((u) => u.id !== user.id);
+      this.users = this.users.filter(u => u.id !== user.id);
 
       // Update both configs with new total
       const basicConfig = { ...this.basicTableConfig };
@@ -438,8 +435,8 @@ export class TableDemoComponent {
       this.advancedTableConfig = advancedConfig;
 
       // Also remove from selection if selected
-      if (this.selectedUsers.some((u) => u.id === user.id)) {
-        this.selectedUsers = this.selectedUsers.filter((u) => u.id !== user.id);
+      if (this.selectedUsers.some(u => u.id === user.id)) {
+        this.selectedUsers = this.selectedUsers.filter(u => u.id !== user.id);
       }
     }
   }

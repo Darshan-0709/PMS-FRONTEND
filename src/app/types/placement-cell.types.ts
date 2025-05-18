@@ -21,4 +21,3 @@ export interface PlacementCellUpdateRequest {
   domains?: string[];
   degrees?: string[];
 }
-
