@@ -1,0 +1,124 @@
+<div
+  class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-2 max-w-2xl m-auto"
+>
+  <!-- Toast component -->
+  <app-toast></app-toast>
+
+  <div class="sm:mx-auto sm:w-full sm:max-w-sm">
+    <h2
+      class="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900"
+    >
+      Sign up
+    </h2>
+  </div>
+  <form
+    [formGroup]="registrationForm"
+    (ngSubmit)="onSubmit()"
+    class="mt-10 sm:mx-auto sm:w-full sm:max-w-lg py-2 px-5 shadow-xl rounded bg-white"
+  >
+    @if (showSuccessMessage) {
+    <div class="success-message">
+      {{ successMessage }}
+      <p>Redirecting to login page...</p>
+    </div>
+    } @else { @if (currentStep() > 1) {
+    <button
+      class="mr-auto cursor-pointer transition duration-100 w-1/5 py-1 px-0.5 bg-secondary-light focus:border-b-2 font-semibold text-primary group hover:group-hover:bg-secondary-dark"
+      type="button"
+      (click)="onPreviousStep()"
+    >
+      <div class="flex">
+        <img
+          class="group-hover:-translate-x-1.5 transition"
+          src="/icon/arrow-left.svg"
+          alt=""
+        />
+        <span class="m-auto"> Back </span>
+      </div>
+      <!-- <div class="group-hover:w-auto transition ease-in  w-0 border-b-2"></div> -->
+    </button>
+    }
+    <div class="flex gap-1 h-2 overflow-hidden mt-4 px-6 py-3">
+      <div
+        class="grow p-1 -skew-x-12 bg-brand-blue-50"
+        [class.bg-info-bg-dark]="currentStep() >= 1"
+      ></div>
+      <div
+        class="grow p-1 -skew-x-12 bg-brand-blue-50"
+        [class.bg-info-bg-dark]="currentStep() >= 2"
+      ></div>
+      <div
+        class="grow p-1 -skew-x-12 bg-brand-blue-50"
+        [class.bg-info-bg-dark]="currentStep() >= 3"
+      ></div>
+    </div>
+    <div class="steps">
+      @if (currentStep() === 1) {
+      <div class="flex max-sm:flex-col gap-6 py-10 px-4 m-auto justify-between">
+        <app-role-select-button
+          label="Join Placement Cell as a Student"
+          role="student"
+          (roleSelected)="onRoleSelect($event)"
+          classes="mb-2 max-sm:min-w-md"
+        ></app-role-select-button>
+
+        <app-role-select-button
+          label="Signup as Placement Cell"
+          role="placement_cell"
+          classes="mb-2 max-sm:min-w-md"
+          (roleSelected)="onRoleSelect($event)"
+        ></app-role-select-button>
+
+        <app-role-select-button
+          label="Signup as Recruiter"
+          role="recruiter"
+          (roleSelected)="onRoleSelect($event)"
+          classes="max-sm:min-w-md"
+        ></app-role-select-button>
+      </div>
+      }
+      <!-- @if (currentStep() === 2) {
+      }  -->
+      <div [ngClass]="{ hidden: currentStep() != 2 }">
+        <app-user-form
+          (validationSuccess)="onUserFormValidationSuccess()"
+          (validationError)="onUserFormValidationError()"
+        ></app-user-form>
+      </div>
+      <!-- @if (currentStep() === 3) { } -->
+      <div [ngClass]="{ hidden: currentStep() != 3 }">
+        @switch (selectedRole()) { @case ('recruiter') {
+        <app-recruiter-form
+          (registrationSuccess)="onRegistrationSuccess($event)"
+        ></app-recruiter-form>
+        } @case ('placement_cell') {
+        <app-placement-cell-form></app-placement-cell-form>
+        <!-- (registrationSuccess)="onRegistrationSuccess($event)" -->
+        } @case ('student') {
+        <app-student-form></app-student-form>
+        <!-- (registrationSuccess)="onRegistrationSuccess($event)" -->
+        } }
+      </div>
+    </div>
+    }
+    <!-- Submit Button -->
+    @if(currentStep() === 3){
+    <button
+      type="submit"
+      class="shadow-layered block ml-auto btn btn-md btn-soft btn-success mt-4"
+    >
+      Submit
+    </button>
+    }
+
+    <div class="text-center mt-6 text-gray-600">
+      Already have an account?
+      <a
+        routerLink="/auth/login"
+        class="text-blue-600 hover:text-blue-800 font-medium hover:underline"
+      >
+        Log in
+      </a>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,24 @@
+<button
+  type="button"
+  class="text-primary border-[2px] border-secondary focus:border-primary hover:border-primary hover:outline-1 sm:w-30 max-w-60 mw-xs py-3 px-2 rounded-md shadow-layered cursor-pointer sm:min-h-52 min-w-32 flex sm:flex-col justify-between max-sm:items-center gap-2 m-auto grow"
+  [ngClass]="classes()"
+  (click)="selectRole()"
+>
+  <div class="text-primary">
+    <div>
+      @if (role() === 'student') {
+      <i class="fa-solid fa-user text-3xl"></i> }@else if (role() ===
+      'placement_cell') {
+      <i class="fa-solid fa-graduation-cap text-3xl"></i> }@else if(role() ===
+      'recruiter'){ <i class="fa-solid fa-suitcase text-3xl"></i> }
+    </div>
+    <div class="text-xl mt-2">
+      @if (role() === 'student') { Student }@else if (role() ===
+      'placement_cell') { Placement Cell }@else if(role() === 'recruiter'){
+      Recruiter }
+    </div>
+  </div>
+  <div class="text-secondary">
+    {{ label() }}
+  </div>
+</button>

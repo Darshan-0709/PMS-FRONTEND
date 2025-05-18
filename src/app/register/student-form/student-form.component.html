@@ -1,0 +1,86 @@
+<fieldset formGroupName="studentForm">
+  @if (domainMismatchWarning()) {
+  <div
+    class="flex p-4 mb-4 text-yellow-800 rounded-lg bg-yellow-50"
+    role="alert"
+  >
+    <svg
+      class="shrink-0 inline w-4 h-4 me-3 mt-1"
+      aria-hidden="true"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="currentColor"
+      viewBox="0 0 20 20"
+    >
+      <path
+        d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"
+      />
+    </svg>
+    <div class="ml-3 flex flex-col w-full">
+      <span class="font-medium">Email Domain Warning</span>
+      <p class="text-xs mt-1">
+        Your email domain does not match any allowed domains for this placement
+        cell. Registration cannot proceed with mismatched domains. Please use an
+        email with one of the allowed domains or select a different placement
+        cell.
+      </p>
+    </div>
+  </div>
+  }
+
+  <!-- Enrollment Number -->
+  <app-shared-input
+    [control]="enrollmentNumberControl"
+    label="Enrollment Number"
+    placeholder="Enter your enrollment number"
+  >
+  </app-shared-input>
+  <app-validation-errors
+    [control]="enrollmentNumberControl"
+    label="Enrollment Number"
+    [messages]="validationMessages"
+  />
+
+  <!-- Full Name -->
+  <app-shared-input
+    [control]="fullNameControl"
+    label="Full Name"
+    placeholder="Enter your full name"
+  >
+  </app-shared-input>
+  <app-validation-errors
+    [control]="fullNameControl"
+    label="Full Name"
+    [messages]="validationMessages"
+  />
+
+  <!-- Placement Cell Selection -->
+  <div class="mt-3">
+    <app-dropdown-autocomplete-component
+      [options]="placementCellAutoCompleteList()"
+      [placeholder]="'Select Placement Cell…'"
+      title="Placement Cell"
+      [canSearch]="true"
+      (selection)="onPlacementCellSelected($event)"
+    ></app-dropdown-autocomplete-component>
+    <app-validation-errors
+      [control]="placementCellIdControl"
+      label="Placement Cell"
+      [messages]="validationMessages"
+    />
+  </div>
+
+  <!-- Degree Selection -->
+  <div class="mt-3">
+    <app-dropdown-autocomplete-component
+      [options]="degrees()"
+      [placeholder]="'Select Degree…'"
+      title="Degree"
+      (selection)="onDegreeSelected($event)"
+    ></app-dropdown-autocomplete-component>
+    <app-validation-errors
+      [control]="degreeIdControl"
+      label="Degree"
+      [messages]="validationMessages"
+    />
+  </div>
+</fieldset>

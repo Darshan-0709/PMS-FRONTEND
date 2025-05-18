@@ -1,2 +1,9 @@
 /* You can add global styles to this file, and also import other style files */
 @import 'tailwindcss';
+/* @tailwind utilities; */
+
+body {
+  background-color: #f7fafc;
+  min-width: 100vh;
+  font-family: 'Lexend', sans-serif;
+}

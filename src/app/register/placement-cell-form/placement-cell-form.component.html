@@ -1,0 +1,159 @@
+<fieldset formGroupName="placementCellForm">
+  <!-- Placement Cell Name -->
+  <div>
+    <app-shared-input
+      [control]="placementCellNameControl"
+      label="Placement Cell Name"
+      placeholder="Enter Placement Cell Name"
+    >
+    </app-shared-input>
+    <app-validation-errors
+      [control]="placementCellNameControl"
+      label="Placement Cell Name"
+      [messages]="validationMessages"
+    />
+  </div>
+
+  <!-- Domains -->
+  <div class="mt-3">
+    <div class="flex gap-2 items-end">
+      <app-shared-input
+        [control]="domainInputControl"
+        label="Domains"
+        placeholder="Domains allowed for student register(@college.edu.id)"
+        class="grow"
+      >
+      </app-shared-input>
+      <button
+        class="btn btn-md btn-solid btn-primary hover:opacity-70"
+        (click)="onDomainAdd()"
+        type="button"
+      >
+        Add
+      </button>
+    </div>
+    <app-validation-errors
+      [control]="domainsControl"
+      label="Domains"
+      [messages]="validationMessages"
+    />
+    <div class="flex flex-wrap gap-2 mt-2 max-h-40 overflow-auto">
+      @for (domain of domainsControl.value; track domain) {
+      <span class="flex items-center btn btn-sm btn-outline btn-info">
+        {{ domain }}
+        <button
+          type="button"
+          class="btn ms-2 btn-info hover:bg-info-bg-light btn-sm hover:text-primary"
+          (click)="onRemoveDomain(domain)"
+        >
+          <svg
+            class="w-2 h-2"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 14 14"
+          >
+            <path
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+            />
+          </svg>
+          <span class="sr-only">Remove badge</span>
+        </button>
+      </span>
+      }
+    </div>
+  </div>
+
+  <!-- Branch Selection -->
+  <div class="mt-3">
+    <app-dropdown-autocomplete-component
+      [options]="branches()"
+      [placeholder]="'Select Branch…'"
+      title="Branch"
+      (selection)="onBranchSelected($event)"
+    ></app-dropdown-autocomplete-component>
+    <app-validation-errors
+      [control]="branchNameControl"
+      label="Branch"
+      [messages]="validationMessages"
+    />
+  </div>
+
+  <!-- Degree Selection -->
+  <div class="mt-3">
+    <app-dropdown-autocomplete-component
+      [options]="degrees()"
+      [placeholder]="'Select Degree…'"
+      title="Degree"
+      [canEmitValue]="true"
+      (selection)="onDegreeSelected()"
+      (added)="onAddDegree($event)"
+    ></app-dropdown-autocomplete-component>
+    <!-- (selection)="onDegreeSelected($event)" -->
+    <app-validation-errors
+      [control]="degreeNamesControl"
+      label="Degree"
+      [messages]="validationMessages"
+    />
+  </div>
+  <div class="flex flex-wrap gap-2 mt-2 max-h-40 overflow-auto">
+    @for (degree of degreeNamesControl.value; track degree) {
+    <span class="flex items-center btn btn-sm btn-outline btn-info">
+      {{ degree }}
+      <button
+        type="button"
+        class="btn ms-2 btn-info hover:bg-info-bg-light btn-sm hover:text-primary"
+        data-dismiss-target="#badge-dismiss-default"
+        aria-label="Remove"
+        (click)="onRemoveDegree(degree)"
+      >
+        <svg
+          class="w-2 h-2"
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 14 14"
+        >
+          <path
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+          />
+        </svg>
+        <span class="sr-only">Remove badge</span>
+      </button>
+    </span>
+    }
+  </div>
+
+  <!-- Placement Cell Email -->
+  <app-shared-input
+    [control]="placementCellEmailControl"
+    label="Placement Cell Email"
+    placeholder="Enter Placement Cell Email"
+  >
+  </app-shared-input>
+  <app-validation-errors
+    [control]="placementCellEmailControl"
+    label="Placement Cell Email"
+    [messages]="validationMessages"
+  />
+
+  <!-- Website -->
+  <app-shared-input
+    [control]="websiteControl"
+    label="Website"
+    placeholder="Enter Website URL"
+  >
+  </app-shared-input>
+  <app-validation-errors
+    [control]="websiteControl"
+    label="Website"
+    [messages]="validationMessages"
+  />
+</fieldset>

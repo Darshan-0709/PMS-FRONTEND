@@ -1,0 +1,192 @@
+<div
+  class="pagination-container flex flex-col md:flex-row items-center gap-3 my-4"
+  [attr.aria-label]="ariaLabel"
+>
+  <!-- Total items info -->
+  @if (showTotal) {
+  <div class="text-sm text-gray-600 mr-auto">
+    Showing
+    {{ (currentPage() - 1) * pagination.pageSize + 1 }}-{{
+      Math.min(currentPage() * pagination.pageSize, pagination.total)
+    }}
+    of {{ pagination.total }} items
+  </div>
+  }
+
+  <!-- Page size selector -->
+  @if (showPageSize) {
+  <div class="flex items-center gap-2 mb-2 md:mb-0">
+    <label for="pageSize" class="text-sm text-gray-600">Items per page:</label>
+    <select
+      id="pageSize"
+      class="border rounded px-2 py-1 text-sm"
+      [value]="pagination.pageSize"
+      (change)="changePageSize($event)"
+    >
+      @for (size of pageSizeOptions; track size) {
+      <option [value]="size" [selected]="pagination.pageSize === size">
+        {{ size }}
+      </option>
+      }
+    </select>
+  </div>
+  }
+
+  <!-- Pagination controls -->
+  <nav
+    class="flex items-center justify-center"
+    role="navigation"
+    aria-label="Pagination"
+  >
+    <ul class="flex items-center gap-1">
+      <!-- First page button -->
+      @if (showFirstLast) {
+      <li>
+        <button
+          class="h-8 w-8 flex items-center justify-center rounded border text-sm"
+          [class.text-gray-400]="!hasPrev()"
+          [class.border-gray-300]="!hasPrev()"
+          [class.bg-white]="!hasPrev()"
+          [class.cursor-not-allowed]="!hasPrev()"
+          [class.hover:bg-gray-50]="hasPrev()"
+          [class.text-gray-700]="hasPrev()"
+          [class.border-gray-300]="hasPrev()"
+          [disabled]="!hasPrev()"
+          (click)="goToFirstPage()"
+          aria-label="Go to first page"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-4 w-4"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M15.707 15.707a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 010 1.414zm-6 0a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 011.414 1.414L5.414 10l4.293 4.293a1 1 0 010 1.414z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </button>
+      </li>
+      }
+
+      <!-- Previous page button -->
+      @if (showPrevNext) {
+      <li>
+        <button
+          class="h-8 w-8 flex items-center justify-center rounded border text-sm"
+          [class.text-gray-400]="!hasPrev()"
+          [class.border-gray-300]="!hasPrev()"
+          [class.bg-white]="!hasPrev()"
+          [class.cursor-not-allowed]="!hasPrev()"
+          [class.hover:bg-gray-50]="hasPrev()"
+          [class.text-gray-700]="hasPrev()"
+          [class.border-gray-300]="hasPrev()"
+          [disabled]="!hasPrev()"
+          (click)="goToPreviousPage()"
+          aria-label="Go to previous page"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-4 w-4"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </button>
+      </li>
+      }
+
+      <!-- Page numbers -->
+      @for (page of displayedPages(); track trackByIndex($index)) {
+      <li>
+        <button
+          class="h-8 w-8 flex items-center justify-center rounded border text-sm transition-colors"
+          [class.bg-blue-600]="page === currentPage()"
+          [class.text-white]="page === currentPage()"
+          [class.border-blue-600]="page === currentPage()"
+          [class.bg-white]="page !== currentPage()"
+          [class.text-gray-700]="page !== currentPage()"
+          [class.border-gray-300]="page !== currentPage()"
+          [class.hover:bg-gray-50]="page !== currentPage()"
+          (click)="goToPage(page)"
+          [attr.aria-label]="'Go to page ' + page"
+          [attr.aria-current]="page === currentPage() ? 'page' : null"
+        >
+          {{ page }}
+        </button>
+      </li>
+      }
+
+      <!-- Next page button -->
+      @if (showPrevNext) {
+      <li>
+        <button
+          class="h-8 w-8 flex items-center justify-center rounded border text-sm"
+          [class.text-gray-400]="!hasNext()"
+          [class.border-gray-300]="!hasNext()"
+          [class.bg-white]="!hasNext()"
+          [class.cursor-not-allowed]="!hasNext()"
+          [class.hover:bg-gray-50]="hasNext()"
+          [class.text-gray-700]="hasNext()"
+          [class.border-gray-300]="hasNext()"
+          [disabled]="!hasNext()"
+          (click)="goToNextPage()"
+          aria-label="Go to next page"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-4 w-4"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </button>
+      </li>
+      }
+
+      <!-- Last page button -->
+      @if (showFirstLast) {
+      <li>
+        <button
+          class="h-8 w-8 flex items-center justify-center rounded border text-sm"
+          [class.text-gray-400]="!hasNext()"
+          [class.border-gray-300]="!hasNext()"
+          [class.bg-white]="!hasNext()"
+          [class.cursor-not-allowed]="!hasNext()"
+          [class.hover:bg-gray-50]="hasNext()"
+          [class.text-gray-700]="hasNext()"
+          [class.border-gray-300]="hasNext()"
+          [disabled]="!hasNext()"
+          (click)="goToLastPage()"
+          aria-label="Go to last page"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-4 w-4"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M4.293 15.707a1 1 0 001.414 0l5-5a1 1 0 000-1.414l-5-5a1 1 0 00-1.414 1.414L8.586 10 4.293 14.293a1 1 0 000 1.414zm6 0a1 1 0 001.414 0l5-5a1 1 0 000-1.414l-5-5a1 1 0 00-1.414 1.414L15.586 10l-4.293 4.293a1 1 0 000 1.414z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </button>
+      </li>
+      }
+    </ul>
+  </nav>
+</div>
