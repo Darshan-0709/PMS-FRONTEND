@@ -90,7 +90,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
   onSubmit() {
     // Ensure the entire registration form is valid
-    console.log(this.registrationForm.getRawValue());
 
     // Check if there's a domain mismatch error
     const studentForm = this.registrationForm.get('studentForm') as FormGroup;
@@ -98,7 +97,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
     // If form is invalid
     if (this.registrationForm.invalid) {
-      console.log('Parent Form Group Errors:', this.registrationForm.errors);
       this.registrationForm.markAllAsTouched();
 
       // Show specific message for domain mismatch by applying it to a form control
@@ -123,7 +121,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
     this.registerService.submitRegistration().subscribe({
       next: response => {
-        console.log('Registration successful:', response);
         this.showSuccessMessage = true;
         this.successMessage = 'Registration completed successfully!';
 
@@ -138,8 +135,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
         });
       },
       error: error => {
-        console.error('Registration failed:', error);
-
         // Show error toast with a general message
         this.toastService.show('Registration failed. Please check the form for errors.', 'error');
 
@@ -152,8 +147,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
   // Method to apply server errors to specific form controls
   private applyServerErrors(errors: Record<string, string>) {
-    console.log('Applying server errors:', errors);
-
     Object.entries(errors).forEach(([key, message]) => {
       // Handle user form errors
       const userForm = this.registrationForm.get('userForm') as FormGroup;
@@ -239,7 +232,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
   onRegistrationSuccess(event: { message: string }) {
     this.showSuccessMessage = true;
     this.successMessage = event.message;
-    console.log('Success');
 
     // Show success toast
     this.toastService.show(event.message, 'success');

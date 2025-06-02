@@ -13,26 +13,26 @@
         label="Email"
       ></app-validation-errors>
 
-      @if(email.hasError('emailDomain')){
-      <div class="mt-2 p-3 text-sm text-yellow-800 rounded-lg bg-yellow-50">
-        <div class="flex items-center">
-          <svg
-            class="w-4 h-4 mr-2"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-          >
-            <path
-              d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"
-            />
-          </svg>
-          <span class="font-medium">Email Domain Warning</span>
+      @if (email.hasError('emailDomain')) {
+        <div class="mt-2 p-3 text-sm text-yellow-800 rounded-lg bg-yellow-50">
+          <div class="flex items-center">
+            <svg
+              class="w-4 h-4 mr-2"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path
+                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"
+              />
+            </svg>
+            <span class="font-medium">Email Domain Warning</span>
+          </div>
+          <p class="mt-1 ml-6">
+            The email domain you entered may not be allowed for the placement cell you want to join.
+            This could cause problems in later steps.
+          </p>
         </div>
-        <p class="mt-1 ml-6">
-          The email domain you entered may not be allowed for the placement cell
-          you want to join. This could cause problems in later steps.
-        </p>
-      </div>
       }
     </div>
     <div class="w-full">
@@ -75,18 +75,18 @@
       ></app-validation-errors>
     </div>
   </div>
-  @if(currentStep() === 2){
-  <div class="flex gap-3 mt-2">
-    <button
-      class="shadow-layered block ml-auto btn btn-md btn-soft btn-primary mt-4"
-      type="button"
-      (click)="validateUserData()"
-    >
-      <div class="flex">
-        <span class="m-auto"> Next </span>
-        <img src="/icon/arrow-right.svg" alt="" />
-      </div>
-    </button>
-  </div>
+  @if (currentStep() === 2) {
+    <div class="flex gap-3 mt-2">
+      <button
+        class="shadow-layered block ml-auto btn btn-md btn-soft btn-primary mt-4"
+        type="button"
+        (click)="validateUserData()"
+      >
+        <div class="flex gap-2 items-center group">
+          <span class="m-auto"> Next </span>
+          <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition ease-in"></i>
+        </div>
+      </button>
+    </div>
   }
 </fieldset>

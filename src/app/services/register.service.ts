@@ -4,6 +4,7 @@ import { ApiService } from './api.service';
 import { AuthService } from './auth.service';
 import { CommonService } from './common.service';
 import { ToastService } from './toast.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 import { Branch, Degree, PlacementCellListItem } from '../types/common.types';
 import { ApiResponse } from '../types/api-response.types';
@@ -106,9 +107,7 @@ export class RegisterService {
     // Fetch degrees
     this.commonService.getDegrees().subscribe({
       next: response => {
-        if (response.success) {
-          this.degrees.set(response.data);
-        }
+        this.degrees.set(response);
       },
       error: error => {
         this.toastService.show('Failed to load degrees', 'error');
@@ -116,15 +115,8 @@ export class RegisterService {
     });
 
     // Fetch branches
-    this.commonService.getBranches().subscribe({
-      next: response => {
-        if (response.success) {
-          this.branches.set(response.data);
-        }
-      },
-      error: error => {
-        this.toastService.show('Failed to load branches', 'error');
-      },
+    this.commonService.getBranches().subscribe(branches => {
+      this.branches.set(branches);
     });
 
     // Fetch placement cells
@@ -194,13 +186,15 @@ export class RegisterService {
         this.clearErrors();
       }),
       map(() => true),
-      catchError(error => {
+      catchError((error: HttpErrorResponse) => {
         if (error.error?.errors) {
+          // API returned structured validation errors
           this.setErrors(error.error.errors);
         } else {
-          this.setErrors({ general: 'Validation failed' });
+          // Fallback for general errors
+          this.setErrors({ general: error.message || 'Validation failed' });
         }
-        return throwError(() => error);
+        return throwError(() => error.error?.errors || error.error || error);
       })
     );
   }

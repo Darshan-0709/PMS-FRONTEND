@@ -5,13 +5,14 @@ export interface PlacementCell {
   placementCellName: string;
   placementCellEmail: string;
   website: string;
-  placementCellDegrees: {
-    degree: Degree;
-  }[];
-  placementCellDomains: {
-    domain: string;
-  }[];
+  placementCellDegrees: Degree[];
+  domains: string[];
 }
+
+// export type PlacementCellUpdatePayload = { branchId: string, degrees: Degree[] } & Pick<
+//   PlacementCell,
+//   'placementCellName' | 'placementCellEmail' | 'domains' | 'website'
+// >;
 
 export interface PlacementCellUpdateRequest {
   placementCellName?: string;

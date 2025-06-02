@@ -1,0 +1,247 @@
+<div class="container mx-auto px-4 py-8">
+  <app-toast></app-toast>
+  <h1 class="text-3xl font-semibold mb-6">Recruiter Profile</h1>
+  <div class="bg-white shadow-md rounded-lg p-6 max-w-4xl mx-auto">
+    <!-- @if (isLoading()) {
+    <div class="flex justify-center items-center h-60">
+      <div
+        class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"
+      ></div>
+    </div>
+    } @else if (!placementCellId) {
+    <div class="text-center p-6">
+      <p class="text-lg text-gray-600">
+        No placement cell information available.
+      </p>
+    </div>
+    } @else if (!formReady()) {
+    <div class="flex justify-center items-center h-60">
+      <div class="text-center p-6">
+        <p class="text-lg text-gray-600">Preparing form...</p>
+      </div>
+    </div>
+    } @else { -->
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-2xl font-semibold text-gray-800">Placement Cell Profile</h2>
+    </div>
+
+    <!-- @if (profile$ | async; as profile) { -->
+    <form [formGroup]="profileForm" class="space-y-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Basic Information -->
+        <div class="space-y-4">
+          <h3 class="text-lg font-medium text-gray-900 border-b pb-2">Basic Information</h3>
+
+          <!-- Placement Cell Name -->
+          <!-- @if (placementCellNameControl) { -->
+          <app-shared-input
+            [control]="placementCellNameControl"
+            label="Placement Cell Name"
+            placeholder="Enter placement cell name"
+            [readonly]="!isEditMode()"
+          ></app-shared-input>
+          <app-validation-errors
+            [control]="placementCellNameControl"
+            label="Email"
+            [messages]="validationMessages"
+          ></app-validation-errors>
+          <!-- } -->
+
+          <!-- Email -->
+          <!-- @if (placementCellEmailControl) { -->
+          <app-shared-input
+            [control]="placementCellEmailControl"
+            label="Email"
+            placeholder="Enter placement cell email"
+            type="email"
+            [readonly]="!isEditMode()"
+          ></app-shared-input>
+          <!-- [readonly]="!canEditField().placementCellEmail" -->
+          <app-validation-errors
+            [control]="placementCellEmailControl"
+            label="Email"
+            [messages]="validationMessages"
+          ></app-validation-errors>
+          <!-- } -->
+
+          <!-- Website -->
+          <!-- @if (websiteControl) { -->
+          <app-shared-input
+            [control]="websiteControl"
+            label="Website"
+            placeholder="Enter website URL"
+            [readonly]="!isEditMode()"
+          ></app-shared-input>
+          <!-- [readonly]="!canEditField().website" -->
+          <app-validation-errors
+            [control]="websiteControl"
+            label="Website"
+            [messages]="validationMessages"
+          ></app-validation-errors>
+          <!-- } -->
+        </div>
+
+        <!-- Branch, Domains and Degrees -->
+        <div class="space-y-4">
+          <!-- Branch Name (Read-only) -->
+          @if (isEditMode()) {
+            <div class="space-y-2">
+              <app-dropdown-autocomplete-component
+                [options]="branches$ | async"
+                [placeholder]="'Select Branch…'"
+                title="Branch"
+                (selection)="onBranchSelected($event)"
+              ></app-dropdown-autocomplete-component>
+              <app-validation-errors
+                [control]="branchControl"
+                label="Branch"
+                [messages]="validationMessages"
+              />
+            </div>
+          } @else {
+            <div class="space-y-2">
+              <app-shared-input
+                [control]="branchControl"
+                label="Branch"
+                [readonly]="true"
+              ></app-shared-input>
+            </div>
+          }
+
+          <!-- Domains -->
+          <div class="mt-3">
+            @if (!isEditMode()) {
+              <label class="block text-sm/6 font-medium text-secondary">Degrees</label>
+            }
+            @if (isEditMode()) {
+              <div class="flex gap-2 items-end">
+                <app-shared-input
+                  [control]="domainInputControl"
+                  label="Email"
+                  placeholder="Enter placement cell email"
+                  type="email"
+                  class="grow"
+                  [readonly]="!isEditMode()"
+                ></app-shared-input>
+                <button
+                  type="button"
+                  class="btn btn-md btn-solid btn-primary hover:opacity-70"
+                  (click)="onDomainAdd()"
+                >
+                  Add
+                </button>
+              </div>
+              <app-validation-errors
+                [control]="placementCellDomains"
+                label="Domains"
+                [messages]="validationMessages"
+              />
+            }
+
+            <div class="flex flex-wrap gap-2 mt-2">
+              @for (domain of placementCellDomains.value; track domain) {
+                <div
+                  class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800"
+                >
+                  {{ domain }}
+                  @if (isEditMode()) {
+                    <button
+                      type="button"
+                      class="ml-2 text-blue-600 hover:text-blue-800"
+                      (click)="onRemoveDomain(domain)"
+                    >
+                      ×
+                    </button>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+          <!-- <div class="flex flex-wrap gap-2 mt-2">
+            @if (isEditMode()) { @for (degree of placementCellDegrees.value; track
+            degree.value) { @if (selectedDegrees().includes(degree.value)) {
+            <div
+              class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800"
+            >
+              {{ degree.label }}
+              @if (!serverDegrees().includes(degree.value)) {
+              <button
+                type="button"
+                class="ml-2 text-blue-600 hover:text-blue-800"
+                (click)="onRemoveDegree(degree.value)"
+              >
+                ×
+              </button>
+              }
+            </div>
+            } } }
+            @else { @for (degreeId of selectedDegrees(); track degreeId) {
+            <div
+              class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800"
+            >
+              {{ getDegreeNameById(degreeId) }}
+            </div>
+            } } @if (selectedDegrees().length === 0) {
+              <p class="text-gray-500 text-sm">No degrees available</p>
+              }
+            </div> -->
+
+          <!-- Degrees Section -->
+          @if (!isEditMode()) {
+            <label class="block text-sm/6 font-medium text-secondary">Degrees</label>
+          }
+          @if (isEditMode()) {
+            <div class="space-y-2">
+              <app-dropdown-autocomplete-component
+                [options]="degreeOptions$ | async"
+                placeholder="Search degrees.."
+                title="Degrees"
+                [canSearch]="true"
+                (selection)="onDomainSelected($event)"
+              ></app-dropdown-autocomplete-component>
+              <app-validation-errors
+                [control]="placementCellDegrees"
+                label="Degrees"
+                [messages]="validationMessages"
+              />
+            </div>
+          }
+          <div class="flex flex-wrap gap-2 mt-2">
+            @for (degree of placementCellDegrees.value; track degree.degreeId) {
+              <div
+                class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800"
+              >
+                {{ degree.name }}
+                @if (isEditMode() && !initialPlacementCellDegrees().includes(degree.degreeId)) {
+                  <button
+                    type="button"
+                    class="ml-2 text-blue-600 hover:text-blue-800"
+                    (click)="onRemoveDegree(degree.degreeId)"
+                  >
+                    ×
+                  </button>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+      <div class="flex space-x-2">
+        @if (!isEditMode()) {
+          <button type="button" class="btn btn-sm btn-soft btn-primary" (click)="onEdit()">
+            Edit Profile
+          </button>
+        } @else {
+          <button type="button" class="btn btn-sm btn-soft btn-danger" (click)="onCancel()">
+            Cancel
+          </button>
+          <button type="submit" class="btn btn-sm btn-soft btn-success" (click)="onSubmit()">
+            Save Changes
+          </button>
+        }
+      </div>
+    </form>
+    <!-- }  -->
+    <!-- } -->
+  </div>
+</div>

@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
-import { authGuard, roleGuard } from './services/auth-guard.service';
+import { authGuard, roleGuard } from './guards/auth.guard';
+import { MainLayoutComponent } from './main-layout/main-layout.component';
 
 export const routes: Routes = [
   {
@@ -27,57 +28,25 @@ export const routes: Routes = [
   },
   {
     path: 'student',
+    component: MainLayoutComponent,
     canActivate: [authGuard, roleGuard],
     data: { role: 'student' },
-    children: [
-      {
-        path: '',
-        redirectTo: 'dashboard',
-        pathMatch: 'full',
-      },
-      {
-        path: 'dashboard',
-        // This will be implemented later
-        loadComponent: () =>
-          import('./shared/pages/forbidden/forbidden.component').then(m => m.ForbiddenComponent),
-      },
-    ],
+    loadChildren: () => import('./student/student.routes').then(m => m.STUDENT_ROUTES),
   },
   {
     path: 'placement-cell',
+    component: MainLayoutComponent,
     canActivate: [authGuard, roleGuard],
     data: { role: 'placement_cell' },
-    children: [
-      {
-        path: '',
-        redirectTo: 'dashboard',
-        pathMatch: 'full',
-      },
-      {
-        path: 'dashboard',
-        // This will be implemented later
-        loadComponent: () =>
-          import('./shared/pages/forbidden/forbidden.component').then(m => m.ForbiddenComponent),
-      },
-    ],
+    loadChildren: () =>
+      import('./placement-cell/placement-cell.routes').then(m => m.PLACEMENT_CELL_ROUTES),
   },
   {
     path: 'recruiter',
+    component: MainLayoutComponent,
     canActivate: [authGuard, roleGuard],
     data: { role: 'recruiter' },
-    children: [
-      {
-        path: '',
-        redirectTo: 'dashboard',
-        pathMatch: 'full',
-      },
-      {
-        path: 'dashboard',
-        // This will be implemented later
-        loadComponent: () =>
-          import('./shared/pages/forbidden/forbidden.component').then(m => m.ForbiddenComponent),
-      },
-    ],
+    loadChildren: () => import('./recruiter/recruiter.routes').then(m => m.RECRUITER_ROUTES),
   },
   {
     path: 'forbidden',

@@ -96,7 +96,6 @@ export class LoginComponent {
           if (response.success && response.data) {
             // Show success toast
             this.toastService.show('Login successful!', 'success');
-            console.log('LoginComponent: Login successful, redirecting based on role');
             this.authService.redirectBasedOnRole();
           }
         },

@@ -1,5 +1,3 @@
-import { FormControl } from '@angular/forms';
-
 // API Response Types
 export interface Branch {
   branchId: string;

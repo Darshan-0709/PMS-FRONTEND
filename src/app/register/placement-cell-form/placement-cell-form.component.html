@@ -39,30 +39,25 @@
     />
     <div class="flex flex-wrap gap-2 mt-2 max-h-40 overflow-auto">
       @for (domain of domainsControl.value; track domain) {
-      <span class="flex items-center btn btn-sm btn-outline btn-info">
-        {{ domain }}
-        <button
-          type="button"
-          class="btn ms-2 btn-info hover:bg-info-bg-light btn-sm hover:text-primary"
-          (click)="onRemoveDomain(domain)"
-        >
-          <svg
-            class="w-2 h-2"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 14 14"
+        <span class="flex items-center btn btn-sm btn-outline btn-info">
+          {{ domain }}
+          <button
+            type="button"
+            class="btn ms-2 btn-info hover:bg-info-bg-light btn-sm hover:text-primary"
+            (click)="onRemoveDomain(domain)"
           >
-            <path
-              stroke="currentColor"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
-            />
-          </svg>
-          <span class="sr-only">Remove badge</span>
-        </button>
-      </span>
+            <svg class="w-2 h-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+              <path
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+              />
+            </svg>
+            <span class="sr-only">Remove badge</span>
+          </button>
+        </span>
       }
     </div>
   </div>
@@ -76,7 +71,7 @@
       (selection)="onBranchSelected($event)"
     ></app-dropdown-autocomplete-component>
     <app-validation-errors
-      [control]="branchNameControl"
+      [control]="branchIdControl"
       label="Branch"
       [messages]="validationMessages"
     />
@@ -94,40 +89,40 @@
     ></app-dropdown-autocomplete-component>
     <!-- (selection)="onDegreeSelected($event)" -->
     <app-validation-errors
-      [control]="degreeNamesControl"
+      [control]="degreeControl"
       label="Degree"
       [messages]="validationMessages"
     />
   </div>
   <div class="flex flex-wrap gap-2 mt-2 max-h-40 overflow-auto">
-    @for (degree of degreeNamesControl.value; track degree) {
-    <span class="flex items-center btn btn-sm btn-outline btn-info">
-      {{ degree }}
-      <button
-        type="button"
-        class="btn ms-2 btn-info hover:bg-info-bg-light btn-sm hover:text-primary"
-        data-dismiss-target="#badge-dismiss-default"
-        aria-label="Remove"
-        (click)="onRemoveDegree(degree)"
-      >
-        <svg
-          class="w-2 h-2"
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 14 14"
+    @for (degree of degreeControl.value; track degree) {
+      <span class="flex items-center btn btn-sm btn-outline btn-info">
+        {{ degree }}
+        <button
+          type="button"
+          class="btn ms-2 btn-info hover:bg-info-bg-light btn-sm hover:text-primary"
+          data-dismiss-target="#badge-dismiss-default"
+          aria-label="Remove"
+          (click)="onRemoveDegree(degree)"
         >
-          <path
-            stroke="currentColor"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
-          />
-        </svg>
-        <span class="sr-only">Remove badge</span>
-      </button>
-    </span>
+          <svg
+            class="w-2 h-2"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 14 14"
+          >
+            <path
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+            />
+          </svg>
+          <span class="sr-only">Remove badge</span>
+        </button>
+      </span>
     }
   </div>
 
@@ -145,11 +140,7 @@
   />
 
   <!-- Website -->
-  <app-shared-input
-    [control]="websiteControl"
-    label="Website"
-    placeholder="Enter Website URL"
-  >
+  <app-shared-input [control]="websiteControl" label="Website" placeholder="Enter Website URL">
   </app-shared-input>
   <app-validation-errors
     [control]="websiteControl"

@@ -81,7 +81,6 @@ export class PaginationDemoComponent {
 
   // Event handlers
   onPageChange(page: number): void {
-    console.log('Page changed to:', page);
     this.paginationConfig = {
       ...this.paginationConfig,
       page,
@@ -103,8 +102,6 @@ export class PaginationDemoComponent {
   }
 
   onPageSizeChange(pageSize: number): void {
-    console.log('Page size changed to:', pageSize);
-
     // Calculate the first item index on the current page
     const firstItemIndex =
       (this.paginationWithPageSizeConfig.page - 1) * this.paginationWithPageSizeConfig.pageSize;

@@ -6,15 +6,15 @@ export interface Student {
   studentId: string;
   enrollmentNumber: string;
   fullName: string;
-  cgpa: number;
-  bachelorsGpa: number;
-  tenthPercentage: number;
-  twelfthPercentage: number;
-  diplomaPercentage: number;
-  backlogs: number;
-  liveBacklogs: number;
+  cgpa: number | null;
+  bachelorsGpa: number | null;
+  tenthPercentage: number | null;
+  twelfthPercentage: number | null;
+  diplomaPercentage: number | null;
+  backlogs: number | null;
+  liveBacklogs: number | null;
+  resumeUrl: string | null;
   placementStatus: PlacementStatus;
-  resumeUrl: string;
   isVerifiedByPlacementCell: boolean;
   degree: Degree;
   placement_cell: {

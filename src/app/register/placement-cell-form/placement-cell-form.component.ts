@@ -66,7 +66,6 @@ export class PlacementCellFormComponent implements OnInit {
     effect(() => {
       const degrees = this.registerService.degrees();
       if (degrees && degrees.length > 0) {
-        console.log('degree');
         this.degrees.set(
           degrees.map(degree => ({
             label: degree.name,
@@ -85,7 +84,7 @@ export class PlacementCellFormComponent implements OnInit {
       domains: new FormControl<string[]>([], [Validators.required]),
       // Array of domains
       branchId: new FormControl('', [Validators.required]),
-      degree: new FormControl<string[]>([], Validators.required),
+      degrees: new FormControl<string[]>([], Validators.required),
       placementCellEmail: new FormControl('', [Validators.required, Validators.email]),
       website: new FormControl('', [
         Validators.required,
@@ -98,7 +97,7 @@ export class PlacementCellFormComponent implements OnInit {
     placementCellForm.valueChanges.subscribe(val => {
       if (
         val.branchId !== undefined &&
-        val.degree !== undefined &&
+        val.degrees !== undefined &&
         val.domains !== undefined &&
         val.placementCellEmail !== undefined &&
         val.placementCellName !== undefined &&
@@ -142,50 +141,48 @@ export class PlacementCellFormComponent implements OnInit {
   }
 
   onAddDegree(degreeId: string) {
-    const currentDegrees = this.degreeNamesControl.value || [];
+    const currentDegrees = this.degreeControl.value || [];
 
     // Add the new degreeId to the array if it doesn't already exist
     if (!currentDegrees.includes(degreeId)) {
       const updatedDegrees = [...currentDegrees, degreeId];
-      this.degreeNamesControl.setValue(updatedDegrees);
-      this.degreeNamesControl.markAsDirty();
-      this.degreeNamesControl.markAsTouched();
+      this.degreeControl.setValue(updatedDegrees);
+      this.degreeControl.markAsDirty();
+      this.degreeControl.markAsTouched();
     }
   }
 
   onDegreeSelected() {
-    this.degreeNamesControl.markAsDirty();
-    this.degreeNamesControl.markAsTouched();
+    this.degreeControl.markAsDirty();
+    this.degreeControl.markAsTouched();
   }
 
   onRemoveDegree(degreeId: string) {
     // Get the current value of the degreeNames form control
-    const currentDegrees = this.degreeNamesControl.value || [];
+    const currentDegrees = this.degreeControl.value || [];
 
     // Filter out the degree to be removed
     const updatedDegrees = currentDegrees.filter((degree: string) => degree !== degreeId);
 
     // Update the form control with the new array
-    this.degreeNamesControl.setValue(updatedDegrees);
-    this.degreeNamesControl.markAsDirty();
-    this.degreeNamesControl.markAsTouched();
+    this.degreeControl.setValue(updatedDegrees);
+    this.degreeControl.markAsDirty();
+    this.degreeControl.markAsTouched();
   }
 
   onBranchSelected(branchName: string) {
-    this.placementCellForm.get('branchName')?.setValue(branchName);
-    this.placementCellForm.get('branchName')?.markAsDirty();
-    this.placementCellForm.get('branchName')?.markAsTouched();
+    this.branchIdControl.setValue(branchName);
+    this.branchIdControl.markAsDirty();
+    this.branchIdControl.markAsTouched();
   }
 
   onSubmit() {
-    console.log('submit');
     if (this.placementCellForm.invalid) {
       this.placementCellForm.markAllAsTouched();
       return;
     }
 
     const formData = this.placementCellForm.getRawValue();
-    console.log('Submitting Placement Cell Data:', formData);
     this.registerService.setPlacementCellProfile(formData);
 
     this.registerService
@@ -227,12 +224,12 @@ export class PlacementCellFormComponent implements OnInit {
     return this.placementCellForm.get('domains') as FormControl;
   }
 
-  get branchNameControl(): FormControl {
-    return this.placementCellForm.get('branchName') as FormControl;
+  get branchIdControl(): FormControl {
+    return this.placementCellForm.get('branchId') as FormControl;
   }
 
-  get degreeNamesControl(): FormControl {
-    return this.placementCellForm.get('degreeNames') as FormControl;
+  get degreeControl(): FormControl {
+    return this.placementCellForm.get('degrees') as FormControl;
   }
 
   get placementCellEmailControl(): FormControl {

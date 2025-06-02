@@ -1,7 +1,205 @@
 /* You can add global styles to this file, and also import other style files */
 @import 'tailwindcss';
+
+@theme {
+  --color-primary: #0d141c;
+  --color-secondary: #4f7396;
+  --color-box-background: #e8edf2;
+  --color-table-column: #e5e8eb;
+  --color-soft-white: #e5e8eb;
+
+  /* Info Alert */
+  --color-info-bg-light: #eff6ff;
+  --color-info-text-light: #1e40af;
+  --color-info-border-light: #bfdbfe;
+  --color-info-bg-dark: #1e3a8a;
+  --color-info-text-dark: #93c5fd;
+  --color-info-border-dark: #1e40af;
+
+  /* Danger Alert */
+  --color-danger-bg-light: #fee2e2;
+  --color-danger-text-light: #991b1b;
+  --color-danger-border-light: #fca5a5;
+  --color-danger-bg-dark: #7f1d1d;
+  --color-danger-text-dark: #f87171;
+  --color-danger-border-dark: #991b1b;
+
+  /* Success Alert */
+  --color-success-bg-light: #d1fae5;
+  --color-success-text-light: #065f46;
+  --color-success-border-light: #6ee7b7;
+  --color-success-bg-dark: #064e3b;
+  --color-success-text-dark: #34d399;
+  --color-success-border-dark: #065f46;
+
+  /* Warning Alert */
+  --color-warning-bg-light: #fef3c7;
+  --color-warning-text-light: #92400e;
+  --color-warning-border-light: #fcd34d;
+  --color-warning-bg-dark: #78350f;
+  --color-warning-text-dark: #fbbf24;
+  --color-warning-border-dark: #92400e;
+
+  /* Dark Alert */
+  --color-dark-bg-light: #f3f4f6;
+  --color-dark-text-light: #1f2937;
+  --color-dark-border-light: #d1d5db;
+  --color-dark-bg-dark: #1f2937;
+  --color-dark-text-dark: #9ca3af;
+  --color-dark-border-dark: #374151;
+}
+
 /* @tailwind utilities; */
 
+@layer components {
+  .shadow-layered {
+    box-shadow:
+      0 1px 1px hsl(0deg 0% 0% / 0.075),
+      0 2px 2px hsl(0deg 0% 0% / 0.075),
+      0 4px 4px hsl(0deg 0% 0% / 0.075),
+      0 8px 8px hsl(0deg 0% 0% / 0.075),
+      0 16px 16px hsl(0deg 0% 0% / 0.075);
+  }
+
+  .shadow-layered-hover {
+    box-shadow: 6.7px 13.4px 13.4px hsl(0deg 0% 0% / 0.29);
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center font-medium cursor-pointer rounded-md transition-colors focus:outline-none disabled:opacity-50 disabled:pointer-events-none;
+  }
+
+  /* Solid Buttons */
+  .btn-solid.btn-primary {
+    @apply bg-primary text-white hover:brightness-90;
+  }
+  .btn-solid.btn-danger {
+    @apply bg-red-500 text-white hover:brightness-95;
+  }
+  .btn-solid.btn-success {
+    @apply bg-green-500 text-white hover:brightness-95;
+  }
+  .btn-solid.btn-info {
+    @apply bg-cyan-500 text-white hover:brightness-95;
+  }
+  .btn-solid.btn-warning {
+    @apply bg-yellow-400 text-black hover:brightness-95;
+  }
+  .btn-solid.btn-secondary {
+    @apply bg-gray-500 text-white hover:brightness-95;
+  }
+  .btn-solid.btn-dark {
+    @apply bg-gray-800 text-white hover:brightness-95;
+  }
+
+  /* Outline Buttons */
+  .btn-outline.btn-primary {
+    @apply border border-blue-600 text-blue-600 bg-transparent hover:bg-blue-600 hover:text-white;
+  }
+  .btn-outline.btn-danger {
+    @apply border border-red-500 text-red-500 bg-transparent hover:bg-red-500 hover:text-white;
+  }
+  .btn-outline.btn-success {
+    @apply border border-green-500 text-green-500 bg-transparent hover:bg-green-500 hover:text-white;
+  }
+  .btn-outline.btn-info {
+    @apply border border-cyan-500 text-cyan-500 bg-transparent hover:bg-cyan-500 hover:text-white;
+  }
+  .btn-outline.btn-warning {
+    @apply border border-yellow-400 text-yellow-400 bg-transparent hover:bg-yellow-400 hover:text-black;
+  }
+  .btn-outline.btn-secondary {
+    @apply border border-gray-500 text-gray-500 bg-transparent hover:bg-gray-500 hover:text-white;
+  }
+  .btn-outline.btn-dark {
+    @apply border border-gray-800 text-gray-800 bg-transparent hover:bg-gray-800 hover:text-white;
+  }
+
+  /* Soft Buttons */
+  .btn-soft.btn-primary {
+    @apply bg-blue-100 text-blue-700 hover:bg-blue-200;
+  }
+  .btn-soft.btn-danger {
+    @apply bg-red-100 text-red-700 hover:bg-red-200;
+  }
+  .btn-soft.btn-success {
+    @apply bg-green-100 text-green-700 hover:bg-green-200;
+  }
+  .btn-soft.btn-info {
+    @apply bg-cyan-100 text-cyan-700 hover:bg-cyan-200;
+  }
+  .btn-soft.btn-warning {
+    @apply bg-yellow-100 text-yellow-700 hover:bg-yellow-200;
+  }
+  .btn-soft.btn-secondary {
+    @apply bg-gray-100 text-gray-700 hover:bg-gray-200;
+  }
+  .btn-soft.btn-dark {
+    @apply bg-gray-200 text-gray-900 hover:bg-gray-300;
+  }
+
+  /* Sizes */
+  .btn-xs {
+    @apply px-1 py-0.5 text-xs;
+  }
+  .btn-sm {
+    @apply px-3 py-1 text-sm;
+  }
+  .btn-md {
+    @apply px-4 py-2 text-base;
+  }
+  .btn-lg {
+    @apply px-6 py-3 text-lg;
+  }
+
+  /* Alerts */
+  .alert-info {
+    @apply bg-cyan-100 text-cyan-700 border border-cyan-300;
+  }
+  .alert-info.dark {
+    @apply bg-cyan-900 text-cyan-100 border border-cyan-800;
+  }
+
+  .alert-danger {
+    @apply bg-red-100 text-red-700 border border-red-300;
+  }
+  .alert-danger.dark {
+    @apply bg-red-900 text-red-100 border border-red-800;
+  }
+
+  .alert-success {
+    @apply bg-green-100 text-green-700 border border-green-300;
+  }
+  .alert-success.dark {
+    @apply bg-green-900 text-green-100 border border-green-800;
+  }
+
+  .alert-warning {
+    @apply bg-yellow-100 text-yellow-700 border border-yellow-300;
+  }
+  .alert-warning.dark {
+    @apply bg-yellow-900 text-yellow-100 border border-yellow-800;
+  }
+
+  .alert-dark {
+    @apply bg-gray-200 text-gray-900 border border-gray-400;
+  }
+  .alert-dark.dark {
+    @apply bg-gray-900 text-gray-100 border border-gray-800;
+  }
+
+  .chip {
+    @apply inline-flex items-center px-3 py-1 text-sm font-medium rounded-md;
+  }
+
+  .chip-placed {
+    @apply bg-green-100 text-green-700;
+  }
+
+  .chip-not-placed {
+    @apply bg-red-100 text-red-700;
+  }
+}
 body {
   background-color: #f7fafc;
   min-width: 100vh;

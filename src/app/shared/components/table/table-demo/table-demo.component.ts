@@ -303,8 +303,6 @@ export class TableDemoComponent {
   }
 
   onTableEvent(event: TableEvent<User>): void {
-    console.log('Table event:', event.type, event.payload);
-
     // Handle pagination config updates
     if (event.type === 'page' || event.type === 'pageSize') {
       // Create a new config object with updated pagination

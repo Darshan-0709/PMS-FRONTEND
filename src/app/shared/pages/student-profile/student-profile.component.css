@@ -1,0 +1,19 @@
+/* Add any component-specific styles here */
+.readonly-field {
+  background-color: #f9fafb;
+  cursor: not-allowed;
+}
+
+h3 {
+  color: #374151;
+}
+
+.section-divider {
+  margin: 1.5rem 0;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* Animation for form transitions */
+form {
+  transition: all 0.3s ease;
+}

@@ -141,7 +141,6 @@ export class StudentFormComponent implements OnInit {
         const emailDomain = userEmail.split('@')[1];
         const placementCellDomains = selectedCell.placementCellDomains;
 
-        console.log({ emailDomain });
         // Check if the email domain is allowed for this placement cell
         const isDomainAllowed = placementCellDomains.some(domain => {
           return domain.endsWith(emailDomain);
@@ -159,11 +158,9 @@ export class StudentFormComponent implements OnInit {
         this.domainMismatchWarning.set(false); // No email, no warning yet
         this.studentForm.setErrors(null);
       }
-      console.log(this.studentForm.errors);
     }
 
     // Log the current errors on the parent form group
-    console.log('Parent Form Group Errors:', this.parentFormGroup.errors);
   }
 
   goBackToEmailForm() {

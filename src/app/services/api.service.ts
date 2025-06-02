@@ -19,16 +19,18 @@ export class ApiService {
       .pipe(catchError(error => this.handleError(error)));
   }
 
-  post<T>(endpoint: string, body: any): Observable<ApiResponse<T>> {
+  post<T, U = T>(endpoint: string, body: U): Observable<ApiResponse<T>> {
     return this.http
       .post<ApiResponse<T>>(`${this.baseUrl}/${endpoint}`, body)
       .pipe(catchError(error => this.handleError(error)));
   }
 
-  patch<T>(endpoint: string, body: any): Observable<ApiResponse<T>> {
-    return this.http
-      .patch<ApiResponse<T>>(`${this.baseUrl}/${endpoint}`, body)
-      .pipe(catchError(error => this.handleError(error)));
+  put<T, U = T>(endpoint: string, body: U): Observable<ApiResponse<T>> {
+    return this.http.put<ApiResponse<T>>(`${this.baseUrl}/${endpoint}`, body).pipe(
+      catchError(error => {
+        return this.handleError(error);
+      })
+    );
   }
 
   delete<T>(endpoint: string): Observable<ApiResponse<T>> {
@@ -37,14 +39,18 @@ export class ApiService {
       .pipe(catchError(error => this.handleError(error)));
   }
 
-  private handleError(error: HttpErrorResponse) {
+  private handleError(err: HttpErrorResponse) {
     let errorMessage = 'An unknown error occurred';
-
-    if (error.error && error.error.message) {
-      errorMessage = error.error.message;
+    this.toastService.show(errorMessage, 'error');
+    if (err.error && err.error.message) {
+      errorMessage = err.error.message;
+      if (err.error.errors && Object.keys(err.error.errors).length != 0) {
+        this.toastService.show(errorMessage, 'error');
+      }
+    } else {
+      this.toastService.show(errorMessage, 'error');
     }
 
-    this.toastService.show(errorMessage, 'error');
-    return throwError(() => new Error(errorMessage));
+    return throwError(() => err);
   }
 }

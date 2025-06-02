@@ -29,7 +29,7 @@ export class StudentService {
   }
 
   updateStudent(id: string, updateData: StudentUpdateRequest): Observable<ApiResponse<Student>> {
-    return this.api.patch<Student>(`students/${id}`, updateData);
+    return this.api.put<Student, StudentUpdateRequest>(`students/${id}`, updateData);
   }
 
   deleteStudent(id: string): Observable<ApiResponse<null>> {
@@ -39,6 +39,9 @@ export class StudentService {
   batchVerifyStudents(
     data: BatchVerifyStudentsRequest
   ): Observable<ApiResponse<{ count: number }>> {
-    return this.api.post<{ count: number }>('students/batch-verify', data);
+    return this.api.post<{ count: number }, BatchVerifyStudentsRequest>(
+      'students/batch-verify',
+      data
+    );
   }
 }

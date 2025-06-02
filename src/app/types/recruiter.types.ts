@@ -8,10 +8,13 @@ export interface Recruiter {
   representativeId: string;
 }
 
-export interface RecruiterUpdateRequest {
-  companyName?: string;
-  companyEmail?: string;
-  representativePosition?: string;
-  description?: string;
-  website?: string;
+export type RecruiterUpdatePayload = Pick<
+  Recruiter,
+  'companyName' | 'representativePosition' | 'description' | 'website' | 'companyEmail'
+>;
+
+export interface RecruiterApiResponse {
+  success: boolean;
+  message: string;
+  data: Recruiter;
 }

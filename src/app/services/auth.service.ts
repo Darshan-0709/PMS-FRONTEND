@@ -18,7 +18,7 @@ export class AuthService {
   isLoggedIn = signal<boolean>(!!this.loadToken());
 
   login(loginData: LoginRequest): Observable<ApiResponse<AuthResponse>> {
-    return this.api.post<AuthResponse>('auth/login', loginData).pipe(
+    return this.api.post<AuthResponse, LoginRequest>('auth/login', loginData).pipe(
       tap(response => {
         if (response.success) {
           this.saveToken(response.data.token);
@@ -31,7 +31,7 @@ export class AuthService {
   }
 
   register(registerData: RegisterRequest): Observable<ApiResponse<AuthUser>> {
-    return this.api.post<AuthUser>('auth/register', registerData);
+    return this.api.post<AuthUser, RegisterRequest>('auth/register', registerData);
   }
 
   validateUserInput(userData: RegisterRequest): Observable<ApiResponse<any>> {

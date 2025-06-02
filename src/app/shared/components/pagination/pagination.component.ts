@@ -99,31 +99,26 @@ export class PaginationComponent implements OnChanges {
   }
 
   goToFirstPage(): void {
-    console.log('First Page');
     this.goToPage(1);
   }
 
   goToLastPage(): void {
-    console.log('Last Page');
     this.goToPage(this.totalPages());
   }
 
   goToPreviousPage(): void {
-    console.log('Previous Page');
     if (this.hasPrev()) {
       this.goToPage(this.currentPage() - 1);
     }
   }
 
   goToNextPage(): void {
-    console.log('Next Page');
     if (this.hasNext()) {
       this.goToPage(this.currentPage() + 1);
     }
   }
 
   changePageSize(event: Event): void {
-    console.log('Change Page Size');
     const select = event.target as HTMLSelectElement;
     const newSize = parseInt(select.value, 10);
 

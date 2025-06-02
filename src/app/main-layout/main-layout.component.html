@@ -1,0 +1,33 @@
+@switch (userRole()) {
+  @case ('student') {
+    <app-sidebar brandName="Student Portal" [navItems]="studentNavItems">
+      <router-outlet />
+    </app-sidebar>
+  }
+  @case ('recruiter') {
+    <app-sidebar brandName="Recruiter Portal" [navItems]="recruiterNavItems">
+      <router-outlet />
+    </app-sidebar>
+  }
+  @case ('placement_cell') {
+    <app-sidebar brandName="Placement Cell" [navItems]="placementCellNavItems">
+      <router-outlet />
+    </app-sidebar>
+  }
+  @default {
+    <!-- Fallback navigation based on URL path if role is not available -->
+    @if (currentPath.startsWith('/student/')) {
+      <app-sidebar brandName="Student Portal" [navItems]="studentNavItems">
+        <router-outlet />
+      </app-sidebar>
+    } @else if (currentPath.startsWith('/recruiter/')) {
+      <app-sidebar brandName="Recruiter Portal" [navItems]="recruiterNavItems">
+        <router-outlet />
+      </app-sidebar>
+    } @else if (currentPath.startsWith('/placement-cell/')) {
+      <app-sidebar brandName="Placement Cell" [navItems]="placementCellNavItems">
+        <router-outlet />
+      </app-sidebar>
+    }
+  }
+}

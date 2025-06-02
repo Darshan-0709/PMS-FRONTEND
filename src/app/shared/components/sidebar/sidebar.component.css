@@ -1,0 +1,23 @@
+/* Additional sidebar styles - most styling is handled by Tailwind */
+
+:host {
+  display: block;
+}
+
+/* Custom scrollbar for sidebar navigation */
+nav::-webkit-scrollbar {
+  width: 4px;
+}
+
+nav::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+nav::-webkit-scrollbar-thumb {
+  background: #ddd;
+  border-radius: 4px;
+}
+
+nav::-webkit-scrollbar-thumb:hover {
+  background: #ccc;
+}

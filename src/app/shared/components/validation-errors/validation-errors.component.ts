@@ -1,6 +1,6 @@
 // shared/components/validation-errors/validation-errors.component.ts
 import { Component, computed, effect, input } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { AbstractControl, FormControl } from '@angular/forms';
 import { ValidationMessages } from '../../../types/validation.types';
 
 @Component({
@@ -43,17 +43,11 @@ export class ValidationErrorsComponent {
         return typeof msg === 'function' ? msg(control, label) : msg;
       });
   }
-
   constructor() {
-    effect(() => {
-      console.log('Control Name:', this.control.name);
-
-      // Subscribe to value changes
-      this.control().valueChanges.subscribe(value => {
-        // console.log('Value:', value);
-        // console.log('Valid:', this.control().valid);
-        console.log('Errors:', this.control().errors);
-      });
-    });
+    // setInterval(() => {
+    //   console.log(this.shouldShowErrors())
+    // }, 100);
+    // effect(()=> {
+    // })
   }
 }
